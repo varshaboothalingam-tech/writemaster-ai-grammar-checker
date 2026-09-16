@@ -1,0 +1,10 @@
+{
+ "note": "full 2000+2000 diagnostic",
+ "TP": 1000,
+ "FN": 0,
+ "recall": 1.0,
+ "fp": 0,
+ "fpr": 0.0,
+ "missed": {},
+ "fp_rules": {}
+}

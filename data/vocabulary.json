@@ -1,0 +1,1579 @@
+{
+  "synonyms": {
+    "good": [
+      "adept",
+      "beneficial",
+      "commodity",
+      "dear",
+      "dependable",
+      "effective",
+      "estimable",
+      "excellent",
+      "expert",
+      "fine"
+    ],
+    "bad": [
+      "awful",
+      "badly",
+      "badness",
+      "big",
+      "defective",
+      "dreadful",
+      "forged",
+      "high-risk",
+      "horrible",
+      "inferior"
+    ],
+    "big": [
+      "adult",
+      "bad",
+      "bighearted",
+      "boastful",
+      "boastfully",
+      "bounteous",
+      "bountiful",
+      "braggart",
+      "colossal",
+      "enormous"
+    ],
+    "small": [
+      "belittled",
+      "compact",
+      "diminished",
+      "humble",
+      "insignificant",
+      "little",
+      "low",
+      "lowly",
+      "miniature",
+      "minor"
+    ],
+    "happy": [
+      "cheerful",
+      "content",
+      "delighted",
+      "elated",
+      "felicitous",
+      "glad",
+      "joyful",
+      "pleased",
+      "thrilled",
+      "well-chosen"
+    ],
+    "sad": [
+      "dejected",
+      "deplorable",
+      "despondent",
+      "distressing",
+      "gloomy",
+      "lamentable",
+      "melancholy",
+      "miserable",
+      "pitiful",
+      "somber"
+    ],
+    "said": [
+      "stated",
+      "mentioned",
+      "remarked",
+      "noted",
+      "pointed out",
+      "explained",
+      "declared",
+      "asserted"
+    ],
+    "make": [
+      "arrive at",
+      "assemble",
+      "attain",
+      "brand",
+      "bring in",
+      "build",
+      "ca-ca",
+      "cause",
+      "clear",
+      "construct"
+    ],
+    "get": [
+      "acquire",
+      "aim",
+      "amaze",
+      "arrest",
+      "arrive",
+      "attain",
+      "baffle",
+      "beat",
+      "become",
+      "collect"
+    ],
+    "go": [
+      "adam",
+      "advance",
+      "become",
+      "belong",
+      "blend",
+      "blend in",
+      "break",
+      "break down",
+      "buy the farm",
+      "head"
+    ],
+    "come": [
+      "add up",
+      "amount",
+      "appear",
+      "approach",
+      "arise",
+      "arrive",
+      "come in",
+      "come up",
+      "cum",
+      "derive"
+    ],
+    "give": [
+      "afford",
+      "apply",
+      "bestow",
+      "break",
+      "cave in",
+      "chip in",
+      "collapse",
+      "commit",
+      "consecrate",
+      "contribute"
+    ],
+    "take": [
+      "accept",
+      "acquire",
+      "admit",
+      "adopt",
+      "aim",
+      "ask",
+      "assume",
+      "bring",
+      "capture",
+      "collect"
+    ],
+    "think": [
+      "believe",
+      "call back",
+      "call up",
+      "cerebrate",
+      "cogitate",
+      "conceive",
+      "consider",
+      "contemplate",
+      "deliberate",
+      "envision"
+    ],
+    "want": [
+      "aspire to",
+      "covet",
+      "crave",
+      "deficiency",
+      "deprivation",
+      "desire",
+      "hanker",
+      "lack",
+      "long for",
+      "need"
+    ],
+    "need": [
+      "ask",
+      "call for",
+      "demand",
+      "indigence",
+      "involve",
+      "merit",
+      "motivation",
+      "motive",
+      "necessitate",
+      "require"
+    ],
+    "use": [
+      "apply",
+      "consumption",
+      "deploy",
+      "economic consumption",
+      "employ",
+      "employment",
+      "enjoyment",
+      "exercise",
+      "expend",
+      "harness"
+    ],
+    "try": [
+      "adjudicate",
+      "aim",
+      "assay",
+      "attempt",
+      "effort",
+      "endeavor",
+      "endeavour",
+      "essay",
+      "examine",
+      "labor"
+    ],
+    "important": [
+      "authoritative",
+      "critical",
+      "crucial",
+      "essential",
+      "imperative",
+      "of import",
+      "paramount",
+      "pivotal",
+      "significant",
+      "vital"
+    ],
+    "interesting": [
+      "absorbing",
+      "captivating",
+      "compelling",
+      "concern",
+      "engaging",
+      "fascinating",
+      "gripping",
+      "interest",
+      "intriguing",
+      "matter to"
+    ],
+    "beautiful": [
+      "gorgeous",
+      "stunning",
+      "magnificent",
+      "lovely",
+      "elegant",
+      "breathtaking",
+      "exquisite",
+      "resplendent"
+    ],
+    "quickly": [
+      "rapidly",
+      "swiftly",
+      "promptly",
+      "speedily",
+      "hastily",
+      "expeditiously",
+      "nimbly",
+      "fleetly"
+    ],
+    "slowly": [
+      "gradually",
+      "steadily",
+      "laboriously",
+      "sluggishly",
+      "languidly",
+      "leisurely",
+      "ploddingly",
+      "torpidly"
+    ],
+    "also": [
+      "additionally",
+      "furthermore",
+      "moreover",
+      "in addition",
+      "likewise",
+      "similarly",
+      "besides",
+      "equally"
+    ],
+    "very": [
+      "extremely",
+      "remarkably",
+      "exceptionally",
+      "extraordinarily",
+      "incredibly",
+      "profoundly",
+      "immensely",
+      "supremely"
+    ],
+    "show": [
+      "appearance",
+      "bear witness",
+      "demo",
+      "demonstrate",
+      "depict",
+      "designate",
+      "display",
+      "establish",
+      "exhibit",
+      "illustrate"
+    ],
+    "help": [
+      "aid",
+      "assist",
+      "assistance",
+      "assistant",
+      "avail",
+      "bolster",
+      "contribute to",
+      "enable",
+      "facilitate",
+      "foster"
+    ],
+    "start": [
+      "begin",
+      "beginning",
+      "bug out",
+      "bulge",
+      "bulge out",
+      "come out",
+      "commence",
+      "commencement",
+      "embark on",
+      "inaugurate"
+    ],
+    "end": [
+      "cease",
+      "close",
+      "closing",
+      "complete",
+      "conclude",
+      "conclusion",
+      "culminate",
+      "death",
+      "destruction",
+      "ending"
+    ],
+    "old": [
+      "age-old",
+      "aged",
+      "ancient",
+      "antique",
+      "elderly",
+      "erstwhile",
+      "former",
+      "honest-to-god",
+      "honest-to-goodness",
+      "mature"
+    ],
+    "new": [
+      "avant-garde",
+      "contemporary",
+      "cutting-edge",
+      "fresh",
+      "freshly",
+      "innovative",
+      "modern",
+      "newfangled",
+      "newly",
+      "novel"
+    ],
+    "easy": [
+      "clear",
+      "comfortable",
+      "easily",
+      "easygoing",
+      "effortless",
+      "facile",
+      "gentle",
+      "leisurely",
+      "light",
+      "loose"
+    ],
+    "hard": [
+      "arduous",
+      "backbreaking",
+      "challenging",
+      "concentrated",
+      "demanding",
+      "difficult",
+      "firmly",
+      "formidable",
+      "grueling",
+      "gruelling"
+    ],
+    "many": [
+      "numerous",
+      "several",
+      "multiple",
+      "various",
+      "myriad",
+      "a multitude of",
+      "a plethora of",
+      "countless"
+    ],
+    "much": [
+      "considerable",
+      "substantial",
+      "significant",
+      "a great deal of",
+      "extensive",
+      "abundant",
+      "copious"
+    ],
+    "maybe": [
+      "perhaps",
+      "possibly",
+      "conceivably",
+      "potentially",
+      "probably",
+      "perchance"
+    ],
+    "like": [
+      "such as",
+      "for example",
+      "for instance",
+      "similar to",
+      "comparable to",
+      "akin to",
+      "analogous to"
+    ],
+    "enough": [
+      "acceptable",
+      "adequate",
+      "ample",
+      "decent",
+      "plenty",
+      "satisfactory",
+      "satisfying",
+      "sufficiency",
+      "sufficient",
+      "sufficiently"
+    ],
+    "about": [
+      "approximately",
+      "roughly",
+      "around",
+      "some",
+      "nearly",
+      "circa",
+      "more or less"
+    ],
+    "friends": [
+      "companions",
+      "acquaintances",
+      "colleagues",
+      "mates",
+      "pals",
+      "buddies",
+      "allies",
+      "associates"
+    ],
+    "friend": [
+      "companion",
+      "acquaintance",
+      "colleague",
+      "mate",
+      "pal",
+      "buddy",
+      "ally",
+      "associate"
+    ],
+    "love": [
+      "adore",
+      "cherish",
+      "treasure",
+      "worship",
+      "relish",
+      "devotion",
+      "affection",
+      "passion"
+    ],
+    "hate": [
+      "despise",
+      "loathe",
+      "detest",
+      "abhor",
+      "dislike",
+      "resent",
+      "scorn"
+    ],
+    "run": [
+      "be given",
+      "black market",
+      "bleed",
+      "bolt",
+      "break away",
+      "bunk",
+      "campaign",
+      "carry",
+      "consort",
+      "dash"
+    ],
+    "walk": [
+      "stroll",
+      "amble",
+      "saunter",
+      "march",
+      "stride",
+      "wander",
+      "roam",
+      "pace"
+    ],
+    "eat": [
+      "consume",
+      "devour",
+      "dine",
+      "feast",
+      "nibble",
+      "munch",
+      "gobble",
+      "ingest"
+    ],
+    "see": [
+      "observe",
+      "notice",
+      "witness",
+      "spot",
+      "glimpse",
+      "view",
+      "perceive",
+      "detect"
+    ],
+    "hear": [
+      "listen",
+      "perceive",
+      "detect",
+      "catch",
+      "sense",
+      "overhear",
+      "discern"
+    ],
+    "tell": [
+      "inform",
+      "notify",
+      "advise",
+      "relay",
+      "communicate",
+      "express",
+      "convey",
+      "reveal"
+    ],
+    "ask": [
+      "inquire",
+      "question",
+      "query",
+      "request",
+      "demand",
+      "petition",
+      "plead",
+      "beg"
+    ],
+    "work": [
+      "labor",
+      "toil",
+      "strive",
+      "function",
+      "operate",
+      "perform",
+      "engage"
+    ],
+    "play": [
+      "engage",
+      "participate",
+      "compete",
+      "amuse",
+      "entertain",
+      "recreate"
+    ],
+    "house": [
+      "home",
+      "residence",
+      "dwelling",
+      "abode",
+      "domicile",
+      "mansion",
+      "cottage",
+      "villa"
+    ],
+    "car": [
+      "vehicle",
+      "automobile",
+      "sedan",
+      "truck",
+      "ride",
+      "wheels",
+      "motorcar"
+    ],
+    "food": [
+      "cuisine",
+      "meal",
+      "dish",
+      "nourishment",
+      "sustenance",
+      "provisions",
+      "fare"
+    ],
+    "money": [
+      "cash",
+      "funds",
+      "currency",
+      "wealth",
+      "capital",
+      "fortune",
+      "assets",
+      "resources"
+    ],
+    "time": [
+      "moment",
+      "instant",
+      "era",
+      "period",
+      "duration",
+      "interval",
+      "occasion",
+      "epoch"
+    ],
+    "place": [
+      "location",
+      "spot",
+      "site",
+      "position",
+      "area",
+      "region",
+      "venue",
+      "setting"
+    ],
+    "idea": [
+      "concept",
+      "notion",
+      "thought",
+      "conception",
+      "brainchild",
+      "inspiration",
+      "theory",
+      "impression"
+    ],
+    "problem": [
+      "issue",
+      "difficulty",
+      "challenge",
+      "obstacle",
+      "trouble",
+      "dilemma",
+      "predicament",
+      "complication"
+    ],
+    "answer": [
+      "response",
+      "reply",
+      "solution",
+      "retort",
+      "explanation",
+      "clarification"
+    ],
+    "change": [
+      "alter",
+      "modify",
+      "adjust",
+      "transform",
+      "revise",
+      "evolve",
+      "shift",
+      "adapt"
+    ],
+    "find": [
+      "discover",
+      "locate",
+      "uncover",
+      "detect",
+      "identify",
+      "spot",
+      "unearth",
+      "procure"
+    ],
+    "keep": [
+      "retain",
+      "maintain",
+      "preserve",
+      "hold",
+      "sustain",
+      "conserve",
+      "uphold",
+      "guard"
+    ],
+    "begin": [
+      "start",
+      "commence",
+      "initiate",
+      "launch",
+      "originate",
+      "institute",
+      "embark"
+    ],
+    "move": [
+      "act",
+      "actuate",
+      "advance",
+      "affect",
+      "be active",
+      "displace",
+      "impress",
+      "incite",
+      "journey",
+      "locomote"
+    ],
+    "student": [
+      "pupil",
+      "learner",
+      "scholar",
+      "educatee",
+      "trainee",
+      "apprentice"
+    ],
+    "teacher": [
+      "instructor",
+      "educator",
+      "tutor",
+      "professor",
+      "mentor",
+      "coach"
+    ],
+    "school": [
+      "academy",
+      "institution",
+      "educational establishment",
+      "learning center"
+    ],
+    "book": [
+      "volume",
+      "text",
+      "publication",
+      "tome",
+      "manual",
+      "work"
+    ],
+    "write": [
+      "compose",
+      "author",
+      "pen",
+      "draft",
+      "draft",
+      "inscribe",
+      "record"
+    ],
+    "fast": [
+      "debauched",
+      "degenerate",
+      "degraded",
+      "dissipated",
+      "dissolute",
+      "fasting",
+      "firm",
+      "flying"
+    ],
+    "slow": [
+      "behind",
+      "boring",
+      "deadening",
+      "decelerate",
+      "dense",
+      "dim",
+      "dull",
+      "dumb"
+    ],
+    "smart": [
+      "ache",
+      "bright",
+      "chic",
+      "fresh",
+      "hurt",
+      "impertinent",
+      "impudent",
+      "overbold"
+    ],
+    "strong": [
+      "firm",
+      "hard",
+      "impregnable",
+      "inviolable",
+      "potent",
+      "secure",
+      "solid",
+      "stiff"
+    ],
+    "weak": [
+      "debile",
+      "decrepit",
+      "faint",
+      "fallible",
+      "feeble",
+      "frail",
+      "imperfect",
+      "infirm"
+    ],
+    "hot": [
+      "blistering",
+      "live",
+      "raging",
+      "red-hot",
+      "spicy"
+    ],
+    "cold": [
+      "cold-blooded",
+      "coldness",
+      "common cold",
+      "dusty",
+      "frigid",
+      "frigidity",
+      "frigidness",
+      "inhuman"
+    ],
+    "long": [
+      "farseeing",
+      "farsighted",
+      "foresighted",
+      "foresightful",
+      "hanker",
+      "longsighted",
+      "prospicient",
+      "recollective"
+    ],
+    "short": [
+      "abruptly",
+      "brusk",
+      "brusque",
+      "curt",
+      "curtly",
+      "dead",
+      "forgetful",
+      "inadequate"
+    ],
+    "rich": [
+      "ample",
+      "copious",
+      "deep",
+      "fat",
+      "fertile",
+      "full-bodied",
+      "plenteous",
+      "plentiful"
+    ],
+    "poor": [
+      "hapless",
+      "inadequate",
+      "miserable",
+      "misfortunate",
+      "pathetic",
+      "piteous",
+      "pitiable",
+      "pitiful"
+    ],
+    "funny": [
+      "amusing",
+      "comic",
+      "comical",
+      "curious",
+      "fishy",
+      "funny remark",
+      "funny story",
+      "good story"
+    ],
+    "scary": [
+      "chilling",
+      "scarey",
+      "shivery",
+      "shuddery"
+    ],
+    "weird": [
+      "eldritch",
+      "uncanny",
+      "unearthly",
+      "wyrd"
+    ],
+    "crazy": [
+      "brainsick",
+      "demented",
+      "disturbed",
+      "dotty",
+      "gaga",
+      "half-baked",
+      "looney",
+      "loony"
+    ],
+    "boring": [
+      "bore",
+      "deadening",
+      "drill",
+      "drilling",
+      "dull",
+      "ho-hum",
+      "irksome",
+      "oil production"
+    ],
+    "amazing": [
+      "amaze",
+      "astonish",
+      "astonishing",
+      "astound",
+      "awe-inspiring",
+      "awesome",
+      "awful",
+      "awing"
+    ],
+    "terrible": [
+      "abominable",
+      "atrocious",
+      "awful",
+      "dire",
+      "direful",
+      "dread",
+      "dreaded",
+      "dreadful"
+    ],
+    "wonderful": [
+      "fantastic",
+      "grand",
+      "howling",
+      "marvellous",
+      "marvelous",
+      "rattling",
+      "terrific",
+      "tremendous"
+    ],
+    "awful": [
+      "abominable",
+      "amazing",
+      "atrocious",
+      "awe-inspiring",
+      "awed",
+      "awesome",
+      "awfully",
+      "awing"
+    ],
+    "fine": [
+      "all right",
+      "alright",
+      "amercement",
+      "delicately",
+      "exquisitely",
+      "finely",
+      "hunky-dory",
+      "mulct"
+    ],
+    "clean": [
+      "blank",
+      "clean and jerk",
+      "clean house",
+      "clean-living",
+      "cleanse",
+      "clear",
+      "fair",
+      "fairly"
+    ],
+    "dirty": [
+      "begrime",
+      "bemire",
+      "cheating",
+      "colly",
+      "contaminating",
+      "dingy",
+      "filthy",
+      "foul"
+    ],
+    "quiet": [
+      "calm",
+      "calm down",
+      "hush",
+      "hushed",
+      "lull",
+      "muted",
+      "pipe down",
+      "placid"
+    ],
+    "loud": [
+      "aloud",
+      "brassy",
+      "cheap",
+      "flash",
+      "flashy",
+      "forte",
+      "garish",
+      "gaudy"
+    ],
+    "safe": [
+      "condom",
+      "dependable",
+      "good",
+      "prophylactic",
+      "rubber",
+      "safety",
+      "secure"
+    ],
+    "dangerous": [
+      "grave",
+      "grievous",
+      "life-threatening",
+      "serious",
+      "severe",
+      "unsafe"
+    ],
+    "correct": [
+      "adjust",
+      "castigate",
+      "chasten",
+      "chastise",
+      "compensate",
+      "counterbalance",
+      "decline",
+      "discipline"
+    ],
+    "wrong": [
+      "amiss",
+      "awry",
+      "damage",
+      "faulty",
+      "haywire",
+      "ill-timed",
+      "improper",
+      "incorrect"
+    ],
+    "feel": [
+      "experience",
+      "feeling",
+      "find",
+      "finger",
+      "flavor",
+      "flavour",
+      "look",
+      "palpate"
+    ],
+    "look": [
+      "appear",
+      "aspect",
+      "attend",
+      "await",
+      "bet",
+      "calculate",
+      "count",
+      "depend"
+    ],
+    "put": [
+      "arrange",
+      "assign",
+      "cast",
+      "commit",
+      "couch",
+      "frame",
+      "invest",
+      "lay"
+    ],
+    "live": [
+      "alive",
+      "bouncy",
+      "dwell",
+      "endure",
+      "exist",
+      "experience",
+      "hold out",
+      "hold up"
+    ],
+    "ugly": [
+      "atrocious",
+      "despicable",
+      "frightful",
+      "horrible",
+      "horrifying",
+      "slimy",
+      "surly",
+      "unworthy"
+    ],
+    "angry": [
+      "furious",
+      "raging",
+      "tempestuous",
+      "wild"
+    ],
+    "pretty": [
+      "fairly",
+      "jolly",
+      "middling",
+      "moderately",
+      "passably",
+      "reasonably",
+      "somewhat"
+    ],
+    "belong": [
+      "belong to"
+    ]
+  },
+  "filler_words": [
+    "basically",
+    "actually",
+    "literally",
+    "honestly",
+    "just",
+    "really",
+    "quite",
+    "rather",
+    "somewhat",
+    "fairly",
+    "pretty much",
+    "kind of",
+    "sort of",
+    "you know",
+    "I mean",
+    "like I said",
+    "as I said",
+    "in a way",
+    "to be honest",
+    "if you will",
+    "like",
+    "stuff",
+    "things",
+    "got",
+    "like",
+    "um",
+    "uh",
+    "ah"
+  ],
+  "weak_words": {
+    "very": [
+      "extremely",
+      "remarkably",
+      "exceptionally"
+    ],
+    "really": [
+      "truly",
+      "genuinely",
+      "particularly"
+    ],
+    "good": [
+      "excellent",
+      "great",
+      "superb",
+      "outstanding"
+    ],
+    "bad": [
+      "terrible",
+      "awful",
+      "horrible",
+      "dreadful"
+    ],
+    "big": [
+      "large",
+      "enormous",
+      "vast",
+      "massive"
+    ],
+    "small": [
+      "tiny",
+      "little",
+      "compact",
+      "minute"
+    ],
+    "nice": [
+      "pleasant",
+      "delightful",
+      "charming",
+      "lovely"
+    ],
+    "said": [
+      "stated",
+      "remarked",
+      "noted",
+      "explained"
+    ],
+    "thing": [
+      "matter",
+      "aspect",
+      "element",
+      "factor"
+    ],
+    "a lot": [
+      "many",
+      "much",
+      "numerous",
+      "frequent"
+    ],
+    "important": [
+      "crucial",
+      "vital",
+      "essential",
+      "significant"
+    ],
+    "interesting": [
+      "fascinating",
+      "intriguing",
+      "compelling",
+      "engaging"
+    ],
+    "beautiful": [
+      "gorgeous",
+      "stunning",
+      "exquisite",
+      "elegant"
+    ],
+    "ugly": [
+      "hideous",
+      "unsightly",
+      "grotesque",
+      "repulsive"
+    ],
+    "happy": [
+      "joyful",
+      "elated",
+      "thrilled",
+      "delighted"
+    ],
+    "sad": [
+      "sorrowful",
+      "mournful",
+      "melancholy",
+      "heartbroken"
+    ],
+    "angry": [
+      "furious",
+      "enraged",
+      "livid",
+      "irate"
+    ],
+    "fast": [
+      "swift",
+      "rapid",
+      "quick",
+      "speedy"
+    ],
+    "slow": [
+      "sluggish",
+      "leisurely",
+      "unhurried",
+      "plodding"
+    ],
+    "smart": [
+      "intelligent",
+      "brilliant",
+      "sharp",
+      "astute"
+    ],
+    "dumb": [
+      "foolish",
+      "senseless",
+      "inane",
+      "mindless"
+    ],
+    "strong": [
+      "powerful",
+      "mighty",
+      "robust",
+      "sturdy"
+    ],
+    "weak": [
+      "feeble",
+      "frail",
+      "fragile",
+      "delicate"
+    ],
+    "hot": [
+      "scorching",
+      "blistering",
+      "sweltering",
+      "blazing"
+    ],
+    "cold": [
+      "freezing",
+      "frigid",
+      "icy",
+      "bitter"
+    ],
+    "old": [
+      "ancient",
+      "antique",
+      "aged",
+      "venerable"
+    ],
+    "new": [
+      "modern",
+      "novel",
+      "innovative",
+      "fresh"
+    ],
+    "long": [
+      "extensive",
+      "lengthy",
+      "prolonged",
+      "extended"
+    ],
+    "short": [
+      "brief",
+      "concise",
+      "abbreviated",
+      "curtailed"
+    ],
+    "hard": [
+      "difficult",
+      "challenging",
+      "demanding",
+      "rigorous"
+    ],
+    "easy": [
+      "simple",
+      "straightforward",
+      "effortless",
+      "uncomplicated"
+    ],
+    "rich": [
+      "wealthy",
+      "affluent",
+      "prosperous",
+      "opulent"
+    ],
+    "poor": [
+      "impoverished",
+      "destitute",
+      "indigent",
+      "needy"
+    ],
+    "funny": [
+      "hilarious",
+      "amusing",
+      "comical",
+      "entertaining"
+    ],
+    "scary": [
+      "terrifying",
+      "frightening",
+      "alarming",
+      "horrifying"
+    ],
+    "weird": [
+      "bizarre",
+      "peculiar",
+      "strange",
+      "unusual"
+    ],
+    "crazy": [
+      "lunatic",
+      "frenzied",
+      "wild",
+      "absurd"
+    ],
+    "stupid": [
+      "idiotic",
+      "foolish",
+      "asinine",
+      "moronic"
+    ],
+    "boring": [
+      "dull",
+      "tedious",
+      "monotonous",
+      "tiresome"
+    ],
+    "cool": [
+      "impressive",
+      "remarkable",
+      "extraordinary",
+      "noteworthy"
+    ],
+    "amazing": [
+      "astonishing",
+      "incredible",
+      "remarkable",
+      "stunning"
+    ],
+    "terrible": [
+      "dreadful",
+      "atrocious",
+      "abominable",
+      "appalling"
+    ],
+    "wonderful": [
+      "magnificent",
+      "splendid",
+      "marvelous",
+      "superb"
+    ],
+    "awful": [
+      "horrendous",
+      "abysmal",
+      "dreadful",
+      "lousy"
+    ],
+    "fine": [
+      "acceptable",
+      "adequate",
+      "satisfactory",
+      "passable"
+    ],
+    "pretty": [
+      "attractive",
+      "appealing",
+      "charming",
+      "lovely"
+    ],
+    "clean": [
+      "spotless",
+      "immaculate",
+      "pristine",
+      "scrupulous"
+    ],
+    "dirty": [
+      "filthy",
+      "grimy",
+      "squalid",
+      "sordid"
+    ],
+    "quiet": [
+      "silent",
+      "hushed",
+      "mute",
+      "noiseless"
+    ],
+    "loud": [
+      "deafening",
+      "booming",
+      "thunderous",
+      "earsplitting"
+    ],
+    "safe": [
+      "secure",
+      "protected",
+      "shielded",
+      "guarded"
+    ],
+    "dangerous": [
+      "hazardous",
+      "perilous",
+      "risky",
+      "treacherous"
+    ],
+    "correct": [
+      "accurate",
+      "precise",
+      "exact",
+      "right"
+    ],
+    "wrong": [
+      "incorrect",
+      "inaccurate",
+      "erroneous",
+      "fallacious"
+    ],
+    "enough": [
+      "sufficient",
+      "adequate",
+      "ample"
+    ],
+    "help": [
+      "assist",
+      "support",
+      "aid",
+      "facilitate"
+    ],
+    "show": [
+      "demonstrate",
+      "display",
+      "exhibit",
+      "illustrate"
+    ],
+    "get": [
+      "obtain",
+      "acquire",
+      "procure",
+      "secure"
+    ],
+    "make": [
+      "create",
+      "produce",
+      "construct",
+      "fabricate"
+    ],
+    "give": [
+      "provide",
+      "supply",
+      "furnish",
+      "deliver"
+    ],
+    "take": [
+      "seize",
+      "grab",
+      "acquire",
+      "capture"
+    ],
+    "use": [
+      "utilize",
+      "employ",
+      "leverage",
+      "apply"
+    ],
+    "try": [
+      "attempt",
+      "endeavor",
+      "strive",
+      "endeavour"
+    ],
+    "start": [
+      "begin",
+      "commence",
+      "initiate",
+      "launch"
+    ],
+    "end": [
+      "conclude",
+      "terminate",
+      "finish",
+      "culminate"
+    ],
+    "need": [
+      "require",
+      "demand",
+      "necessitate"
+    ],
+    "want": [
+      "desire",
+      "crave",
+      "yearn for"
+    ],
+    "think": [
+      "consider",
+      "contemplate",
+      "ponder",
+      "reflect"
+    ],
+    "feel": [
+      "sense",
+      "perceive",
+      "experience",
+      "detect"
+    ],
+    "look": [
+      "appear",
+      "seem",
+      "resemble"
+    ],
+    "come": [
+      "arrive",
+      "approach",
+      "emerge"
+    ],
+    "go": [
+      "proceed",
+      "advance",
+      "depart",
+      "travel"
+    ],
+    "put": [
+      "place",
+      "position",
+      "situate",
+      "deposit"
+    ],
+    "run": [
+      "sprint",
+      "dash",
+      "race",
+      "hasten"
+    ],
+    "move": [
+      "relocate",
+      "transfer",
+      "shift",
+      "reposition"
+    ],
+    "live": [
+      "reside",
+      "dwell",
+      "inhabit",
+      "occupy"
+    ],
+    "belong": [
+      "pertain",
+      "relate",
+      "apply",
+      "correspond"
+    ]
+  }
+}

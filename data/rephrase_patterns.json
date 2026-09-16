@@ -1,0 +1,235 @@
+{
+  "rephrase_styles": {
+    "professional": {
+      "word_replacements": {
+        "want": "would like", "need": "require", "get": "obtain",
+        "give": "provide", "help": "assist", "start": "commence",
+        "end": "conclude", "use": "utilize", "make": "produce",
+        "think": "believe", "show": "demonstrate", "tell": "inform",
+        "ask": "inquire", "big": "significant", "good": "excellent",
+        "bad": "unsatisfactory", "important": "essential", "many": "numerous",
+        "also": "additionally", "because": "due to the fact that",
+        "about": "regarding", "before": "prior to", "after": "subsequent to",
+        "fast": "efficient", "helpful": "beneficial", "fix": "resolve",
+        "change": "modify", "keep": "maintain", "find": "identify"
+      },
+      "patterns": [
+        {"from": "I want to", "to": "I would like to"},
+        {"from": "I need to", "to": "I need to"},
+        {"from": "Can you", "to": "Could you please"},
+        {"from": "Thanks", "to": "Thank you"},
+        {"from": "Hi", "to": "Dear"},
+        {"from": "Hey", "to": "Dear"},
+        {"from": "Bye", "to": "Best regards"},
+        {"from": "OK", "to": "Understood"},
+        {"from": "ok", "to": "Understood"},
+        {"from": "yes", "to": "Certainly"},
+        {"from": "no", "to": "Unfortunately not"},
+        {"from": "I think", "to": "In my assessment"},
+        {"from": "a lot", "to": "significantly"},
+        {"from": "very", "to": "extremely"},
+        {"from": "really", "to": "particularly"},
+        {"from": "thing", "to": "matter"},
+        {"from": "stuff", "to": "materials"},
+        {"from": "get", "to": "obtain"},
+        {"from": "got", "to": "obtained"},
+        {"from": "try", "to": "endeavor"},
+        {"from": "start", "to": "initiate"},
+        {"from": "end", "to": "finalize"},
+        {"from": "use", "to": "utilize"}
+      ],
+      "sentence_patterns": [
+        {"from": "I want to know about", "to": "I would like to inquire about"},
+        {"from": "Can you tell me", "to": "Could you please inform me"},
+        {"from": "I think this is", "to": "I believe this is"},
+        {"from": "We need to fix this", "to": "We need to resolve this matter"},
+        {"from": "I have a question", "to": "I have an inquiry"},
+        {"from": "Let me know", "to": "Please advise"},
+        {"from": "What do you think", "to": "What is your assessment"},
+        {"from": "I will do it", "to": "I will proceed accordingly"},
+        {"from": "Thanks for your help", "to": "Thank you for your assistance"},
+        {"from": "Sorry for the delay", "to": "I apologize for the delay"}
+      ]
+    },
+    "simple": {
+      "word_replacements": {
+        "utilize": "use", "commence": "start", "terminate": "end",
+        "demonstrate": "show", "facilitate": "help", "endeavor": "try",
+        "substantiate": "prove", "approximately": "about",
+        "nevertheless": "but", "furthermore": "also",
+        "consequently": "so", "subsequently": "then",
+        "aforementioned": "this", "notwithstanding": "despite",
+        "prior to": "before", "subsequent to": "after",
+        "in order to": "to", "due to the fact that": "because",
+        "at this point in time": "now", "in the event that": "if",
+        "for the purpose of": "to", "in light of": "because",
+        "with regard to": "about", "in terms of": "about",
+        "has the ability to": "can", "is able to": "can"
+      },
+      "patterns": [
+        {"from": "in order to", "to": "to"},
+        {"from": "due to the fact that", "to": "because"},
+        {"from": "at this point in time", "to": "now"},
+        {"from": "in the event that", "to": "if"},
+        {"from": "for the purpose of", "to": "to"},
+        {"from": "in light of the fact that", "to": "since"},
+        {"from": "given the fact that", "to": "since"},
+        {"from": "on a daily basis", "to": "daily"},
+        {"from": "in spite of the fact that", "to": "although"},
+        {"from": "with regard to", "to": "about"},
+        {"from": "in terms of", "to": "about"},
+        {"from": "in excess of", "to": "more than"},
+        {"from": "has the ability to", "to": "can"},
+        {"from": "is able to", "to": "can"},
+        {"from": "prior to", "to": "before"},
+        {"from": "subsequent to", "to": "after"},
+        {"from": "I would like to", "to": "I want to"},
+        {"from": "it is important to note that", "to": "note that"},
+        {"from": "it should be noted that", "to": "note that"},
+        {"from": "in the near future", "to": "soon"}
+      ],
+      "sentence_patterns": [
+        {"from": "I want to know about this project", "to": "Can you tell me more about this project?"},
+        {"from": "Due to the fact that the weather was bad", "to": "Because the weather was bad"},
+        {"from": "In order to succeed in life", "to": "To succeed in life"},
+        {"from": "At this point in time we are not able to ascertain", "to": "Right now we cannot determine"}
+      ]
+    },
+    "formal": {
+      "word_replacements": {
+        "get": "receive", "give": "provide", "help": "assist",
+        "use": "employ", "show": "illustrate", "start": "commence",
+        "end": "conclude", "fix": "remedy", "change": "alter",
+        "think": "contemplate", "big": "substantial", "small": "minimal",
+        "good": "commendable", "bad": "unsatisfactory", "fast": "expeditious"
+      },
+      "patterns": [
+        {"from": "I want", "to": "I desire"},
+        {"from": "Can you", "to": "Would you be able to"},
+        {"from": "Thanks", "to": "I appreciate your help"},
+        {"from": "Hi", "to": "Dear"},
+        {"from": "Hey", "to": "Dear"},
+        {"from": "Bye", "to": "Sincerely"},
+        {"from": "I think", "to": "It is my considered opinion that"},
+        {"from": "a lot", "to": "a great deal"},
+        {"from": "very", "to": "extremely"},
+        {"from": "really", "to": "truly"}
+      ],
+      "sentence_patterns": [
+        {"from": "I want to know about", "to": "I am writing to inquire about"},
+        {"from": "Can you help me", "to": "I would be grateful for your assistance"},
+        {"from": "Thanks for your help", "to": "I am grateful for your assistance"},
+        {"from": "Please let me know", "to": "I would appreciate your response"},
+        {"from": "I will do it", "to": "I shall proceed accordingly"}
+      ]
+    },
+    "friendly": {
+      "word_replacements": {
+        "utilize": "use", "demonstrate": "show", "facilitate": "help",
+        "commence": "start", "terminate": "end", "endeavor": "try",
+        "purchase": "buy", "obtain": "get", "inquire": "ask"
+      },
+      "patterns": [
+        {"from": "Dear", "to": "Hi there"},
+        {"from": "Sincerely", "to": "Best wishes"},
+        {"from": "Thank you for your assistance", "to": "Thanks so much for your help!"},
+        {"from": "I would like to", "to": "I'd love to"},
+        {"from": "Could you please", "to": "Would you mind"},
+        {"from": "I am writing to", "to": "I wanted to reach out about"},
+        {"from": "I believe", "to": "I feel like"},
+        {"from": "It would be appreciated", "to": "I'd really appreciate it"}
+      ],
+      "sentence_patterns": [
+        {"from": "I would like to inquire about", "to": "I was wondering about"},
+        {"from": "Could you please provide", "to": "Could you share"},
+        {"from": "I am writing to inform you", "to": "Just wanted to let you know"},
+        {"from": "Thank you for your prompt response", "to": "Thanks for getting back to me so quickly!"}
+      ]
+    },
+    "academic": {
+      "word_replacements": {
+        "show": "demonstrate", "think": "hypothesize", "use": "employ",
+        "get": "obtain", "give": "provide", "help": "facilitate",
+        "big": "significant", "small": "negligible", "good": "optimal",
+        "bad": "suboptimal", "important": "paramount", "also": "additionally",
+        "because": "due to", "about": "regarding", "fast": "rapid"
+      },
+      "patterns": [
+        {"from": "I think", "to": "This paper argues"},
+        {"from": "We found", "to": "Our findings indicate"},
+        {"from": "This shows", "to": "This evidence suggests"},
+        {"from": "a lot", "to": "a substantial number"},
+        {"from": "very", "to": "considerably"},
+        {"from": "really", "to": "notably"},
+        {"from": "good", "to": "favorable"},
+        {"from": "bad", "to": "adverse"}
+      ],
+      "sentence_patterns": [
+        {"from": "I want to know about", "to": "This study aims to examine"},
+        {"from": "We used this method", "to": "The employed methodology"},
+        {"from": "The results show", "to": "The empirical evidence demonstrates"},
+        {"from": "This is important because", "to": "This is significant, as"}
+      ]
+    },
+    "concise": {
+      "word_replacements": {
+        "because": "as", "although": "though", "approximately": "about",
+        "begin": "start", "endeavor": "try", "utilize": "use",
+        "facilitate": "help", "demonstrate": "show", "terminate": "end",
+        "purchase": "buy", "obtain": "get", "inquire": "ask"
+      },
+      "patterns": [
+        {"from": "due to the fact that", "to": "because"},
+        {"from": "in order to", "to": "to"},
+        {"from": "at this point in time", "to": "now"},
+        {"from": "in the event that", "to": "if"},
+        {"from": "for the purpose of", "to": "to"},
+        {"from": "on a daily basis", "to": "daily"},
+        {"from": "in the near future", "to": "soon"},
+        {"from": "at the present time", "to": "now"},
+        {"from": "has the ability to", "to": "can"},
+        {"from": "is able to", "to": "can"},
+        {"from": "in spite of the fact that", "to": "although"},
+        {"from": "it is important to note that", "to": "note that"},
+        {"from": "I would like to", "to": "I want to"},
+        {"from": "a large number of", "to": "many"},
+        {"from": "a great deal of", "to": "much"},
+        {"from": "the majority of", "to": "most"},
+        {"from": "in the process of", "to": "currently"},
+        {"from": "with respect to", "to": "about"},
+        {"from": "in regard to", "to": "about"}
+      ],
+      "sentence_patterns": []
+    },
+    "persuasive": {
+      "word_replacements": {
+        "think": "know", "maybe": "certainly", "possibly": "definitely",
+        "try": "must", "should": "must", "could": "will",
+        "might": "will", "some": "countless", "good": "exceptional",
+        "important": "critical", "big": "massive", "small": "minimal"
+      },
+      "patterns": [
+        {"from": "I think", "to": "I know"},
+        {"from": "maybe", "to": "without a doubt"},
+        {"from": "possibly", "to": "certainly"},
+        {"from": "you should", "to": "you must"},
+        {"from": "it might", "to": "it will"},
+        {"from": "we could", "to": "we should"},
+        {"from": "this is good", "to": "this is exceptional"},
+        {"from": "very important", "to": "absolutely essential"}
+      ],
+      "sentence_patterns": [
+        {"from": "I think this is important", "to": "This is critically important"},
+        {"from": "You should consider", "to": "You must consider"},
+        {"from": "This could help", "to": "This will transform"},
+        {"from": "We should try", "to": "We must pursue"}
+      ]
+    }
+  },
+  "passive_to_active": [
+    {"pattern": "The (\\w+) was (\\w+) by (\\w+)", "replacement": "\\3 \\2 the \\1"},
+    {"pattern": "(\\w+) was (\\w+) by (\\w+)", "replacement": "\\3 \\2 \\1"},
+    {"pattern": "(\\w+) were (\\w+) by (\\w+)", "replacement": "\\3 \\2 \\1"},
+    {"pattern": "The (\\w+) were (\\w+) by (\\w+)", "replacement": "\\3 \\2 the \\1"}
+  ]
+}

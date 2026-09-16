@@ -1,0 +1,207 @@
+WriteMaster AI - Architecture Report
+=====================================
+College Mini Project: Grammar Checker & Writing Assistant
+
+1. PROJECT OVERVIEW
+====================
+WriteMaster AI is a web-based grammar checking and writing improvement tool built using Python (Flask) for the backend and HTML/CSS/JavaScript for the frontend. It provides real-time grammar analysis, spelling correction, style suggestions, tone detection, text summarization, readability scoring, and synonym finding.
+
+2. SYSTEM ARCHITECTURE
+=======================
+The application follows a client-server architecture:
+
+  [Browser/Client] <--> [Flask Web Server] <--> [Grammar Engine + AI Engine]
+
+- The browser sends text via HTTP POST requests to REST API endpoints.
+- Flask routes the requests to the appropriate engine.
+- Results are returned as JSON and rendered dynamically by JavaScript.
+
+3. TECHNOLOGY STACK
+====================
+Backend:
+  - Python 3.14 with Flask 3.x web framework
+  - spaCy NLP library for tokenization, POS tagging, and dependency parsing
+  - Regular expressions (re module) for pattern matching
+  - Rule-based NLP with ML-assisted analysis
+
+Frontend:
+  - HTML5 templates with Jinja2 templating
+  - Bootstrap 5.3 for responsive layout
+  - Font Awesome 6.5 for icons
+  - Chart.js 4.4 for doughnut chart visualization
+  - Vanilla JavaScript (no frameworks)
+  - CSS3 with custom properties (light theme)
+  - localStorage for client-side history persistence
+
+4. FILE STRUCTURE
+==================
+grammar_checker/
+  app.py                  - Flask application, routes, API endpoints
+  grammar_engine.py       - Grammar/spelling/context/style checking
+  ai_engine.py            - Tone detection, vocabulary, summarizer
+  requirements.txt        - Python dependencies
+  templates/
+    base.html             - Base template with navbar/footer/CDN links
+    index.html            - Main editor and results page
+    rules.html            - Grammar rules reference page
+  static/
+    css/style.css         - Light theme custom styles
+    js/script.js          - Frontend logic, API calls, chart rendering
+
+5. MODULE DESCRIPTIONS
+=======================
+
+5.1 app.py (Flask Application)
+--------------------------------
+Responsibilities:
+  - Define Flask routes for pages and API endpoints
+  - Initialize GrammarChecker and AISuggestionEngine instances
+  - Serve sample texts and grammar rules reference data
+
+Routes:
+  GET  /              - Main editor page
+  GET  /rules         - Grammar rules reference
+  POST /api/check     - Full grammar check (spelling + grammar + AI analysis)
+  POST /api/auto_correct - Automatic text correction
+  POST /api/synonyms  - Synonym lookup for a word
+  POST /api/rephrase  - Sentence rephrasing
+  POST /api/summarize - Text summarization
+  POST /api/readability - Readability score calculation
+
+5.2 grammar_engine.py (GrammarChecker Class)
+---------------------------------------------
+Responsibilities:
+  - Spell checking against 100+ common misspellings dictionary
+  - Homophone detection using 100+ homophone pairs
+  - 10 grammar rules with regex patterns (subject-verb agreement, 
+    double negatives, a/an usage, repeated words, capitalization, etc.)
+  - Contextual analysis for homophones (their/there/they're)
+  - Style checking (long sentences, filler words, weak intensifiers)
+  - Flesch-Kincaid readability scoring
+
+Data Structures:
+  MISSPELLINGS: dict of misspelled -> correct word (100+ entries)
+  HOMOPHONES: dict mapping each homophone to its alternatives (100+ pairs)
+  GRAMMAR_RULES: list of rule dicts with id, name, severity, regex pattern
+
+Algorithm:
+  1. Check spelling: scan words against MISSPELLINGS dictionary
+  2. Check grammar: apply regex patterns from GRAMMAR_RULES
+  3. Check context: analyze surrounding words for homophone disambiguation
+  4. Check style: detect long sentences, weak words, missing punctuation
+  5. Calculate readability: Flesch-Kincaid formula using syllable counting
+
+5.3 ai_engine.py (AISuggestionEngine Class)
+---------------------------------------------
+Responsibilities:
+  - Passive voice detection (regex patterns)
+  - Filler word detection (20+ common fillers)
+  - Vocabulary diversity analysis (repeated word detection)
+  - Repeated phrase detection
+  - Tone detection (7 tones: formal, informal, confident, tentative, negative, positive, academic)
+  - Text summarization (extractive method using word frequency scoring)
+  - Sentence rephrasing (passive->active conversion, wordy->concise replacements)
+  - Synonym suggestions (45+ word categories with 8 synonyms each)
+
+Algorithm:
+  - Tone Detection: weighted regex pattern matching across 7 tone categories
+  - Summarization: word frequency scoring, first/last sentence boost, 
+    top 50% sentences selected and reordered
+  - Rephrasing: regex substitution for passive voice and wordy phrases, 
+    optional synonym replacement (40% probability)
+
+6. DATA FLOW
+=============
+
+Grammar Check Flow:
+  1. User types text and clicks "Check Grammar"
+  2. JavaScript sends POST /api/check with {text: "..."}
+  3. app.py calls grammar_checker.check(text)
+     - _check_spelling(): matches words against MISSPELLINGS
+     - _check_grammar_rules(): applies regex patterns
+     - _check_contextual(): disambiguates homophones
+     - _check_style(): checks for long sentences, weak words
+  4. app.py calls ai_engine.analyze(text, grammar_issues)
+     - _check_passive_voice()
+     - _check_fillers()
+     - _suggest_vocabulary()
+     - _check_repeated_phrases()
+     - _detect_tone()
+     - _generate_summary() (with scoring)
+  5. app.py calls grammar_checker.calculate_readability(text)
+     - Flesch-Kincaid formula
+  6. JSON response returned with all results
+  7. JavaScript renders stats, issues, suggestions, chart, tone meter
+
+7. KEY ALGORITHMS
+==================
+
+7.1 Flesch-Kincaid Readability Score
+  score = 206.835 - (1.015 x avg_words_per_sentence) - (84.6 x avg_syllables_per_word)
+  grade = 0.39 x avg_words_per_sentence + 11.8 x avg_syllables_per_word - 15.59
+
+7.2 Syllable Counting
+  - Count vowel groups (consecutive vowels = 1 syllable)
+  - Subtract 1 for silent 'e' at end
+  - Minimum 1 syllable per word
+
+7.3 Tone Detection
+  - Each tone has 4+ weighted regex patterns
+  - Score = sum of (matches x weight) per tone
+  - Primary tone = highest score, secondary = second highest
+
+7.4 Text Summarization (Extractive)
+  - Split text into sentences
+  - Remove stop words, count remaining word frequencies
+  - Score each sentence = sum of word frequencies
+  - Boost first and last sentences (1.5x)
+  - Select top 50% sentences, reorder by position
+
+7.5 Homophone Context Disambiguation
+  - For each homophone, examine adjacent words
+  - Apply context rules (e.g., "their" before "car/house" -> probably "their")
+  - If context suggests alternative, flag as warning
+
+8. FEATURES
+============
+
+  [x] Spelling check (100+ misspellings)
+  [x] Grammar rules (10 regex-based rules)
+  [x] Homophone detection (100+ pairs)
+  [x] Contextual analysis
+  [x] Style checking (passive voice, filler words, weak words)
+  [x] Tone detection (7 categories)
+  [x] Readability scoring (Flesch-Kincaid)
+  [x] Grade level calculation
+  [x] Auto-correct
+  [x] Sentence rephrasing
+  [x] Text summarization (extractive)
+  [x] Synonym finder (45+ words)
+  [x] Issue breakdown chart (Chart.js doughnut)
+  [x] Check history (localStorage)
+  [x] Export report (text file download)
+  [x] Character and word counter
+  [x] Expand/collapse issues
+  [x] Sample texts (7 pre-written examples)
+  [x] Keyboard shortcut (Ctrl+Enter)
+  [x] Responsive design (mobile-friendly)
+
+9. LIMITATIONS
+===============
+  - Rule-based system (no trained ML model)
+  - Homophone disambiguation uses keyword matching with NLP context analysis
+  - Summarization is extractive only (selects existing sentences)
+  - No user authentication or cloud storage
+  - Limited synonym database (45 common words only)
+  - No support for multiple languages
+
+10. FUTURE IMPROVEMENTS
+=========================
+  - Train ML model on grammar error corpus
+  - Add abstractive summarization using transformers
+  - User accounts with cloud history
+  - Browser extension for real-time checking
+  - Support for academic citation checking
+  - Multi-language support
+
+END OF REPORT

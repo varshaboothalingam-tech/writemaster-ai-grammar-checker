@@ -1,0 +1,111 @@
+{
+  "subject_verb_agreement": [
+    {"incorrect": "She go to school every day.", "correct": "She goes to school every day.", "explanation": "Third-person singular subject 'she' requires 'goes'."},
+    {"incorrect": "He don't like coffee.", "correct": "He doesn't like coffee.", "explanation": "Third-person singular 'he' requires 'doesn't'."},
+    {"incorrect": "I has a new phone.", "correct": "I have a new phone.", "explanation": "First-person 'I' requires 'have', not 'has'."},
+    {"incorrect": "They was playing cricket.", "correct": "They were playing cricket.", "explanation": "Plural subject 'they' requires 'were', not 'was'."},
+    {"incorrect": "We is going to the park.", "correct": "We are going to the park.", "explanation": "Plural subject 'we' requires 'are', not 'is'."},
+    {"incorrect": "She have two brothers.", "correct": "She has two brothers.", "explanation": "Third-person singular 'she' requires 'has'."},
+    {"incorrect": "They doesn't know me.", "correct": "They don't know me.", "explanation": "Plural subject 'they' requires 'don't', not 'doesn't'."},
+    {"incorrect": "My friend are very helpful.", "correct": "My friend is very helpful.", "explanation": "Singular subject 'friend' requires 'is'."},
+    {"incorrect": "The dogs is barking.", "correct": "The dogs are barking.", "explanation": "Plural subject 'dogs' requires 'are'."},
+    {"incorrect": "He are a good boy.", "correct": "He is a good boy.", "explanation": "Singular subject 'he' requires 'is'."},
+    {"incorrect": "It are cold today.", "correct": "It is cold today.", "explanation": "Singular subject 'it' requires 'is'."},
+    {"incorrect": "The children was playing.", "correct": "The children were playing.", "explanation": "Plural subject 'children' requires 'were'."},
+    {"incorrect": " Everybody have arrived.", "correct": "Everybody has arrived.", "explanation": "'Everybody' is singular and requires 'has'."},
+    {"incorrect": "Each of the students have a book.", "correct": "Each of the students has a book.", "explanation": "'Each' is singular and requires 'has'."},
+    {"incorrect": "Nobody are perfect.", "correct": "Nobody is perfect.", "explanation": "'Nobody' is singular and requires 'is'."}
+  ],
+  "verb_tense": [
+    {"incorrect": "He eat rice yesterday.", "correct": "He ate rice yesterday.", "explanation": "'Yesterday' indicates past tense; use 'ate'."},
+    {"incorrect": "I am go to school.", "correct": "I am going to school.", "explanation": "After 'am', use the present participle 'going'."},
+    {"incorrect": "I didn't went there.", "correct": "I didn't go there.", "explanation": "After 'didn't', use the base form 'go'."},
+    {"incorrect": "She was run all day.", "correct": "She was running all day.", "explanation": "Past continuous requires verb-ing form."},
+    {"incorrect": "We has finished our work.", "correct": "We have finished our work.", "explanation": "'We' requires 'have', not 'has'."},
+    {"incorrect": "I can sings very well.", "correct": "I can sing very well.", "explanation": "After modal 'can', use base form 'sing'."},
+    {"incorrect": "She can sings very well.", "correct": "She can sing very well.", "explanation": "After modal 'can', use base form 'sing'."},
+    {"incorrect": "He will goed there.", "correct": "He will go there.", "explanation": "After 'will', use base form 'go', not past tense."},
+    {"incorrect": "I am waiting since morning.", "correct": "I have been waiting since morning.", "explanation": "Use present perfect continuous for actions continuing from past."},
+    {"incorrect": "She walks to school yesterday.", "correct": "She walked to school yesterday.", "explanation": "'Yesterday' indicates past tense."},
+    {"incorrect": "They already finished.", "correct": "They have already finished.", "explanation": "'Already' requires present perfect tense."},
+    {"incorrect": "I am knowing the answer.", "correct": "I know the answer.", "explanation": "'Know' is a stative verb and is not used in continuous form."},
+    {"incorrect": "He is wanting a new car.", "correct": "He wants a new car.", "explanation": "'Want' is a stative verb and is not used in continuous form."},
+    {"incorrect": "I was agreeing with you.", "correct": "I agreed with you.", "explanation": "'Agree' is a stative verb and is not used in continuous form."},
+    {"incorrect": "She do not like tea.", "correct": "She does not like tea.", "explanation": "Third-person singular requires 'does', not 'do'."}
+  ],
+  "articles": [
+    {"incorrect": "I saw a apple.", "correct": "I saw an apple.", "explanation": "Use 'an' before words starting with a vowel sound."},
+    {"incorrect": "She is a honest girl.", "correct": "She is an honest girl.", "explanation": "Use 'an' before 'honest' because 'h' is silent."},
+    {"incorrect": "He is an university student.", "correct": "He is a university student.", "explanation": "Use 'a' before 'university' because 'u' has a 'yoo' sound."},
+    {"incorrect": "I need a information.", "correct": "I need information.", "explanation": "'Information' is uncountable and does not need an article."},
+    {"incorrect": "She is best student in class.", "correct": "She is the best student in class.", "explanation": "Superlative adjectives require 'the'."},
+    {"incorrect": "I like the music.", "correct": "I like music.", "explanation": "General concepts do not need an article."},
+    {"incorrect": "He is an European.", "correct": "He is a European.", "explanation": "Use 'a' before 'European' because 'E' has a 'yoo' sound."},
+    {"incorrect": "I have a great respect for her.", "correct": "I have great respect for her.", "explanation": "'Respect' in this sense is uncountable."}
+  ],
+  "pronouns": [
+    {"incorrect": "Me and my brother went to the shop.", "correct": "My brother and I went to the shop.", "explanation": "Use 'I' as a subject, not 'me'. Put yourself last."},
+    {"incorrect": "Her went to the market.", "correct": "She went to the market.", "explanation": "'Her' is an object pronoun; use 'she' as subject."},
+    {"incorrect": "Him is my friend.", "correct": "He is my friend.", "explanation": "'Him' is an object pronoun; use 'he' as subject."},
+    {"incorrect": "Us went to the park.", "correct": "We went to the park.", "explanation": "'Us' is an object pronoun; use 'we' as subject."},
+    {"incorrect": "Them are playing.", "correct": "They are playing.", "explanation": "'Them' is an object pronoun; use 'they' as subject."},
+    {"incorrect": "Between you and I.", "correct": "Between you and me.", "explanation": "Use object pronoun 'me' after preposition."},
+    {"incorrect": "Me went home.", "correct": "I went home.", "explanation": "Use 'I' as a subject pronoun."},
+    {"incorrect": "My friend and me went to school.", "correct": "My friend and I went to school.", "explanation": "Use 'I' as a subject pronoun."}
+  ],
+  "plurals": [
+    {"incorrect": "I have two mouses.", "correct": "I have two mice.", "explanation": "The plural of 'mouse' is 'mice'."},
+    {"incorrect": "She has many childs.", "correct": "She has many children.", "explanation": "The plural of 'child' is 'children'."},
+    {"incorrect": "There is many books on the table.", "correct": "There are many books on the table.", "explanation": "'Books' is plural, so use 'are'."},
+    {"incorrect": "I bought two informations.", "correct": "I bought two pieces of information.", "explanation": "'Information' is uncountable."},
+    {"incorrect": "She gave me many advices.", "correct": "She gave me much advice.", "explanation": "'Advice' is uncountable."},
+    {"incorrect": "He has three tooths.", "correct": "He has three teeth.", "explanation": "The plural of 'tooth' is 'teeth'."},
+    {"incorrect": "I saw two deers.", "correct": "I saw two deer.", "explanation": "The plural of 'deer' is 'deer'."},
+    {"incorrect": "There is some sheeps.", "correct": "There are some sheep.", "explanation": "The plural of 'sheep' is 'sheep'."}
+  ],
+  "comparatives": [
+    {"incorrect": "He is taller then me.", "correct": "He is taller than me.", "explanation": "Use 'than' for comparisons, not 'then'."},
+    {"incorrect": "She is more beautifullest.", "correct": "She is the most beautiful.", "explanation": "Cannot combine comparative and superlative forms."},
+    {"incorrect": "This book is more better.", "correct": "This book is better.", "explanation": "Cannot use 'more' with 'better' (already comparative)."},
+    {"incorrect": "He is most tall in class.", "correct": "He is the tallest in class.", "explanation": "Use superlative form '-est' with 'the'."},
+    {"incorrect": "This is more easier.", "correct": "This is easier.", "explanation": "Cannot use 'more' with 'easier' (already comparative)."},
+    {"incorrect": "She is gooder than me.", "correct": "She is better than me.", "explanation": "'Good' has irregular comparative form 'better'."},
+    {"incorrect": "This is the most worst movie.", "correct": "This is the worst movie.", "explanation": "Cannot use 'most' with 'worst' (already superlative)."}
+  ],
+  "modals": [
+    {"incorrect": "She can sings very well.", "correct": "She can sing very well.", "explanation": "After modal verbs, use the base form of the verb."},
+    {"incorrect": "He should goes home.", "correct": "He should go home.", "explanation": "After modal 'should', use base form 'go'."},
+    {"incorrect": "I must studies hard.", "correct": "I must study hard.", "explanation": "After modal 'must', use base form 'study'."},
+    {"incorrect": "She mustn't went there.", "correct": "She mustn't go there.", "explanation": "After modal, use base form."},
+    {"incorrect": "You might wants to try.", "correct": "You might want to try.", "explanation": "After modal 'might', use base form."},
+    {"incorrect": "He could helps us.", "correct": "He could help us.", "explanation": "After modal 'could', use base form."}
+  ],
+  "negatives": [
+    {"incorrect": "I don't have no money.", "correct": "I don't have any money.", "explanation": "Avoid double negatives."},
+    {"incorrect": "She can't hardly wait.", "correct": "She can hardly wait.", "explanation": "Remove the negative to fix the double negative."},
+    {"incorrect": "He doesn't know nothing.", "correct": "He doesn't know anything.", "explanation": "Replace 'nothing' with 'anything' after negative."},
+    {"incorrect": "They didn't went nowhere.", "correct": "They didn't go anywhere.", "explanation": "Use base form after 'didn't' and fix double negative."},
+    {"incorrect": "I ain't got no time.", "correct": "I don't have any time.", "explanation": "'Ain't' is informal; use standard negative forms."}
+  ],
+  "sentence_structure": [
+    {"incorrect": "I am go to school.", "correct": "I am going to school.", "explanation": "Use present participle 'going' with 'am'."},
+    {"incorrect": "Because I was tired.", "correct": "I went home because I was tired.", "explanation": "Avoid sentence fragments; include a main clause."},
+    {"incorrect": "Running in the park.", "correct": "I was running in the park.", "explanation": "Add a subject to complete the sentence."},
+    {"incorrect": "She suggested me to go.", "correct": "She suggested that I go.", "explanation": "'Suggest' takes a that-clause, not an object + infinitive."},
+    {"incorrect": "I very much like it.", "correct": "I like it very much.", "explanation": "Adverb placement: 'very much' should come after the verb."},
+    {"incorrect": "He gave me an information.", "correct": "He gave me some information.", "explanation": "'Information' is uncountable; use 'some'."},
+    {"incorrect": "I am agree with you.", "correct": "I agree with you.", "explanation": "'Agree' is a verb, not an adjective; do not use 'am'."},
+    {"incorrect": "She is knowing the answer.", "correct": "She knows the answer.", "explanation": "'Know' is a stative verb and is not used in continuous form."},
+    {"incorrect": "I am loving this song.", "correct": "I love this song.", "explanation": "'Love' is typically a stative verb."}
+  ],
+  "punctuation": [
+    {"incorrect": "where are you going", "correct": "Where are you going?", "explanation": "Questions must start with a capital letter and end with '?'.", "category": "punctuation"},
+    {"incorrect": "hello how are you", "correct": "Hello, how are you?", "explanation": "Greeting needs comma; question needs '?'.", "category": "punctuation"},
+    {"incorrect": "i went to the store", "correct": "I went to the store.", "explanation": "Capitalize 'I' and add period.", "category": "punctuation"},
+    {"incorrect": "this is a good book", "correct": "This is a good book.", "explanation": "Capitalize the first letter of the sentence.", "category": "punctuation"},
+    {"incorrect": "im going to schools", "correct": "I'm going to school.", "explanation": "Capitalize 'I', add apostrophe, singular noun.", "category": "punctuation"},
+    {"incorrect": "what is your name", "correct": "What is your name?", "explanation": "Questions need a question mark.", "category": "punctuation"},
+    {"incorrect": "thank you", "correct": "Thank you.", "explanation": "Sentences need ending punctuation.", "category": "punctuation"},
+    {"incorrect": "i am a student", "correct": "I am a student.", "explanation": "Capitalize the pronoun 'I' and the first letter.", "category": "punctuation"}
+  ]
+}

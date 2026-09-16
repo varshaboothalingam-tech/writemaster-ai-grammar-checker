@@ -1,0 +1,167 @@
+{
+  "confusing_words": {
+    "their": {
+      "correct_usage": "possessive (their house)",
+      "confused_with": ["there", "they're"],
+      "rules": [
+        {"context_words": ["car", "house", "dog", "cat", "book", "room", "children", "parents", "friends", "phone", "house", "bag", "clothes"], "correct": "their", "reason": "'Their' is possessive — use when showing ownership."},
+        {"context_words": ["is", "was", "are", "were", "will", "can", "not", "here", "over", "going"], "correct": "there", "reason": "'There' refers to a place or is used with 'is/are'."}
+      ]
+    },
+    "there": {
+      "correct_usage": "place or existence (there is)",
+      "confused_with": ["their", "they're"],
+      "rules": [
+        {"context_words": ["is", "was", "are", "were", "will", "can", "not", "here", "over"], "correct": "there", "reason": "Use 'there' with 'is/are/was/were'."},
+        {"context_words": ["car", "house", "book", "room", "children"], "correct": "their", "reason": "Use 'their' for possession."}
+      ]
+    },
+    "they're": {
+      "correct_usage": "contraction of 'they are'",
+      "confused_with": ["their", "there"],
+      "rules": [
+        {"context_words": ["going", "coming", "doing", "playing", "happy", "ready"], "correct": "they're", "reason": "'They're' = 'they are'."}
+      ]
+    },
+    "your": {
+      "correct_usage": "possessive (your book)",
+      "confused_with": ["you're"],
+      "rules": [
+        {"context_words": ["car", "house", "dog", "cat", "book", "room", "name", "phone", "family", "friend", "bag"], "correct": "your", "reason": "Use 'your' for possession."},
+        {"context_words": ["welcome", "right", "wrong", "going", "coming", "doing", "correct", "smart", "kind"], "correct": "you're", "reason": "'You're' = 'you are'."}
+      ]
+    },
+    "you're": {
+      "correct_usage": "contraction of 'you are'",
+      "confused_with": ["your"],
+      "rules": [
+        {"context_words": ["welcome", "right", "wrong", "going", "coming", "doing"], "correct": "you're", "reason": "'You're' = 'you are'."}
+      ]
+    },
+    "its": {
+      "correct_usage": "possessive (its tail)",
+      "confused_with": ["it's"],
+      "rules": [
+        {"context_words": ["car", "house", "dog", "cat", "book", "room", "color", "shape", "tail", "purpose"], "correct": "its", "reason": "'Its' is possessive (no apostrophe)."},
+        {"context_words": ["a", "an", "raining", "sunny", "cold", "hot", "been"], "correct": "it's", "reason": "'It's' = 'it is'."}
+      ]
+    },
+    "it's": {
+      "correct_usage": "contraction of 'it is'",
+      "confused_with": ["its"],
+      "rules": [
+        {"context_words": ["a", "an", "raining", "sunny", "cold", "hot", "been"], "correct": "it's", "reason": "'It's' = 'it is'."}
+      ]
+    },
+    "then": {
+      "correct_usage": "time sequence (first this, then that)",
+      "confused_with": ["than"],
+      "rules": [
+        {"context_words": ["and", "now", "next", "after", "before", "first"], "correct": "then", "reason": "'Then' refers to time or sequence."},
+        {"context_words": ["more", "less", "better", "worse", "rather", "other", "bigger", "smaller", "taller"], "correct": "than", "reason": "'Than' is used for comparisons."}
+      ]
+    },
+    "than": {
+      "correct_usage": "comparisons (better than, more than)",
+      "confused_with": ["then"],
+      "rules": [
+        {"context_words": ["more", "less", "better", "worse", "rather", "other", "bigger", "smaller", "taller"], "correct": "than", "reason": "'Than' is used for comparisons."}
+      ]
+    },
+    "affect": {
+      "correct_usage": "verb (the weather affects me)",
+      "confused_with": ["effect"],
+      "rules": [
+        {"context_words": ["the", "my", "our", "his", "her", "this", "that"], "correct": "affect", "reason": "'Affect' is usually a verb."},
+        {"context_words": ["has", "had", "have", "the", "an", "positive", "negative"], "correct": "effect", "reason": "'Effect' is usually a noun."}
+      ]
+    },
+    "effect": {
+      "correct_usage": "noun (the effect was strong)",
+      "confused_with": ["affect"],
+      "rules": [
+        {"context_words": ["has", "had", "have", "the", "an", "positive", "negative", "good", "bad"], "correct": "effect", "reason": "'Effect' is usually a noun."},
+        {"context_words": ["will", "can", "does", "do", "to"], "correct": "affect", "reason": "'Affect' is usually a verb."}
+      ]
+    },
+    "accept": {
+      "correct_usage": "to agree or receive (accept the offer)",
+      "confused_with": ["except"],
+      "rules": [
+        {"context_words": ["will", "can", "to", "the", "this", "it"], "correct": "accept", "reason": "'Accept' means to agree or receive."},
+        {"context_words": ["for", "all", "every", "one", "but"], "correct": "except", "reason": "'Except' means 'not including'."}
+      ]
+    },
+    "except": {
+      "correct_usage": "not including (all except one)",
+      "confused_with": ["accept"],
+      "rules": [
+        {"context_words": ["for", "all", "every", "one", "but"], "correct": "except", "reason": "'Except' means 'not including'."}
+      ]
+    },
+    "loose": {
+      "correct_usage": "not tight (loose clothes)",
+      "confused_with": ["lose"],
+      "rules": [
+        {"context_words": ["clothes", "fit", "tight", "shoe"], "correct": "loose", "reason": "'Loose' means not tight."},
+        {"context_words": ["weight", "game", "match", "chance", "hope"], "correct": "lose", "reason": "'Lose' means to not win."}
+      ]
+    },
+    "lose": {
+      "correct_usage": "to not win (lose a game)",
+      "confused_with": ["loose"],
+      "rules": [
+        {"context_words": ["weight", "game", "match", "chance", "hope"], "correct": "lose", "reason": "'Lose' means to not win or misplace."}
+      ]
+    },
+    "weather": {
+      "correct_usage": "atmospheric conditions",
+      "confused_with": ["whether"],
+      "rules": [
+        {"context_words": ["is", "was", "are", "cold", "hot", "rain", "snow", "sunny", "cloudy"], "correct": "weather", "reason": "'Weather' refers to atmospheric conditions."}
+      ]
+    },
+    "whether": {
+      "correct_usage": "if (whether or not)",
+      "confused_with": ["weather"],
+      "rules": [
+        {"context_words": ["or", "not", "will", "can", "to"], "correct": "whether", "reason": "'Whether' means 'if' (introducing alternatives)."}
+      ]
+    },
+    "advice": {
+      "correct_usage": "noun (give advice)",
+      "confused_with": ["advise"],
+      "rules": [
+        {"context_words": ["give", "some", "good", "his", "her", "the", "need"], "correct": "advice", "reason": "'Advice' is a noun (pronounced with 's' sound)."}
+      ]
+    },
+    "advise": {
+      "correct_usage": "verb (I advise you)",
+      "confused_with": ["advice"],
+      "rules": [
+        {"context_words": ["to", "you", "him", "her", "them", "will", "can"], "correct": "advise", "reason": "'Advise' is a verb (pronounced with 'z' sound)."}
+      ]
+    },
+    "to": {
+      "correct_usage": "preposition (go to school)",
+      "confused_with": ["too", "two"],
+      "rules": [
+        {"context_words": ["go", "come", "walk", "run", "give", "send", "back", "school", "home", "work"], "correct": "to", "reason": "'To' is a preposition indicating direction or purpose."}
+      ]
+    },
+    "too": {
+      "correct_usage": "also or excessively (too much, too hot)",
+      "confused_with": ["to", "two"],
+      "rules": [
+        {"context_words": ["much", "many", "hot", "cold", "big", "small", "fast", "slow"], "correct": "too", "reason": "'Too' means 'also' or 'excessively'."}
+      ]
+    },
+    "two": {
+      "correct_usage": "number 2",
+      "confused_with": ["to", "too"],
+      "rules": [
+        {"context_words": ["days", "weeks", "months", "years", "times", "people", "boys", "girls"], "correct": "two", "reason": "'Two' is the number 2."}
+      ]
+    }
+  }
+}

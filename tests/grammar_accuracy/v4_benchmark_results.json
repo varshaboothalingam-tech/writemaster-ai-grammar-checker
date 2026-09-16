@@ -1,0 +1,3028 @@
+{
+  "cases_path": "C:\\Users\\hemal\\OneDrive\\Documents\\grammar_checker\\tests\\grammar_accuracy\\test_cases.json",
+  "total": 200,
+  "tp": 92,
+  "fp": 0,
+  "fn": 0,
+  "tn": 108,
+  "precision": 1.0,
+  "recall": 1.0,
+  "f1": 1.0,
+  "fpr": 0.0,
+  "by_category": {
+    "general": {
+      "tp": 92,
+      "fp": 0,
+      "fn": 0,
+      "tn": 108
+    }
+  },
+  "fps": [],
+  "fns": [],
+  "details": [
+    {
+      "id": 1,
+      "text": "The cat sat on the mat.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 2,
+      "text": "She goes to school every day.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 3,
+      "text": "I have a beautiful garden.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 4,
+      "text": "He is reading a book.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 5,
+      "text": "They were playing in the park.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 6,
+      "text": "The weather is nice today.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 7,
+      "text": "We need to finish this project.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 8,
+      "text": "She bought a new car yesterday.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 9,
+      "text": "The children are studying for their exams.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 10,
+      "text": "I would like some water, please.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 11,
+      "text": "My friend has a new phone.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 12,
+      "text": "He said that it's very good.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 13,
+      "text": "He doesn't know how to use all the features.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 14,
+      "text": "He is learning fast.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 15,
+      "text": "He told me that your phone is better than his.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 16,
+      "text": "My phone works perfectly good.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 17,
+      "text": "Yesterday I went to the store.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 18,
+      "text": "She can speak three languages fluently.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 19,
+      "text": "The movie was very entertaining.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 20,
+      "text": "We should leave early tomorrow morning.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 21,
+      "text": "The students were writing outside while they waited for the teacher.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 22,
+      "text": "She has been working on this project for months.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 23,
+      "text": "I will call you when I arrive.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 24,
+      "text": "The restaurant serves excellent Italian food.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 25,
+      "text": "He has been to Paris three times.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 26,
+      "text": "The concert was sold out last night.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 27,
+      "text": "She decided to take a different route.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 28,
+      "text": "The book I borrowed from the library was fascinating.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 29,
+      "text": "He spent the afternoon reading in the garden.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 30,
+      "text": "The children played happily in the backyard.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 31,
+      "text": "I need to buy groceries for dinner tonight.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 32,
+      "text": "She always arrives on time for meetings.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 33,
+      "text": "The train departs at eight o'clock every morning.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 34,
+      "text": "He finished his homework before watching TV.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 35,
+      "text": "The garden was full of beautiful flowers.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 36,
+      "text": "We enjoyed our vacation at the beach.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 37,
+      "text": "She promised to call me later today.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 38,
+      "text": "The dog chased the ball across the yard.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 39,
+      "text": "I have been thinking about this problem all day.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 40,
+      "text": "He said he would be here by noon.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 41,
+      "text": "The students are preparing for their final exams.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 42,
+      "text": "She loves to cook Italian dishes.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 43,
+      "text": "The airplane landed safely at the airport.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 44,
+      "text": "He works as a software engineer at a tech company.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 45,
+      "text": "The library has an extensive collection of rare books.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 46,
+      "text": "They celebrated their anniversary with a special dinner.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 47,
+      "text": "She was disappointed by the results of the experiment.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 48,
+      "text": "The mountain trail was challenging but rewarding.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 49,
+      "text": "He apologized for arriving late to the meeting.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 50,
+      "text": "The software update fixed several bugs in the system.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 51,
+      "text": "Yesterday my friend and me goes to a large stopping mall.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "SVA",
+          "message": "The subject \"friend\" is plural, but the verb \"goes\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"I\" instead of \"me\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "TENSE_CONSISTENCY",
+          "message": "Use past tense \"went\" for consistency.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "text": "Yesterday my friend and me goes to a large stopping mall.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "SVA",
+          "message": "The subject \"friend\" is plural, but the verb \"goes\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"I\" instead of \"me\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "TENSE_CONSISTENCY",
+          "message": "Use past tense \"went\" for consistency.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 53,
+      "text": "Yesterday my friend and me goes to a large stopping mall.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "SVA",
+          "message": "The subject \"friend\" is plural, but the verb \"goes\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"I\" instead of \"me\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "TENSE_CONSISTENCY",
+          "message": "Use past tense \"went\" for consistency.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "text": "I recieve alot of emails every day.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"recieve\" may be misspelled. Did you mean \"receive\"?",
+          "sources": [
+            "fast_detector",
+            "data_driven"
+          ]
+        },
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"alot\" may be misspelled. Did you mean \"a lot\"?",
+          "sources": [
+            "fast_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "text": "I recieve alot of emails every day.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"recieve\" may be misspelled. Did you mean \"receive\"?",
+          "sources": [
+            "fast_detector",
+            "data_driven"
+          ]
+        },
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"alot\" may be misspelled. Did you mean \"a lot\"?",
+          "sources": [
+            "fast_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "text": "She dont know the answer.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"don't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        },
+        {
+          "rule": "DO_SUPPORT",
+          "message": "Use \"doesn't\" with third-person singular subjects (he/she/it).",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 57,
+      "text": "He went to the store yesterday and buyed some food.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_IRREGULAR_PAST",
+          "message": "Correct form is \"bought\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"buyed\" may be misspelled. Did you mean \"buyer\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "text": "The childrens were playing in the garden.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "POSSESSIVE_APOSTROPHE",
+          "message": "Use an apostrophe to show possession: \"children's\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"childrens\" may be misspelled. Did you mean \"children\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 59,
+      "text": "She has went to Paris twice.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 60,
+      "text": "I seen that movie last week.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_SEEN_WITHOUT_AUX",
+          "message": "Use \"i saw\" (simple past) instead of \"i seen\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "text": "He dont have no money.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"don't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        },
+        {
+          "rule": "DO_SUPPORT",
+          "message": "Use \"doesn't\" with third-person singular subjects (he/she/it).",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "text": "Their going to the party tonight.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "THEIR_THEYRE",
+          "message": "Use \"they're\" (they are) instead of \"their\".",
+          "sources": [
+            "fast_detector",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'There' refers to a place or is used with 'is/are'.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 63,
+      "text": "I could of done better.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_COULD",
+          "message": "Use \"could have\" instead of \"could of\".",
+          "sources": [
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 64,
+      "text": "She is more better than me at math.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"better\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 65,
+      "text": "The team are going to win the game.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_COLLECTIVE_SVA",
+          "message": "In American English \"team\" takes the singular verb \"is\" (not \"are\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 66,
+      "text": "Him and me went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "PRONOUN_SUBJECT_CASE",
+          "message": "Use the subject form \"he\" as the subject of a verb.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"I\" instead of \"me\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_SUBJECT_PRONOUN",
+          "message": "Use the subject form (for example, \"He and I\") as the subject of a verb.",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "text": "She lays on the couch all day.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_LAY_LIE",
+          "message": "Use \"lies on\" (to recline) instead of \"lays on\" (to place something).",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "text": "I have less books than you.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "LESS_FEWER",
+          "message": "Use \"fewer books\" (not \"less books\") for countable nouns.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "text": "The data shows that the plan is working.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 70,
+      "text": "Each student must submit their assignment on time.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 71,
+      "text": "She sings beautiful.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "ADVERB_FORM",
+          "message": "Use the adverb form \"beautifully\" instead of \"beautiful\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_ADJ_AS_ADVERB",
+          "message": "Use the adverb \"beautifully\" to modify the verb \"sings\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 72,
+      "text": "He did good on the test.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_GOOD_WELL",
+          "message": "Use \"well\" (adverb) instead of \"good\" to modify \"did\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "ADVERB_FORM",
+          "message": "Use the adverb form \"well\" instead of \"good\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 73,
+      "text": "I am more hungrier than before.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"hungrier\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 74,
+      "text": "Between you and I, this is a secret.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "PRONOUN_DATA",
+          "message": "Use object pronouns after prepositions.",
+          "sources": [
+            "data_driven",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "OBJECT_PRONOUN",
+          "message": "Use the object form \"me\" after \"Between\".",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 75,
+      "text": "The reason is because he was late.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "REDUNDANT_BECAUSE",
+          "message": "Use \"the reason is that\" (not \"the reason is because\").",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 76,
+      "text": "She is one of those people who is always late.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 77,
+      "text": "The group of students were studying.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_GROUP_OF_SVA",
+          "message": "The head noun is singular; the verb should be \"was\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 78,
+      "text": "Neither the teacher nor the students was ready.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "SVA",
+          "message": "The subject \"teacher\" is plural, but the verb \"was\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 79,
+      "text": "Everyone have their own opinion.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "SVA",
+          "message": "The subject \"Everyone\" is singular, but the verb \"have\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_INDEFINITE_SVA",
+          "message": "Indefinite pronouns like \"everyone\" take a singular verb (\"everyone has\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 80,
+      "text": "The news are surprising.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_NEWS_SINGULAR",
+          "message": "\"news\" is uncountable; use the singular verb \"is\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SVA",
+          "message": "The subject \"news\" is singular, but the verb \"are\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 81,
+      "text": "He runned quickly to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_IRREGULAR_PAST",
+          "message": "Correct form is \"ran\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"runned\" may be misspelled. Did you mean \"ruined\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 82,
+      "text": "She is a very good dancer.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 83,
+      "text": "The informations was helpful.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"informations\" may be misspelled. Did you mean \"information\"?",
+          "sources": [
+            "fast_detector",
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SVA",
+          "message": "The subject \"informations\" is plural, but the verb \"was\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 84,
+      "text": "I need a informations about this topic.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "SPELL_MISSPELLING",
+          "message": "\"informations\" may be misspelled. Did you mean \"information\"?",
+          "sources": [
+            "fast_detector",
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "ARTICLE_A_AN",
+          "message": "Use \"an\" before \"informations\" (vowel sound).",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "A_AN",
+          "message": "Use \"an\" before vowel sounds.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 85,
+      "text": "He have went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "SVA",
+          "message": "The subject \"He\" is singular, but the verb \"have\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 86,
+      "text": "She was to the store yesterday.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_WAS_TO_GO",
+          "message": "Use \"went to the store\" (the verb \"go\" in the past) instead of \"was/were to the ",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 87,
+      "text": "The team are playing well this season.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_COLLECTIVE_SVA",
+          "message": "In American English \"team\" takes the singular verb \"is\" (not \"are\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 88,
+      "text": "He did a great job on the project.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 89,
+      "text": "She is more smarter than her brother.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"smarter\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 90,
+      "text": "I am feeling more better today.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"better\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 91,
+      "text": "The cat's paw was injured.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 92,
+      "text": "The cats' toys were scattered.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 93,
+      "text": "Its a beautiful day outside.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "ITS_ITS",
+          "message": "Use \"it's\" (it is) instead of \"its\" before \"a\".",
+          "sources": [
+            "fast_detector"
+          ]
+        },
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'It's' = 'it is'.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 94,
+      "text": "The dog wagged it's tail.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "ITS_POSSESSIVE",
+          "message": "Use \"its\" (possessive) instead of \"it's\" before \"tail\".",
+          "sources": [
+            "fast_detector",
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_ITS_POSSESSIVE",
+          "message": "Use the possessive \"its\" (no apostrophe) before \"tail\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 95,
+      "text": "Your going to love this movie.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "YOUR_YOURE",
+          "message": "Use \"you're\" (you are) instead of \"your\".",
+          "sources": [
+            "fast_detector",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'You're' = 'you are'.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 96,
+      "text": "I love your new dress.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 97,
+      "text": "The teacher grading there papers.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_THERE_THEIR",
+          "message": "Use the possessive \"their\" before \"papers\" (not \"there\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "THERE_THEIR",
+          "message": "Use \"their\" (possessive) instead of \"there\".",
+          "sources": [
+            "fast_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 98,
+      "text": "They're going to the store.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 99,
+      "text": "We're going to be late.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 100,
+      "text": "Its important to exercise daily.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "ITS_ITS",
+          "message": "Use \"it's\" (it is) instead of \"its\" before \"important\".",
+          "sources": [
+            "fast_detector",
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 101,
+      "text": "I can't hardly wait for the concert.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "HARDLY_HARD",
+          "message": "Use \"hard\" (adverb meaning \"with effort\") instead of \"hardly\" (which means \"bare",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_DOUBLE_NEG",
+          "message": "Avoid the double negative: \"hardly\" already makes the statement negative. Use \"c",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 102,
+      "text": "She's doing good in school.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_GOOD_WELL",
+          "message": "Use \"well\" (adverb) instead of \"good\" to modify \"doing\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 103,
+      "text": "He brung his friend to the party.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "DATA_RULE_IRREGULAR_PAST",
+          "message": "Correct form is \"brought\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SVA",
+          "message": "The subject \"He\" is singular, but the verb \"brung\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"brung\" may be misspelled. Did you mean \"bring\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 104,
+      "text": "I seen him at the store yesterday.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_SEEN_WITHOUT_AUX",
+          "message": "Use \"i saw\" (simple past) instead of \"i seen\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 105,
+      "text": "She was real happy about the news.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_REAL_REALLY",
+          "message": "Use the adverb \"really\" before \"happy\" (not the adjective \"real\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 106,
+      "text": "He ain't going to like this.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 107,
+      "text": "The information were correct.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_INFORMATION_SINGULAR",
+          "message": "\"information\" is uncountable; use the singular verb \"was\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SVA",
+          "message": "The subject \"information\" is singular, but the verb \"were\" does not agree.",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 108,
+      "text": "She don't know what she's talking about.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "SVA_DATA",
+          "message": "Third-person singular uses doesn't, not don't.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 109,
+      "text": "He was to the store and buyed some food.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "DATA_RULE_IRREGULAR_PAST",
+          "message": "Correct form is \"bought\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_WAS_TO_GO",
+          "message": "Use \"went to the store\" (the verb \"go\" in the past) instead of \"was/were to the ",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"buyed\" may be misspelled. Did you mean \"buyer\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 110,
+      "text": "The news is very important.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 111,
+      "text": "Me and him went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "PRONOUN_SUBJECT_CASE",
+          "message": "Use the subject form \"I\" as the subject of a verb.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"he\" instead of \"him\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_SUBJECT_PRONOUN",
+          "message": "Use the subject form (for example, \"He and I\") as the subject of a verb.",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "text": "Her and me are going to the park.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 3,
+      "issues": [
+        {
+          "rule": "PRONOUN_SUBJECT_CASE",
+          "message": "Use the subject form \"she\" as the subject of a verb.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "COMPOUND_SUBJECT_PRONOUN",
+          "message": "In a compound subject, use \"I\" instead of \"me\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_SUBJECT_PRONOUN",
+          "message": "Use the subject form (for example, \"He and I\") as the subject of a verb.",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 113,
+      "text": "Between you and I, this is a secret.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "PRONOUN_DATA",
+          "message": "Use object pronouns after prepositions.",
+          "sources": [
+            "data_driven",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "OBJECT_PRONOUN",
+          "message": "Use the object form \"me\" after \"Between\".",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "text": "She is taller then me.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'Than' is used for comparisons.",
+          "sources": [
+            "data_driven"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_THEN_THAN",
+          "message": "Use \"than\" for comparisons (\"taller than\"), not \"then\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "text": "The cake was made by she.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "PRONOUN_OBJECT_CASE",
+          "message": "Use the object form \"her\" after a preposition or as an object.",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_BY_OBJECT_PRONOUN",
+          "message": "After the preposition \"by\", use the object pronoun \"her\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "text": "He is smarter then his brother.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_THEN_THAN",
+          "message": "Use \"than\" for comparisons (\"smarter than\"), not \"then\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "text": "The book is on the table.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 118,
+      "text": "She is more better than him.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"better\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "text": "He is the most tallest person in the class.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_SUPERLATIVE",
+          "message": "Use just \"tallest\" — do not use \"most\" with a superlative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 120,
+      "text": "This is the bestest pizza I've ever had.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_BESTEST",
+          "message": "Use \"best\" (not \"bestest\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"bestest\" may be misspelled. Did you mean \"fastest\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 121,
+      "text": "She wasnt at the meeting yesterday.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"wasn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"wasnt\" may be misspelled. Did you mean \"want\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 122,
+      "text": "I dont have any money.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"don't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 123,
+      "text": "He cant come to the party.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"can't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 124,
+      "text": "She wouldnt tell me the truth.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"wouldn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 125,
+      "text": "I didnt see him at the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"didn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 126,
+      "text": "He isnt coming to the meeting.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"isn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 127,
+      "text": "They wont be at the party.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"won't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 128,
+      "text": "She hasnt finished her work yet.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"hasn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 129,
+      "text": "I havent seen him in a long time.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"haven't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 130,
+      "text": "He couldnt believe his eyes.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use \"couldn't\" (with apostrophe).",
+          "sources": [
+            "nlp_detector",
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 131,
+      "text": "The company's profits increased this quarter.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 132,
+      "text": "The companies' headquarters are in New York.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 133,
+      "text": "Its a beautiful day outside.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "ITS_ITS",
+          "message": "Use \"it's\" (it is) instead of \"its\" before \"a\".",
+          "sources": [
+            "fast_detector"
+          ]
+        },
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'It's' = 'it is'.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 134,
+      "text": "The dog wagged it's tail happily.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "ITS_POSSESSIVE",
+          "message": "Use \"its\" (possessive) instead of \"it's\" before \"tail\".",
+          "sources": [
+            "fast_detector",
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "DATA_RULE_ITS_POSSESSIVE",
+          "message": "Use the possessive \"its\" (no apostrophe) before \"tail\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 135,
+      "text": "You're doing a great job!",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 136,
+      "text": "Your welcome for the help.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "YOUR_YOURE",
+          "message": "Use \"you're\" (you are) instead of \"your\".",
+          "sources": [
+            "fast_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "CONFUSABLE_DATA",
+          "message": "'You're' = 'you are'.",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 137,
+      "text": "The children's toys were scattered.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 138,
+      "text": "The childrens toys were scattered.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "MISSING_APOSTROPHE",
+          "message": "Use an apostrophe to show possession: \"children's\".",
+          "sources": [
+            "fast_detector",
+            "nlp_detector"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"childrens\" may be misspelled. Did you mean \"children\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 139,
+      "text": "Its important to save money.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "ITS_ITS",
+          "message": "Use \"it's\" (it is) instead of \"its\" before \"important\".",
+          "sources": [
+            "fast_detector",
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 140,
+      "text": "The teacher's pet is a golden retriever.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 141,
+      "text": "Dr. Smith is a very good doctor.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 142,
+      "text": "I work at IBM.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 143,
+      "text": "She lives on Main Street.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 144,
+      "text": "The United States is a large country.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 145,
+      "text": "He graduated from Harvard University.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 146,
+      "text": "The Pacific Ocean is very deep.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 147,
+      "text": "She works at Google.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 148,
+      "text": "The Amazon River is very long.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 149,
+      "text": "He studied at MIT.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 150,
+      "text": "The Rocky Mountains are beautiful.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 151,
+      "text": "I went to the store yesterday.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 152,
+      "text": "She has went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 153,
+      "text": "He was went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_BE_WENT_FORM",
+          "message": "Use \"went\" (simple past) instead of a form of \"be\" + \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 154,
+      "text": "They have went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 155,
+      "text": "We will went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_MODAL_BARE_INFINITIVE",
+          "message": "After \"will\", use the base form \"go\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "MODAL_WRONG_FORM",
+          "message": "After \"will\", use the base form \"go\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 156,
+      "text": "I am went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_BE_WENT_FORM",
+          "message": "Use \"went\" (simple past) instead of a form of \"be\" + \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 157,
+      "text": "She had went to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"had\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"had\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 158,
+      "text": "He has went to the store three times.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"has\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 159,
+      "text": "They will went to the store tomorrow.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_MODAL_BARE_INFINITIVE",
+          "message": "After \"will\", use the base form \"go\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "MODAL_WRONG_FORM",
+          "message": "After \"will\", use the base form \"go\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 160,
+      "text": "I have went to the store before.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_AUX_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "WRONG_PAST_PARTICIPLE",
+          "message": "After \"have\", use the past participle \"gone\" instead of \"went\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 161,
+      "text": "She is more prettier than her sister.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_COMPARATIVE",
+          "message": "Use just \"prettier\" — do not use \"more\" with a comparative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 162,
+      "text": "He is most tallest person in the class.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DOUBLE_SUPERLATIVE",
+          "message": "Use just \"tallest\" — do not use \"most\" with a superlative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "MISSING_ARTICLE",
+          "message": "Add \"a\" before \"person\".",
+          "sources": [
+            "nlp_detector"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 163,
+      "text": "This is the bestest day ever.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 2,
+      "issues": [
+        {
+          "rule": "DATA_RULE_BESTEST",
+          "message": "Use \"best\" (not \"bestest\").",
+          "sources": [
+            "high_conf_rules"
+          ]
+        },
+        {
+          "rule": "SPELLING_FUZZY",
+          "message": "\"bestest\" may be misspelled. Did you mean \"fastest\"?",
+          "sources": [
+            "data_driven"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 164,
+      "text": "She is the most smartest student.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DOUBLE_SUPERLATIVE",
+          "message": "Use just \"smartest\" — do not use \"most\" with a superlative adjective.",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 165,
+      "text": "He is very more intelligent than me.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_VERY_MORE",
+          "message": "Use \"much more\" (not \"very more\") before a comparative.",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 166,
+      "text": "The view was very much beautiful.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "DATA_RULE_VERY_MUCH_ADJ",
+          "message": "Use \"very beautiful\" (not \"very much beautiful\") here.",
+          "sources": [
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 167,
+      "text": "She sings very beautifully.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 168,
+      "text": "He runs very quickly.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 169,
+      "text": "The food was extremely delicious.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 170,
+      "text": "She is incredibly talented.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 171,
+      "text": "I could of gone to the store.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_COULD",
+          "message": "Use \"could have\" instead of \"could of\".",
+          "sources": [
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 172,
+      "text": "She should of called me.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_SHOULD",
+          "message": "Use \"should have\" instead of \"should of\".",
+          "sources": [
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 173,
+      "text": "He would of been here on time.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_WOULD",
+          "message": "Use \"would have\" instead of \"would of\".",
+          "sources": [
+            "nlp_detector",
+            "data_driven",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 174,
+      "text": "They might of gone to the park.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_MIGHT",
+          "message": "Use \"might have\" instead of \"might of\".",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 175,
+      "text": "I must of forgotten my keys.",
+      "should_flag": true,
+      "system_flagged": true,
+      "result": "TP",
+      "num_issues": 1,
+      "issues": [
+        {
+          "rule": "WOULD_OF_MUST",
+          "message": "Use \"must have\" instead of \"must of\".",
+          "sources": [
+            "nlp_detector",
+            "high_conf_rules"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 176,
+      "text": "She can have gone to the store.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 177,
+      "text": "He may have gone to the store.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 178,
+      "text": "They will have gone by tomorrow.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 179,
+      "text": "I should have studied harder.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 180,
+      "text": "She would have been here if she could.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 181,
+      "text": "The teacher said that we need to study.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 182,
+      "text": "She asked me if I wanted to go.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 183,
+      "text": "He told me that he was tired.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 184,
+      "text": "They said that the meeting was cancelled.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 185,
+      "text": "We asked if they could help us.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 186,
+      "text": "She said she would be here soon.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 187,
+      "text": "He told her that he loved her.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 188,
+      "text": "They asked us to help them move.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 189,
+      "text": "We told them to come early.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 190,
+      "text": "She asked him if he was coming.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 191,
+      "text": "I have been waiting for two hours.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 192,
+      "text": "She has been working hard all day.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 193,
+      "text": "He has been studying for his exams.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 194,
+      "text": "They have been playing soccer.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 195,
+      "text": "We have been waiting for the bus.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 196,
+      "text": "She has been reading that book for weeks.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 197,
+      "text": "He has been working on this project.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 198,
+      "text": "They have been living here for years.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 199,
+      "text": "We have been friends since childhood.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    },
+    {
+      "id": 200,
+      "text": "She has been very helpful.",
+      "should_flag": false,
+      "system_flagged": false,
+      "result": "TN",
+      "num_issues": 0,
+      "issues": []
+    }
+  ]
+}

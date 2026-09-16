@@ -1,0 +1,361 @@
+WriteMaster AI — Grammar Checker & Writing Assistant
+=====================================================
+Abstract for Project Report
+
+
+1. ABSTRACT
+============
+WriteMaster AI is a web-based English grammar checking and writing improvement
+application developed as a college mini project. The system analyzes user-provided
+text in real-time and identifies spelling errors, grammatical mistakes, contextual
+confusions, style issues, and provides AI-powered suggestions for improvement. The
+application features a clean, modern, responsive user interface built with Bootstrap
+and is powered by a Python Flask backend with rule-based natural language processing
+engines. The system achieves reliable grammar checking through a combination of
+spelling dictionaries (100+ entries), homophone disambiguation (100+ pairs),
+10 grammar rules implemented via regular expressions, and contextual analysis
+using surrounding word patterns.
+
+
+2. PROBLEM STATEMENT
+======================
+English writing errors are common among students and professionals. Existing grammar
+checkers often require internet connectivity and lack transparency in how corrections
+are made. This project aims to build a standalone, locally-hosted grammar checking
+tool that explains each error type and provides educational feedback, making it
+suitable for academic use and English language learning.
+
+
+3. OBJECTIVES
+==============
+  1. Detect and correct spelling mistakes using a curated dictionary of 100+
+     commonly misspelled English words.
+  2. Identify grammatical errors using 10 rule-based regex patterns including
+     subject-verb agreement, double negatives, a/an usage, and capitalization.
+  3. Disambiguate homophones (their/there/they're, your/you're, its/it's)
+     using contextual word analysis.
+  4. Detect passive voice, filler words, weak vocabulary, and repeated phrases.
+  5. Analyze writing tone across 7 categories: formal, informal, confident,
+     tentative, negative, positive, and academic.
+  6. Calculate readability using the Flesch-Kincaid formula.
+  7. Provide sentence rephrasing, text summarization, and synonym suggestions.
+  8. Deliver a clean, responsive, light-themed user interface.
+
+
+4. TECHNOLOGY STACK
+=====================
+  Frontend:
+    - HTML5, CSS3 (Custom Properties, Flexbox)
+    - Bootstrap 5.3.2 (Responsive Layout)
+    - Font Awesome 6.5.1 (Icons)
+    - Chart.js 4.4.0 (Issue Breakdown Visualization)
+    - Vanilla JavaScript (DOM Manipulation, Fetch API)
+
+  Backend:
+    - Python 3.14
+    - Flask 3.x (Web Framework)
+    - Regular Expressions (re module for NLP)
+
+  Data Storage:
+    - localStorage (Browser-side Check History)
+    - No external database required
+
+  Architecture:
+    - Client-Server (REST API)
+    - Rule-Based NLP (No Machine Learning Required)
+
+
+5. SYSTEM ARCHITECTURE
+========================
+The application follows a three-tier architecture:
+
+  ┌─────────────────────────────────────────────────────────┐
+  │                    PRESENTATION LAYER                     │
+  │  HTML Templates + CSS + JavaScript                       │
+  │  - Editor textarea for text input                        │
+  │  - Results dashboard with stats, issues, suggestions     │
+  │  - Chart.js doughnut chart for issue breakdown           │
+  │  - Synonym finder, tone meter, readability display       │
+  └───────────────────────┬─────────────────────────────────┘
+                          │ HTTP POST (JSON)
+  ┌───────────────────────▼─────────────────────────────────┐
+  │                    APPLICATION LAYER                      │
+  │  Flask Routes (app.py)                                   │
+  │  - POST /api/check      → Full grammar analysis          │
+  │  - POST /api/auto_correct → Automatic text correction    │
+  │  - POST /api/synonyms   → Synonym lookup                 │
+  │  - POST /api/rephrase   → Sentence rephrasing            │
+  │  - POST /api/summarize  → Text summarization             │
+  │  - POST /api/readability → Readability score             │
+  └───────────────────────┬─────────────────────────────────┘
+                          │
+  ┌───────────────────────▼─────────────────────────────────┐
+  │                    ENGINE LAYER                           │
+  │  GrammarEngine + AISuggestionEngine                      │
+  │  - Spelling dictionary (100+ entries)                    │
+  │  - Homophone map (100+ pairs)                            │
+  │  - 10 grammar rules (regex patterns)                    │
+  │  - Contextual disambiguation rules                       │
+  │  - Tone pattern matching (7 tones)                       │
+  │  - Extractive summarization (word frequency)             │
+  │  - Flesch-Kincaid readability formula                    │
+  └─────────────────────────────────────────────────────────┘
+
+
+6. MODULE DESCRIPTION
+=======================
+
+6.1 Grammar Checker (grammar_engine.py)
+-----------------------------------------
+The GrammarChecker class performs four levels of text analysis:
+
+  a) Spelling Check:
+     - Tokenizes input text using regex word boundary matching
+     - Compares each word (case-insensitive) against MISSPELLINGS dictionary
+     - Reports misspelled word, position, and correct suggestion
+     - Dictionary contains 100+ common English misspellings
+
+  b) Grammar Rule Check:
+     - Applies 10 pre-defined regular expression patterns
+     - Patterns detect: subject-verb disagreement, double negatives,
+       a/an before vowels, repeated words, uncapitalized "I",
+       comma splices, sentence capitalization errors, who/whom misuse
+     - Each rule has severity (error/warning/info) and suggestions
+
+  c) Contextual Analysis:
+     - For each word, checks if it belongs to HOMOPHONES dictionary
+     - Examines 1-2 adjacent words for context clues
+     - Applies disambiguation rules:
+       "their" before "car/house/dog" → likely "their" (correct)
+       "there" before "car/house/dog" → suggest "their"
+       "your" before "welcome/right/going" → suggest "you're"
+       "then" before "more/better/worse" → suggest "than"
+     - Returns list of likely correct alternatives
+
+  d) Style Check:
+     - Detects sentences starting with lowercase letters
+     - Flags sentences longer than 40 words
+     - Identifies weak intensifiers (very, really, extremely, etc.)
+     - Checks for missing end punctuation
+
+6.2 AI Suggestion Engine (ai_engine.py)
+-----------------------------------------
+The AISuggestionEngine class provides writing improvement suggestions:
+
+  a) Passive Voice Detection:
+     - Pattern: (is/are/was/were/been/be/being) + (past participle)
+     - Also detects irregular past participles (known, made, seen, etc.)
+
+  b) Filler Word Detection:
+     - Checks against 20+ common filler words (basically, actually,
+       literally, honestly, just, really, quite, you know, etc.)
+
+  c) Vocabulary Diversity:
+     - Counts word frequency in the text
+     - Flags words repeated more than 3 times (if length > 3)
+     - Suggests synonyms from SYNONYM_MAP
+
+  d) Repeated Phrase Detection:
+     - Finds 2-word phrases repeated more than 2 times
+     - Suggests varying the phrasing
+
+  e) Tone Detection:
+     - 7 tone categories, each with 4+ weighted regex patterns
+     - Calculates weighted score per tone
+     - Primary tone = highest score, secondary = second highest
+     - Tones: formal, informal, confident, tentative, negative,
+       positive, academic
+
+  f) Text Summarization (Extractive):
+     - Splits text into sentences
+     - Removes stop words, counts remaining word frequencies
+     - Scores each sentence = sum of word frequencies
+     - Boosts first/last sentences (1.5x multiplier)
+     - Selects top 50% sentences, reorders by position
+     - Reports original vs summary sentence count and reduction %
+
+  g) Sentence Rephrasing:
+     - Applies passive-to-active voice conversions (regex substitution)
+     - Replaces wordy phrases with concise alternatives
+       (e.g., "due to the fact that" → "because")
+     - Optionally replaces common words with synonyms (40% probability)
+
+6.3 Readability Calculation (Flesch-Kincaid):
+    - Counts sentences, words, and syllables
+    - Syllable counting: vowel group detection with silent-e adjustment
+    - Flesch Score = 206.835 - (1.015 × avg_words_per_sentence)
+                         - (84.6 × avg_syllables_per_word)
+    - Grade Level = 0.39 × avg_words_per_sentence
+                     + 11.8 × avg_syllables_per_word - 15.59
+    - Maps score to reading level: Very Easy (80-100) to Very Difficult (0-30)
+
+6.4 Flask Application (app.py)
+--------------------------------
+  - Serves HTML templates via Jinja2 rendering
+  - Exposes 6 REST API endpoints accepting JSON POST requests
+  - Initializes engine instances once at startup
+  - Returns JSON responses with issues, suggestions, readability data
+  - Handles 7 sample texts for demonstration
+
+
+7. FEATURES
+=============
+  [Core Checking]
+  - Spelling error detection (100+ misspellings)
+  - Grammar rule checking (10 regex rules)
+  - Homophone confusion detection (100+ pairs)
+  - Contextual word disambiguation
+  - Passive voice detection
+  - Filler word detection
+  - Vocabulary diversity analysis
+  - Repeated phrase detection
+
+  [Analysis]
+  - Tone analysis (7 categories with weighted scoring)
+  - Flesch-Kincaid readability score
+  - Grade level calculation
+  - Reading time estimation
+  - Speaking time estimation
+
+  [Tools]
+  - One-click auto-correction
+  - Sentence rephrasing
+  - Extractive text summarization
+  - Synonym finder (60+ word categories)
+  - Check history (localStorage)
+  - Export results as text file
+
+  [UI/UX]
+  - Clean light theme with responsive design
+  - Collapsible issue cards with click-to-expand
+  - Chart.js doughnut chart for issue breakdown
+  - Live character and word counter
+  - Sample text presets (7 examples)
+  - Keyboard shortcut (Ctrl+Enter)
+  - Expand All / Collapse All toggle
+
+
+8. DATA FLOW
+==============
+  Step 1: User enters text in editor textarea
+  Step 2: Clicks "Check Grammar" (or Ctrl+Enter)
+  Step 3: JavaScript sends POST /api/check with {text: "..."}
+  Step 4: Flask receives request, calls grammar_checker.check(text)
+    Step 4a: _check_spelling() → matches against MISSPELLINGS
+    Step 4b: _check_grammar_rules() → applies GRAMMAR_RULES regex
+    Step 4c: _check_contextual() → disambiguates HOMOPHONES
+    Step 4d: _check_style() → checks sentence length, weak words
+  Step 5: Flask calls ai_engine.analyze(text, grammar_issues)
+    Step 5a: _check_passive_voice()
+    Step 5b: _check_fillers()
+    Step 5c: _suggest_vocabulary()
+    Step 5d: _check_repeated_phrases()
+    Step 5e: _detect_tone()
+    Step 5f: _generate_summary()
+  Step 6: Flask calls grammar_checker.calculate_readability(text)
+    Step 6a: Flesch-Kincaid formula applied
+  Step 7: Flask returns JSON: {issues, suggestions, readability, summary}
+  Step 8: JavaScript renders:
+    - Stat cards (words, errors, suggestions, score)
+    - Readability metrics (6 boxes)
+    - Issues list (expandable cards)
+    - AI Suggestions list
+    - Tone meter (7 tags)
+    - Doughnut chart (issue breakdown by type)
+  Step 9: Results saved to localStorage history
+
+
+9. API ENDPOINTS
+==================
+  POST /api/check
+    Request:  {"text": "string"}
+    Response: {"text", "issues": [...], "suggestions": [...],
+               "readability": {...}, "summary": {...},
+               "total_issues": int, "total_suggestions": int}
+
+  POST /api/auto_correct
+    Request:  {"text": "string"}
+    Response: {"original", "corrected", "changes_made": int}
+
+  POST /api/synonyms
+    Request:  {"word": "string"}
+    Response: {"word", "synonyms": [...]}
+
+  POST /api/rephrase
+    Request:  {"text": "string"}
+    Response: {"original", "rephrased"}
+
+  POST /api/summarize
+    Request:  {"text": "string"}
+    Response: {"summary", "key_points": [...],
+               "original_sentences", "summary_sentences", "reduction"}
+
+  POST /api/readability
+    Request:  {"text": "string"}
+    Response: {"score", "level", "grade", "sentences", "words",
+               "avg_words_sentence", "reading_time", "speaking_time"}
+
+
+10. TESTING
+=============
+  Test Case 1 — Spelling Errors:
+    Input:  "Their going to the store tommorow."
+    Output: "tommorow" → "tomorrow" (error, spelling)
+
+  Test Case 2 — Grammar Rules:
+    Input:  "He are going. They is happy."
+    Output: "are" → "is" (error, subject-verb agreement)
+            "is" → "are" (error, subject-verb agreement)
+
+  Test Case 3 — Homophones:
+    Input:  "Your going to love its."
+    Output: "your" → "you're" (warning, contextual)
+            "its" → "it's" (warning, contextual)
+
+  Test Case 4 — Readability:
+    Input:  Short simple text
+    Output: Flesch Score 80+, Level "Easy", Grade 3-5
+
+  Test Case 5 — Summarization:
+    Input:  Text with 6+ sentences
+    Output: Summary with 50% fewer sentences, key points extracted
+
+
+11. LIMITATIONS
+================
+  - Rule-based system (no trained ML model, limited pattern coverage)
+  - Homophone disambiguation uses keyword matching, not full NLP
+  - Summarization is extractive only (selects existing sentences)
+  - No support for multiple languages
+  - Limited synonym database (60+ common words)
+  - No punctuation-level checking beyond missing end punctuation
+  - No subject-verb number agreement for complex sentences
+
+
+12. FUTURE SCOPE
+==================
+  - Train ML classifier on grammar error corpora (CoNLL-2014, BEA-2019)
+  - Add transformer-based abstractive summarization
+  - Implement browser extension for real-time checking
+  - Add user accounts with cloud history sync
+  - Multi-language support
+  - Plagiarism detection using text similarity algorithms
+  - API rate limiting and user authentication
+
+
+13. CONCLUSION
+===============
+WriteMaster AI demonstrates that effective grammar checking can be implemented
+using rule-based approaches without requiring machine learning models or external
+APIs. The system successfully detects spelling errors, grammatical mistakes, and
+contextual confusions while providing educational feedback. The extractive
+summarization, tone analysis, and readability scoring features add practical
+value for academic and professional writing. The clean, responsive interface
+ensures accessibility across devices, making it suitable for deployment as a
+local writing assistant tool.
+
+=====================================================
+Project: WriteMaster AI
+Type: College Mini Project
+Duration: 2025
+=====================================================

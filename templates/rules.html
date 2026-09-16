@@ -1,0 +1,143 @@
+{% extends "base.html" %}
+{% block title %}WriteMaster AI - Grammar Rules{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-book"></i> Grammar Rules Quick Reference</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted mb-4">A comprehensive guide to common grammar rules and writing best practices.</p>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-language text-primary"></i> Subject-Verb Agreement</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Singular subjects take singular verbs:</strong></p>
+                    <p class="mb-1 text-success">She <strong>goes</strong> to school. He <strong>likes</strong> coffee.</p>
+                    <p class="mb-1 text-danger">She <del>go</del> to school. He <del>like</del> coffee.</p>
+                    <p class="mb-0"><small class="text-muted">Third-person singular (he/she/it) requires verb with -s or -es.</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Plural subjects take plural verbs:</strong></p>
+                    <p class="mb-1 text-success">They <strong>are</strong> happy. We <strong>have</strong> books.</p>
+                    <p class="mb-1 text-danger">They <del>is</del> happy. We <del>has</del> books.</p>
+                    <p class="mb-0"><small class="text-muted">Plural subjects use "are" and "have".</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Use "doesn't" with third-person singular:</strong></p>
+                    <p class="mb-1 text-success">He <strong>doesn't</strong> like it. She <strong>doesn't</strong> know.</p>
+                    <p class="mb-1 text-danger">He <del>don't</del> like it. She <del>don't</del> know.</p>
+                    <p class="mb-0"><small class="text-muted">"Don't" is for I/you/we/they; "doesn't" is for he/she/it.</small></p>
+                </div>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-clock text-warning"></i> Verb Tenses</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>After "didn't", use the base form:</strong></p>
+                    <p class="mb-1 text-success">I didn't <strong>go</strong>. She didn't <strong>eat</strong>.</p>
+                    <p class="mb-1 text-danger">I didn't <del>went</del>. She didn't <del>ate</del>.</p>
+                    <p class="mb-0"><small class="text-muted">The past tense is already in "didn't".</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>After modal verbs, use the base form:</strong></p>
+                    <p class="mb-1 text-success">He can <strong>sing</strong>. She will <strong>go</strong>.</p>
+                    <p class="mb-1 text-danger">He can <del>sings</del>. She will <del>goes</del>.</p>
+                    <p class="mb-0"><small class="text-muted">Modal verbs: can, could, will, would, shall, should, may, might, must.</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>After am/is/are, use the -ing form:</strong></p>
+                    <p class="mb-1 text-success">I am <strong>going</strong>. She is <strong>running</strong>.</p>
+                    <p class="mb-1 text-danger">I am <del>go</del>. She is <del>run</del>.</p>
+                    <p class="mb-0"><small class="text-muted">Present continuous requires -ing form.</small></p>
+                </div>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-person text-info"></i> Pronouns</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Use "I" (not "me") as a subject:</strong></p>
+                    <p class="mb-1 text-success">My friend and <strong>I</strong> went to the store.</p>
+                    <p class="mb-1 text-danger">My friend and <del>me</del> went to the store.</p>
+                    <p class="mb-0"><small class="text-muted">Put yourself last: "My friend and I", not "I and my friend".</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>"I" is always capitalized:</strong></p>
+                    <p class="mb-1 text-success"><strong>I</strong> am a student. <strong>I</strong> went home.</p>
+                    <p class="mb-1 text-danger"><del>i</del> am a student. <del>i</del> went home.</p>
+                    <p class="mb-0"><small class="text-muted">The pronoun "I" should always be uppercase.</small></p>
+                </div>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-ruler text-secondary"></i> Comparisons</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Use "than" for comparisons:</strong></p>
+                    <p class="mb-1 text-success">She is taller <strong>than</strong> me.</p>
+                    <p class="mb-1 text-danger">She is taller <del>then</del> me.</p>
+                    <p class="mb-0"><small class="text-muted">"Than" is for comparisons; "then" is for time/sequence.</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Use "there are" with plural nouns:</strong></p>
+                    <p class="mb-1 text-success">There <strong>are</strong> many books.</p>
+                    <p class="mb-1 text-danger">There <del>is</del> many books.</p>
+                    <p class="mb-0"><small class="text-muted">"There is" for singular, "there are" for plural.</small></p>
+                </div>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-quote-left text-danger"></i> Punctuation</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Start sentences with capitals, end with punctuation:</strong></p>
+                    <p class="mb-1 text-success"><strong>H</strong>ello, how are you<strong>?</strong></p>
+                    <p class="mb-1 text-danger"><del>hello</del> how are you</p>
+                    <p class="mb-0"><small class="text-muted">Every sentence starts with a capital letter and ends with . ? or !</small></p>
+                </div>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Proper contractions:</strong></p>
+                    <p class="mb-1 text-success"><strong>I'm</strong> happy. <strong>Don't</strong> do that. <strong>It's</strong> a nice day.</p>
+                    <p class="mb-1 text-danger"><del>im</del> happy. <del>dont</del> do that. <del>its</del> a nice day.</p>
+                    <p class="mb-0"><small class="text-muted">Use apostrophes in contractions. "It's" = "it is"; "its" = possessive.</small></p>
+                </div>
+
+                <h6 class="mt-4 mb-3"><i class="fas fa-spell-check text-success"></i> Spelling</h6>
+                <div class="rule-item mb-3 p-3 bg-light rounded">
+                    <p class="mb-1"><strong>Common spelling mistakes:</strong></p>
+                    <p class="mb-1 text-danger"><del>definately</del> -> <strong>definitely</strong></p>
+                    <p class="mb-1 text-danger"><del>seperate</del> -> <strong>separate</strong></p>
+                    <p class="mb-1 text-danger"><del>occured</del> -> <strong>occurred</strong></p>
+                    <p class="mb-1 text-danger"><del>recieve</del> -> <strong>receive</strong></p>
+                    <p class="mb-0"><small class="text-muted">Double-check commonly misspelled words.</small></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="fas fa-lightbulb text-warning"></i> Writing Tips</h5>
+            </div>
+            <div class="card-body">
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-scissors text-danger"></i> Keep Sentences Concise</h6>
+                    <p class="text-muted mb-0">Aim for 15-20 words per sentence. Break long sentences into shorter ones.</p>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-ban text-warning"></i> Avoid Filler Words</h6>
+                    <p class="text-muted mb-0">Remove words like "basically", "actually", "literally", "just", "really" that add no meaning.</p>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-bolt text-primary"></i> Use Active Voice</h6>
+                    <p class="text-muted mb-0">"The teacher graded the papers" is stronger than "The papers were graded by the teacher."</p>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-spell-check text-success"></i> Vary Your Vocabulary</h6>
+                    <p class="text-muted mb-0">Replace weak words (good, bad, big, small) with more specific alternatives.</p>
+                </div>
+                <div class="tip-item mb-3">
+                    <h6><i class="fas fa-robot text-info"></i> Read Aloud</h6>
+                    <p class="text-muted mb-0">Reading your text aloud helps catch awkward phrasing and run-on sentences.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mb-4">
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-pen-fancy"></i> Start Checking Your Text
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
