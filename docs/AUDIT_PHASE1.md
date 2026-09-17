@@ -4,19 +4,35 @@
 > (keep / merge / rename / remove). See `ARCHITECTURE_REVIEW.md` and
 > `ARCHITECTURE_REPORT.txt` for earlier analysis this document supersedes.
 >
-> **Status: 5a EXECUTED; Phases 2–8 in progress** — dead cluster removed (git
-> history preserves all 96 archive scripts + dead modules). 169 unit tests +
-> serverless import verified green after removal. `results/` + stale benchmark
-> output JSONs removed; `benchmark/{clean,error}_cases.json`,
+> **Status: 5a EXECUTED; Phases 2–8 DONE; Phases 12–14 DONE; Phase 16 pending**
+> (see below). Dead cluster removed (git history preserves all 96 archive
+> scripts + dead modules). 179 unit tests + serverless import verified green.
+> `results/` + stale benchmark output JSONs removed; `results/` now
+> gitignored (regenerable); `benchmark/{clean,error}_cases.json`,
 > `test_cases.json`, `grammar_error_dataset_1000.csv`, `data/jfleg_test.json`
-> KEPT as input datasets (Phases 12–14).
+> KEPT as input datasets.
 >
 > Master pipeline built: `pipeline/master.py` (check_master, single entry;
-> `ai_core.check_ai_text` now delegates to it), `pipeline/schema.py` (canonical
-> v2 error object + taxonomy), consensus engine AGREED/AI_ONLY/LOCAL_ONLY with
+> `ai_core.check_ai_text` now delegates), `pipeline/schema.py` (canonical v2
+> error object + taxonomy), consensus engine AGREED/AI_ONLY/LOCAL_ONLY with
 > AI-authoritative default and opt-in `report_local_only` discovery mode;
-> character-similarity meaning guard (handles word splits). 179 unit tests
-> green, serverless import green. Commit `36140e7`.
+> character-similarity meaning guard. 179 unit tests green; serverless import
+> green. Phases 2–8 committed `36140e7` + `0147bd6`.
+>
+> Gold benchmark (Phases 12–14): `benchmark/run_gold_benchmark.py` over the real
+> balanced sets — OFFLINE F1 99.68%, Precision 99.55%, Recall 99.80%, sentence
+> repair 99.40%, clean-FP 0.10% (2 BrE dialect traps). Rule FP fixes (no-op
+> participles, modal+marker, had-had, embedded-wh aux placement, passive
+> be+participle, span-preserving from_candidate) committed `0ef6549`;
+> `docs/MODEL_EVALUATION.md` updated with honest method + numbers.
+>
+> **Phase 16 — ONE OPEN DECISION:** the v1–v4 legacy stack (`app.py` +
+> grammar/writing/scoring engines + 17 checker/engine modules) is live ONLY
+> through `tests/unit/test_api_v4.py` importing `app`; nothing in the Vercel
+> surface or benchmark harness imports it. RECOMMENDED: migrate `test_api_v4`
+> to the `api/index.py` contract and then `git rm` `app.py` + the 21-module
+> legacy closure (history preserves everything). NOT executed yet — awaiting
+> confirmation because `app.py` is the manual local-Flask entry.
 
 Audit method: AST import-graph reachability from the four real entry points,
 then a targeted grep cross-check on every "dead" candidate (no dynamic

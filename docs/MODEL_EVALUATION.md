@@ -18,23 +18,51 @@ Measured properties:
 | Span/text consistency (`errors` ↔ `corrected_text`) | all spans verified locally |
 | Legacy stray-span corruption (`Their going` +0) | eliminated by relocation guard |
 
-## Precise/recall on the AutoCorrect benchmarks
+## Precision/recall on the gold benchmark (Phase 12–14)
 
-Not published. The repo contains benchmark harnesses under
-`tests/grammar_accuracy/` that were run against earlier heuristic pipelines
-with widely varying (and noisy) generators; they do not reflect the new AI
-pipeline, so re-publishing those numbers would be misleading. Before quoting
-precision/recall/F1 for the new engine, run a controlled, hand-labelled
-corpus — see "How to evaluate" below.
+Measured on the real balanced datasets (kept as input, not regenerable output):
+
+| Source | Items | Role |
+|---|---|---|
+| `benchmark/error_cases.json` | 2000 | flagged sentences, each with a `good` target |
+| `benchmark/clean_cases.json` | 2000 | clean sentences that must NOT be flagged |
+
+Runner: `python benchmark/run_gold_benchmark.py [--mode offline|ai] [--limit N]`
+→ writes `results/gold_benchmark_<mode>.json` (gitignored, regenerable).
+
+Method (per error sentence): a proposal is a true positive if applying it at its
+span reproduces the gold `good` text; `sentence_repair_accuracy` is the share of
+sentences whose `corrected_text == good`; clean sentences with any error count
+toward false positives / clean-FP rate.
+
+Results — offline rule path (hermetic, `AI_PROVIDER=none`, no Gemini):
+
+| Metric | Value |
+|---|---|
+| Precision | 99.55% (1996 TP / 2005 proposals) |
+| Recall | 99.80% (1996 / 2000) |
+| F1 | 99.68% |
+| Sentence repair accuracy | 99.40% |
+| Clean-sentence FP rate | 0.10% (2/2000 — deliberate BrE collective-noun dialect traps, surfaced as warnings) |
+
+Remaining offline FN examples (all Gemini-domain or multi-fix): "I did real good
+on the test." → "really well" (collocation, needs world knowledge); "The
+informations are ready." → requires two coordinated fixes; missing end-period on
+input without terminal punctuation (conservative: reported, below auto-apply
+gate). The AI path (`--mode ai`, needs `GEMINI_API_KEY`) is expected to cover the
+collocation/embedded-inversion cases the offline path cannot.
 
 ## How to evaluate honestly
 
 1. Build a labelled corpus: for each sentence store `{text, corrections[]}`,
    where every correction is a `{original→fixed}` pair and text without
-   corrections counts toward false-positive rate.
-2. Run: `from pipeline.ai_core import check_ai_text; res = check_ai_text(text, use_ai=False)`
-   (offline) or with `use_ai=True` + a live `GEMINI_API_KEY`.
-3. Compute precision / recall / F1 over correction PAIRS:
+   corrections counts toward false-positive rate. (The repo ships gold sets:
+   `benchmark/error_cases.json` + `benchmark/clean_cases.json`, plus
+   `tests/grammar_accuracy/test_cases.json` and `data/jfleg_test.json`.)
+2. Run `python benchmark/run_gold_benchmark.py` (offline) or
+   `python benchmark/run_gold_benchmark.py --mode ai` (live Gemini).
+3. Compute precision / recall / F1 over correction PAIRS (the script does
+   span-level TP/FP/FN, sentence-repair accuracy, and clean-FP rate):
    - TP = proposed correction matches a gold pair;
    - FP = proposed correction not in gold (or a clean sentence got any error);
    - FN = gold pair not proposed.
