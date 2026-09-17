@@ -399,7 +399,7 @@ class AIValidator:
     def _default_model(provider: str) -> str:
         return {
             "ollama": "llama3.2:3b-instruct-q4_K_M",
-            "gemini": "gemini-2.0-flash",
+            "gemini": "gemini-3.5-flash-lite",
             "openai": "gpt-4o-mini",
             "anthropic": "claude-sonnet-4-20250514",
             "groq": "llama-3.3-70b-versatile",
@@ -767,19 +767,34 @@ class AIValidator:
             return data["choices"][0]["message"]["content"]
 
     def _call_gemini(self, prompt: str) -> str:
+        import time as _time
+        import urllib.error
         import urllib.request
         model = self.model or "gemini-2.0-flash"
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/{model}"
                f":generateContent?key={_api_key('gemini')}")
         body = json.dumps({
             "contents": [{"parts": [{"text": prompt}]}],
-            "generationConfig": {"temperature": 0, "maxOutputTokens": 512},
+            "generationConfig": {"temperature": 0, "maxOutputTokens": 2048},
         }).encode()
-        req = urllib.request.Request(
-            url, data=body, headers={"Content-Type": "application/json"}, method="POST")
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            data = json.loads(resp.read().decode())
-            return data["candidates"][0]["content"]["parts"][0]["text"]
+        last_err: Optional[Exception] = None
+        for attempt in range(3):
+            req = urllib.request.Request(
+                url, data=body, headers={"Content-Type": "application/json"}, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=90) as resp:
+                    data = json.loads(resp.read().decode())
+                return data["candidates"][0]["content"]["parts"][0]["text"]
+            except urllib.error.HTTPError as e:
+                last_err = e
+                if e.code in (429, 500, 502, 503, 504):
+                    _time.sleep(3.0 * (attempt + 1))
+                    continue
+                raise
+            except (urllib.error.URLError, OSError) as e:
+                last_err = e
+                _time.sleep(3.0 * (attempt + 1))
+        raise last_err if last_err else RuntimeError("gemini call failed")
 
     def _call_anthropic(self, prompt: str) -> str:
         import urllib.request
