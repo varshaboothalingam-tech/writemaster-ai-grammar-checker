@@ -31,10 +31,12 @@ def check_ai_text(text: str,
                   use_ai: bool = True,
                   raw_call: Optional[Callable[[str], str]] = None,
                   include_v4_hints: bool = True,
-                  v4_result: Optional[Dict] = None) -> Dict:
+                  v4_result: Optional[Dict] = None,
+                  max_passes: int = 1) -> Dict:
     """Full master-pipeline check (public API — shape unchanged)."""
     return check_master(text, use_ai=use_ai, raw_call=raw_call,
-                        include_v4_hints=include_v4_hints, v4_result=v4_result)
+                        include_v4_hints=include_v4_hints, v4_result=v4_result,
+                        max_passes=max_passes)
 
 
 __all__ = ["check_ai_text", "detect_rules", "aggregate", "check_master"]

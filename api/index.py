@@ -180,6 +180,29 @@ label { display:block; font-size:.74rem; letter-spacing:.14em; text-transform:up
 @keyframes rot { to { transform:rotate(360deg); } }
 @keyframes sheen { to { left:130%; } }
 @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:.35; } }
+.summary-bar{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 4px;justify-content:center}
+.summary-chip{display:inline-flex;align-items:center;gap:5px;background:rgba(114,47,55,.07);
+  border:1px solid rgba(114,47,55,.14);border-radius:8px;padding:4px 10px;font-size:.72rem;
+  font-weight:600;color:var(--wine)}
+.summary-chip .sdot{width:8px;height:8px;border-radius:50%;flex:none}
+.corrected-section{margin-top:16px;padding-top:16px;border-top:1px dashed rgba(114,47,55,.18);
+  animation:rise .4s ease both}
+.corrected-label{font-size:.74rem;letter-spacing:.14em;text-transform:uppercase;color:var(--good);
+  font-weight:700;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.corrected-box{background:rgba(46,125,91,.06);border:1px solid rgba(46,125,91,.22);
+  border-radius:14px;padding:14px 16px;font-size:1rem;line-height:1.7;color:var(--ink);
+  min-height:60px;white-space:pre-wrap;word-break:break-word}
+.corrected-meta{font-size:.74rem;color:#8a6a71;margin-top:8px}
+.corrected-meta b{color:var(--good)}
+.corrected-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.btn-copy{background:rgba(114,47,55,.08);color:var(--wine);border:1px solid rgba(114,47,55,.25);
+  border-radius:12px;padding:8px 16px;font-size:.86rem;cursor:pointer;font-family:'Outfit',sans-serif;
+  font-weight:500;transition:all .2s}
+.btn-copy:hover{background:rgba(114,47,55,.15);transform:translateY(-1px)}
+.btn-copy.copied{background:rgba(46,125,91,.12);color:var(--good);border-color:rgba(46,125,91,.3)}
+.kbd-hint{display:inline-block;font-size:.65rem;background:rgba(114,47,55,.08);border:1px solid rgba(114,47,55,.15);
+  border-radius:4px;padding:1px 5px;margin-left:6px;color:var(--wine-light);vertical-align:middle;opacity:.7}
+.editor-corrected{margin-top:20px}
 </style>
 </head>
 <body>
@@ -207,7 +230,7 @@ label { display:block; font-size:.74rem; letter-spacing:.14em; text-transform:up
         <textarea id="text" placeholder="Type or paste a sentence…  e.g.  She go to school everyday and she dont like it"></textarea>
       </div>
       <div class="edbar">
-        <div class="counts"><b id="cChars">0</b> chars &middot; <b id="cWords">0</b> words &middot; <b id="cSents">0</b> sentences</div>
+        <div class="counts"><b id="cChars">0</b> chars &middot; <b id="cWords">0</b> words &middot; <b id="cSents">0</b> sentences <span class="kbd-hint">Ctrl+Enter</span></div>
         <button class="btn ghost small" id="btnReset" style="display:none">Reset</button>
         <button class="btn" id="btn" onclick="check()">&#10005; Check grammar</button>
         <span class="spin" id="spin"></span>
@@ -218,6 +241,7 @@ label { display:block; font-size:.74rem; letter-spacing:.14em; text-transform:up
         <button type="button" onclick="setSample(2)">He dont like coffee</button>
         <button type="button" onclick="setSample(3)">The men is walking fast</button>
       </div>
+      <div id="editorCorrected" class="editor-corrected"></div>
     </div>
 
     <div class="panel assistant">
@@ -295,11 +319,14 @@ function render(j){
     if((cons[k]||0) > 0) chips.push(k.replace('_','-') + ' ' + cons[k]);
   }
   if(chips.length) meta += '<div class="chips">'+ chips.map(function(c){ return '<span class="chip">'+c+'</span>'; }).join('') +'</div>';
+  meta += summaryBarHtml(errors);
 
   if(!errors.length){
     body.innerHTML = meta + '<div class="empty-assist"><span class="big">No issues found</span>' +
       (j.ai_used ? 'Gemini read it twice and found nothing to pour away.' :
                   'Your text reads clean.' ) + '</div>';
+    var ecN=document.getElementById('editorCorrected');
+    if(ecN) ecN.innerHTML='';
     return;
   }
   const groups = {};
@@ -315,6 +342,10 @@ function render(j){
   });
   body.innerHTML = html;
   for(const i in state.applied) applyMark(i, !!state.applied[i]);
+  var ec=document.getElementById('editorCorrected');
+  if(ec) ec.innerHTML = correctedTextHtml(j);
+  var cs=document.getElementById('correctedSection');
+  if(cs) setTimeout(function(){cs.scrollIntoView({behavior:'smooth',block:'nearest'});},150);
 }
 function issueHtml(e, i){
   const tag = e.consensus ? ' &middot; '+esc(e.consensus.toLowerCase()) : '';
@@ -367,8 +398,62 @@ document.getElementById('btnReset').addEventListener('click', function(){
     'Click <b>Check grammar</b> to review your text.</div>';
   document.getElementById('btnReset').style.display = 'none';
   setScore(null);
+  var ec2=document.getElementById('editorCorrected');
+  if(ec2) ec2.innerHTML='';
 });
+function summaryBarHtml(errors){
+  if(!errors||!errors.length) return '';
+  var counts={};
+  errors.forEach(function(e){ var g=grpOf(e.type); counts[g]=(counts[g]||0)+1; });
+  var igc={Grammar:'grammar',Spelling:'spelling',Punctuation:'punctuation',
+    Style:'style',Clarity:'clarity',Context:'context',Other:'other'};
+  var h='<div class="summary-bar">';
+  Object.keys(counts).forEach(function(g){
+    h+='<span class="summary-chip"><span class="sdot ig-'+(igc[g]||'other')+'"></span>'+g+' '+counts[g]+'</span>';
+  });
+  return h+'</div>';
+}
+function correctedTextHtml(j){
+  if(!j.corrected_text||j.corrected_text===j.original_text) return '';
+  var ow=wordGuess(j.original_text),cw=wordGuess(j.corrected_text);
+  var d=cw-ow,ds=d===0?'':d>0?' (+'+d+')':' ('+d+')';
+  return '<div class="corrected-section" id="correctedSection">'+
+    '<div class="corrected-label">&#10003; Corrected Text</div>'+
+    '<div class="corrected-box" id="correctedBox">'+esc(j.corrected_text)+'</div>'+
+    '<div class="corrected-meta"><b>'+cw+'</b> words'+ds+' &middot; <b>'+j.corrected_text.length+'</b> chars</div>'+
+    '<div class="corrected-actions">'+
+    '<button class="btn small" id="btnAcceptAll" onclick="acceptAll()">&#10003; Accept All</button>'+
+    '<button class="btn-copy" id="btnCopy" onclick="copyCorrected()">Copy</button>'+
+    '</div></div>';
+}
+function acceptAll(){
+  var ta=document.getElementById('text');
+  if(state.good){ta.value=state.good;updateCounts();}
+  for(var i=0;i<state.errors.length;i++){
+    state.applied[i]=true;
+    var btn=document.getElementById('acc'+i);
+    if(btn){btn.disabled=true;btn.classList.remove('ghost');btn.classList.add('accepted');btn.textContent='\u2713 Applied';}
+    var iss=document.getElementById('iss'+i);
+    if(iss) iss.classList.add('done');
+  }
+  var ab=document.getElementById('btnAcceptAll');
+  if(ab){ab.disabled=true;ab.textContent='\u2713 All Applied';}
+}
+function copyCorrected(){
+  var txt=state.good||document.getElementById('text').value;
+  var ta=document.createElement('textarea');
+  ta.value=txt;ta.style.position='fixed';ta.style.opacity='0';
+  document.body.appendChild(ta);ta.select();
+  try{document.execCommand('copy');showCopied();}catch(e){}
+  document.body.removeChild(ta);
+}
+function showCopied(){
+  var b=document.getElementById('btnCopy');
+  b.textContent='Copied!';b.classList.add('copied');
+  setTimeout(function(){b.textContent='Copy';b.classList.remove('copied');},2000);
+}
 updateCounts();
+document.addEventListener('keydown',function(e){if((e.ctrlKey||e.metaKey)&&e.key==='Enter'){e.preventDefault();check();}});
 </script>
 </body>
 </html>
@@ -391,7 +476,8 @@ def api_check():
             status=400, mimetype="application/json")
     try:
         result = check_ai_text(text, use_ai=payload.get("use_ai", True)
-                               if ai_key_configured() else False)
+                               if ai_key_configured() else False,
+                               max_passes=3)
         meta = result.get("meta", {})
         verification = meta.get("verification", {}) or {}
         return Response(

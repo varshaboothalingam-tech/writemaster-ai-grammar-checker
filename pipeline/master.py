@@ -41,6 +41,9 @@ from .schema import (
     make_error, to_legacy, from_candidate, normalize_category,
     consensus_tag, NEVER_AUTO_APPLY_CATEGORIES,
 )
+from .consensus import merge as merge_consensus
+from .consensus import statistics as build_statistics
+from .consensus import groups_of as build_groups
 
 # Offline floor — only confident rule corrections applied without AI.
 _OFFLINE_MIN = 0.75
@@ -133,7 +136,7 @@ def _meaning_preserved_ok(original: str, corrected: str, errors: List[Dict]) -> 
     if not a or not b:
         return False
     from difflib import SequenceMatcher
-    ratio = SequenceMatcher(None, a, b).ratio()
+    ratio = SequenceMatcher(None, a, b, autojunk=False).ratio()
     # corrections that keep >=60% character identity are meaning-preserving;
     # a verified AI verdict above that is trusted.
     return ratio >= 0.60
@@ -146,7 +149,8 @@ def check_master(text: str,
                  v4_result: Optional[Dict] = None,
                  min_auto_apply: float = _AUTO_APPLY_MIN,
                  auto_correct_only: bool = True,
-                 report_local_only: bool = False) -> Dict:
+                 report_local_only: bool = False,
+                 max_passes: int = 1) -> Dict:
     """Run the single master pipeline.
 
     ``report_local_only`` (Phase 5 discovery mode): when a rule candidate with
@@ -154,10 +158,14 @@ def check_master(text: str,
     as a ``LOCAL_ONLY`` suggestion (never auto-applied). Default False keeps
     the AI-authoritative contract (AI errors win outright).
 
+    ``max_passes`` (second full check, §15/§16): when > 1 in AI mode, the
+    corrected text is re-checked up to ``max_passes`` (spec cap 3) to catch
+    errors the first pass missed. Loop prevention uses normalized text hashes.
+
     Returns (backwards compatible with the previous ``check_ai_text`` shape,
-    plus ``schema``, ``quality``, ``consensus`` fields):
+    plus ``schema``, ``quality``, ``consensus``, ``statistics`` fields):
         {success, original_text, corrected_text, errors, grammar_status,
-         meta, processing_time_ms, quality, consensus}
+         meta, processing_time_ms, quality, consensus, statistics}
     ``errors`` are standard error objects WITH legacy aliases (wrong/correct/
     type) so existing tests and frontends keep working unchanged.
     """
@@ -199,60 +207,33 @@ def check_master(text: str,
             offline = False
 
     if ai_used:
-        # 7-9 AI produced a verdict (even "no errors") — it is authoritative.
+        # 7-9 consensus engine (pipeline.consensus, Case A-D):
+        #   local candidates + Gemini complete-text verdict -> one change set.
         ai_errs = _blend_rules_into_ai(ai_result["errors"], rules)
         ai_errs = relocate_candidates(ai_errs, text)
-        # (span, correction) -> canonical object, global index
-        for idx, e in enumerate(ai_errs):
-            key = (e.get("start"), e.get("end"))
-            if key in errors_map:
-                # overlapping AI errors: keep higher confidence
-                existing = errors_map[key]
-                if float(e.get("confidence", 0.5)) > existing["confidence"]:
-                    existing["confidence"] = float(e.get("confidence", 0.5))
-                    existing["explanation"] = e.get("explanation", existing["explanation"])
-                continue
-            sources = set(e.get("source") or ["ai"])
-            if not sources:
-                sources = {"ai"}
-            src = list(dict.fromkeys(
-                list(sources if "rule" in sources else ["ai"] + list(sources))))
-            canon = make_error(
-                original=e.get("wrong", e.get("original", "")),
-                correction=e.get("correct", e.get("correction", "")),
-                category=e.get("type", e.get("category", "grammar")),
-                start=e.get("start", 0),
-                end=e.get("end", 0),
-                sentence_id=_sentence_id_of(sents, e.get("start", 0)),
-                confidence=float(e.get("confidence", 0.8)),
-                subcategory=e.get("rule_id", e.get("type", "")),
-                explanation=e.get("explanation", ""),
-                source=src,
-                evidence=[e] if isinstance(e, dict) else [],
-                message=e.get("message", e.get("explanation", "")),
-                index=idx,
-            )
-            canon["_discovery"] = consensus_tag(canon, True)
-            canon["_ai_raw"] = e
-            errors_map[key] = canon
+        ai_candidates = [{
+            "wrong": e.get("wrong", e.get("original", "")),
+            "correct": e.get("correct", e.get("correction", "")),
+            "type": e.get("type", e.get("category", "grammar")),
+            "start": e.get("start", 0),
+            "end": e.get("end", 0),
+            "confidence": float(e.get("confidence", 0.8)),
+            "_ai_raw": e,
+        } for e in ai_errs]
 
-        # LOCAL_ONLY: rule candidates the AI did not touch become low-priority
-        # suggestions (improves recall without forcing wrong auto-fixes).
-        # Opt-in (Phase 5 discovery mode) to keep the AI-authoritative contract
-        # by default.
-        ai_spans = list(errors_map.keys())
-        for e in (_local_only_candidates(candidates, ai_spans) if report_local_only else []):
-            conf = float(e.get("confidence", 0.6))
-            if conf < 0.6:
-                continue
-            key = (e.get("start"), e.get("end"))
-            if key in errors_map:
-                continue
-            canon = from_candidate(e, sentence_id=_sentence_id_of(sents, e.get("start", 0)),
-                                   index=len(error_list))
-            canon["_discovery"] = "LOCAL_ONLY"
-            canon["source"] = list(dict.fromkeys(canon.get("source") or ["rule"]))
-            errors_map[key] = canon
+        merged = merge_consensus(candidates, ai_candidates,
+                                 report_local_only=report_local_only,
+                                 reference="gemini",
+                                 agree_sources={"rule"})
+
+        for i, rec in enumerate(merged["records"]):
+            sid = _sentence_id_of(sents, rec.get("start", 0))
+            canon = from_candidate(rec, sentence_id=sid, index=i)
+            canon["_discovery"] = rec.get("_discovery") or consensus_tag(canon, True)
+            canon["_group"] = rec.get("_group", "")
+            if rec.get("_ai_raw"):
+                canon["_ai_raw"] = rec["_ai_raw"]
+            errors_map[(rec.get("start", 0), rec.get("end", 0))] = canon
 
         error_list = sorted(errors_map.values(),
                             key=lambda e: (-e["confidence"], e["start"]))
@@ -293,6 +274,7 @@ def check_master(text: str,
     for e in error_list:
         d = to_legacy(dict(e))
         d.pop("_ai_raw", None)
+        d.pop("_group", None)
         tag = d.pop("_discovery", None)
         if tag:
             d["consensus"] = tag
@@ -322,8 +304,90 @@ def check_master(text: str,
     agreed = sum(1 for e in error_list if e.get("_discovery", "") == "AGREED")
     ai_only_n = sum(1 for e in error_list if e.get("_discovery", "") == "AI_ONLY")
     local_n = sum(1 for e in error_list if e.get("_discovery", "") == "LOCAL_ONLY")
+    conflict_n = sum(1 for e in error_list if e.get("_discovery", "") == "CONFLICT")
+
+    # 15/16 second full check (max 3 passes, loop prevention via text hashes)
+    recheck_info = {"passes_used": 1, "loop_detected": False,
+                    "extra_errors": [], "residual_filtered": 0,
+                    "missed_logged": 0}
+    # 18/19 missed-error corpus: log AI_ONLY (Gemini-caught, local-missed)
+    # errors from the FIRST pass before any recheck folding.
+    missed_logged = 0
+    if ai_used and ai_only_n:
+        from .recheck import log_missed_from_result
+        result_for_logging = {
+            "original_text": text,
+            "errors": clean,
+            "meta": {"ai_used": ai_used,
+                     "sentences": [s["text"] for s in sents]},
+        }
+        missed_logged += log_missed_from_result(result_for_logging, pass_no=1)
+    if use_ai and ai_used and max_passes > 1 and corrected_text != text:
+        from .recheck import recheck as run_recheck
+
+        def _make_pass(current: str) -> Dict:
+            return check_master(current, use_ai=use_ai, raw_call=raw_call,
+                                include_v4_hints=include_v4_hints,
+                                v4_result=None,
+                                min_auto_apply=min_auto_apply,
+                                auto_correct_only=auto_correct_only,
+                                report_local_only=report_local_only,
+                                max_passes=1)
+
+        rc = run_recheck(
+            text,
+            {"corrected_text": corrected_text, "errors": clean,
+             "meta": {"ai_used": ai_used}},
+            _make_pass,
+            max_passes=max_passes,
+            log_missed=True,
+            raw_call=raw_call)
+        recheck_info = rc
+        if rc.get("corrected_text") and _meaning_preserved_ok(
+                text, rc["corrected_text"], clean):
+            corrected_text = rc["corrected_text"]
+        extra = rc.get("extra_errors") or []
+        if extra:
+            error_list.extend(extra)
+            error_list.sort(key=lambda e: (-e["confidence"], e["start"]))
+            clean = []
+            for e in error_list:
+                d = to_legacy(dict(e))
+                d.pop("_ai_raw", None)
+                d.pop("_group", None)
+                tag = d.pop("_discovery", None)
+                if tag:
+                    d["consensus"] = tag
+                clean.append(d)
+            # a change set that was rejected after recheck never happens here
+            # (recheck only folds in errors that survived their own pass).
 
     avg_conf = float(sum((e.get("confidence", 0) for e in error_list), 0.0)) / len(error_list) if error_list else 1.0
+
+    # 17 auditable statistics block
+    gemini_candidates = len(ai_candidates) if ai_used else 0
+    rejected_n = len(merged["rejected"]) if ai_used else 0
+    conflict_total = len(merged["conflicts"]) if ai_used else 0
+    missed_logged = missed_logged + recheck_info.get("missed_logged", 0)
+    stats = build_statistics(
+        records=[{"_group": (e.get("_discovery") or "")} for e in error_list],
+        local_count=len(candidates),
+        gemini_count=gemini_candidates,
+        rejected_count=rejected_n,
+        conflict_count=conflict_total,
+        passes=recheck_info.get("passes_used", 1),
+        missed_logged=missed_logged,
+        uncertain=int(verification.get("decision") == "uncertain") if ai_used else 0,
+    )
+
+    # §8 groups: verified_local / rejected_local / gemini_only
+    groups = build_groups([
+        {"_group": (e.get("_discovery") or ""),
+         "wrong": e.get("wrong") or e.get("original"),
+         "correct": e.get("correct") or e.get("correction"),
+         "type": e.get("category") or e.get("type") or "grammar",
+         "confidence": float(e.get("confidence", 0))}
+        for e in error_list])
 
     return {
         "success": True,
@@ -338,7 +402,9 @@ def check_master(text: str,
             "ai_validated": ai_used and verification.get("decision") in ("accept", "uncertain"),
         },
         "consensus": {"agreed": agreed, "ai_only": ai_only_n,
-                      "local_only": local_n, "offline": offline},
+                      "local_only": local_n, "conflicts": conflict_n,
+                      "offline": offline},
+        "statistics": stats,
         "meta": {
             "pipeline": "master",
             "ai_used": ai_used,
@@ -348,6 +414,9 @@ def check_master(text: str,
             "rule_count": len(rules),
             "v4_hint_count": len(hints),
             "word_count": len(text.split()),
+            "sentences": [s["text"] for s in sents],
+            "groups": groups,
+            "recheck": {k: v for k, v in recheck_info.items() if k != "extra_errors"},
         },
         "processing_time_ms": int((time.time() - started) * 1000),
     }

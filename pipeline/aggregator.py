@@ -172,6 +172,23 @@ def _relocate_one(text: str, wrong: str) -> Optional[tuple]:
     return (m.start(), m.end())
 
 
+def _relocate_nearest(text: str, wrong: str, preferred: int = 0) -> Optional[tuple]:
+    """Locate ``wrong`` and pick the occurrence NEAREST the ``preferred``
+    offset. Prevents a repeated word (e.g. ``were``) from always snapping to
+    the FIRST occurrence while the detector meant a later one (§11)."""
+    needle = (wrong or "").strip()
+    if not needle:
+        return None
+    pattern = re.compile(
+        r"(?<![A-Za-z0-9])" + re.escape(needle) + r"(?![A-Za-z0-9])",
+        re.IGNORECASE)
+    best = None
+    for m in pattern.finditer(text):
+        if best is None or abs(m.start() - preferred) < abs(best[0] - preferred):
+            best = (m.start(), m.end())
+    return best
+
+
 def relocate_candidates(candidates: List[Dict], text: str) -> List[Dict]:
     """Guarantee every candidate's (start, end) span matches its ``wrong``
     string in the original text. Candidates whose ``wrong`` cannot be located
@@ -184,11 +201,13 @@ def relocate_candidates(candidates: List[Dict], text: str) -> List[Dict]:
             continue
         s = c.get("start")
         e = c.get("end")
-        if isinstance(s, int) and isinstance(e, int) and 0 <= s < e <= len(text):
-            if text[s:e].strip().lower() == wrong.lower():
-                out.append(c)
-                continue
-        located = _relocate_one(text, wrong)
+        valid_span = isinstance(s, int) and isinstance(e, int) and 0 <= s < e <= len(text)
+        if valid_span and text[s:e].strip().lower() == wrong.lower():
+            out.append(c)
+            continue
+        # span missing/stale → relocate to the occurrence NEAREST the declared
+        # position (repeated-word safe), else first occurrence.
+        located = _relocate_nearest(text, wrong, s if isinstance(s, int) else 0)
         if located is None:
             continue
         c = dict(c)
@@ -240,7 +259,7 @@ def apply_corrections(text: str, candidates: List[Dict],
             if 0 <= s < e <= len(text) and text[s:e].strip().lower() == wrong.lower():
                 pass
             else:
-                located = _relocate_one(text, wrong)
+                located = _relocate_nearest(text, wrong, s)
                 if located is None:
                     continue
                 s, e = located

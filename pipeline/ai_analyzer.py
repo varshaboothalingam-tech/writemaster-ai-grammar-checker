@@ -45,7 +45,11 @@ SYSTEM_PROMPT = (
     "7. Repeated letters indicate a typing mistake: 'homeeee' -> 'home',\n"
     "   'schoollll' -> 'school', 'happyyy' -> 'happy'.\n"
     "8. A correction must preserve the writer's meaning and be natural English.\n"
-    "9. For each error give one word-safe 'wrong' and one 'correct' string.\n\n"
+    "9. For each error give one word-safe 'wrong' and one 'correct' string.\n"
+    "10. Repeated words are common. ALWAYS include the `context` field: a short\n"
+    "    literal snippet of the text IMMEDIATELY around the exact occurrence you mean\n"
+    "    (e.g. 'the food were', 'While we were'). If the same word appears twice,\n"
+    "    your context decides WHICH occurrence we correct — get it right.\n\n"
 )
 
 
@@ -58,8 +62,10 @@ def build_prompt(text: str, candidates: Optional[List[Dict]] = None) -> str:
              for c in candidates], ensure_ascii=False)
     return (
         SYSTEM_PROMPT
-        + "Candidate hints from a local detector (they MAY contain false positives — verify each "
-        "against the real context, keep only the correct ones):\n"
+        + "Candidate hints from a local detector (they MAY contain false positives AND may be "
+        "located at the WRONG occurrence of a repeated word — verify each against the real "
+        "context, keep only the correct ones, and always include the `context` field so the "
+        "exact occurrence is unambiguous):\n"
         + cand_block + "\n\n"
         + "Text to analyze:\n"
         + text + "\n\n"
@@ -67,7 +73,8 @@ def build_prompt(text: str, candidates: Optional[List[Dict]] = None) -> str:
         + '{"original_text": "", "corrected_text": "", "errors": ['
         '{"wrong": "", "correct": "", "type": "spelling|grammar|subject_verb|tense|verb_form|'
         'article|pronoun|preposition|plural|word_order|missing_word|extra_word|punctuation|'
-        'capitalization|word_choice|redundancy|context", "explanation": "", "confidence": 0.9}], '
+        'capitalization|word_choice|redundancy|context", "explanation": "", "confidence": 0.9, '
+        '"context": "exact short snippet around the occurrence"}], '
         '"grammar_status": "errors_found|correct", "meaning_preserved": true}\n'
         'If the text is already correct, return errors: [] and grammar_status "correct".'
     )
@@ -135,6 +142,7 @@ def _validate_error(e: Dict) -> Optional[Dict]:
         "type": etype,
         "explanation": str(e.get("explanation") or "").strip(),
         "confidence": conf,
+        "context": str(e.get("context") or "").strip(),
     }
 
 
@@ -147,6 +155,51 @@ def locate_span(text: str, wrong: str, cursor: int = 0) -> Optional[int]:
     return pos if pos != -1 else None
 
 
+def _occurrences(text: str, wrong: str) -> List[int]:
+    """All word-boundary start offsets of ``wrong`` (repeated-word aware)."""
+    import re
+    needle = (wrong or "").strip()
+    if not needle:
+        return []
+    return [m.start() for m in re.finditer(
+        r"(?<![A-Za-z0-9])" + re.escape(needle) + r"(?![A-Za-z0-9])",
+        text, re.IGNORECASE)]
+
+
+def _context_score(text: str, start: int, end: int, context: str) -> int:
+    """How many normalized context tokens appear in a window around (start,end)."""
+    ctx = " ".join((context or "").lower().split())
+    if not ctx:
+        return -1
+    window = " ".join(text[max(0, start - 60):end + 60].lower().split())
+    tokens = ctx.split()
+    return sum(1 for t in tokens if t in window)
+
+
+def _locate_with_context(text: str, fixed: Dict, cursor: int) -> Optional[int]:
+    """Locate the EXACT occurrence of a repeated word using the model's
+    ``context`` snippet (§7/§11). Falls back to the honest ambiguity handling:
+    the occurrence at/after ``cursor``, unchanged from the previous contract."""
+    starts = _occurrences(text, fixed["wrong"])
+    if not starts:
+        return None
+    if len(starts) == 1:
+        return starts[0]
+    ctx = fixed.get("context") or ""
+    if ctx:
+        best, best_score, best_first = None, -1, None
+        for s in starts:
+            score = _context_score(text, s, s + len(fixed["wrong"]), ctx)
+            if score > best_score:
+                best, best_score, best_first = s, score, (s if best_first is None else best_first)
+        if best is not None and best_score > 0:
+            return best
+    for s in starts:
+        if s >= cursor:
+            return s
+    return starts[0]
+
+
 def _locate_errors(text: str, raw_errors: List[Dict]) -> List[Dict]:
     out: List[Dict] = []
     cursor = 0
@@ -154,17 +207,27 @@ def _locate_errors(text: str, raw_errors: List[Dict]) -> List[Dict]:
         fixed = _validate_error(e)
         if not fixed:
             continue
-        pos = locate_span(text, fixed["wrong"], cursor)
-        if pos is None:
-            # highlight only the first token if the phrase is not contiguous
+        pos = _locate_with_context(text, fixed, cursor)
+        multiword = len(fixed["wrong"].split()) > 1
+        if pos is None and multiword:
+            # phrase not contiguous → highlight only its first token so the
+            # correction object is still span-safe
             first = fixed["wrong"].split()[0]
             pos = locate_span(text, first, cursor)
             if pos is None:
                 continue
             fixed["wrong"] = text[pos:pos + len(first)]
             fixed["end"] = pos + len(first)
+        elif pos is None:
+            # single word that cannot be found as a whole token → refuse to
+            # guess (otherwise 'go' would be highlighted inside 'goes')
+            continue
         else:
-            fixed["wrong"] = text[pos:pos + len(fixed["wrong"])]
+            match = text[pos:pos + len(fixed["wrong"])]
+            if match.strip().lower() != fixed["wrong"].strip().lower():
+                # anchored locator drifted (model "wrong" differs in case/space) →
+                # keep the exact model string but realign end onto the text
+                fixed["wrong"] = match.rstrip()
             fixed["end"] = pos + len(fixed["wrong"])
         fixed["start"] = pos
         cursor = pos + max(1, len(fixed["wrong"]))

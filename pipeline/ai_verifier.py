@@ -52,6 +52,86 @@ def build_verify_prompt(original: str, corrected: str,
 _DECISIONS = {"accept", "reject", "uncertain"}
 
 
+def _build_changes_prompt(original: str, changes: List[Dict]) -> str:
+    change_list = []
+    for c in changes or []:
+        change_list.append({"wrong": c.get("wrong") or c.get("original"),
+                            "correct": c.get("correct") or c.get("replacement")})
+    return (
+        _VERIFY_SYSTEM
+        + "Judge EVERY proposed change one by one.\n"
+        + json.dumps({"original_text": original, "changes": change_list}, ensure_ascii=False)
+        + '\n\nReturn ONLY strict JSON: {"verdicts": ['
+        '{"wrong": "", "correct": "", "decision": "accept|reject|uncertain", '
+        '"reason": "short reason"}]}\n'
+        'One verdict entry per proposed change. "accept" = fixes a real error and preserves '
+        'meaning; "reject" = not a real error / changes meaning; "uncertain" = ambiguous.\n'
+    )
+
+
+def verify_changes(original: str,
+                   changes: Optional[List[Dict]] = None,
+                   raw_call: Optional[Callable[[str], str]] = None) -> Dict:
+    """Per-change verification. Returns the §8 groups:
+
+        {verified_local: [accepted change dicts],
+         rejected_local: [rejected change dicts],
+         uncertain:      [ambiguous change dicts],
+         decisions:      {wrong->correct: verdict}}
+
+    Falls back to the whole-set ``verify`` verdict when the model does not
+    return per-change entries (so callers always get a usable answer).
+    Never raises.
+    """
+    groups = {"verified_local": [], "rejected_local": [], "uncertain": []}
+    decisions: Dict[str, str] = {}
+    if not original or not changes:
+        return {**groups, "decisions": decisions, "per_change": False}
+    call = raw_call if raw_call is not None else _provider_callable()
+    if call is None:
+        return {**groups, "decisions": decisions, "per_change": False}
+    try:
+        raw = call(_build_changes_prompt(original, changes))
+    except Exception:
+        raw = None
+    data = _extract_json(raw) if raw else None
+    verdicts = (data or {}).get("verdicts") if isinstance(data, dict) else None
+    if not isinstance(verdicts, list) or not verdicts:
+        # fall back to the whole-set verdict
+        whole = verify(original, original, changes, raw_call=raw_call)
+        decision = whole.get("decision", "uncertain")
+        for c in changes:
+            mark = "verified_local" if decision == "accept" else (
+                "rejected_local" if decision == "reject" else "uncertain")
+            groups[mark].append(dict(c))
+            decisions[f"{c.get('wrong')}->{c.get('correct')}"] = decision
+        return {**groups, "decisions": decisions, "per_change": False}
+
+    by_key = {}
+    for v in verdicts:
+        if not isinstance(v, dict):
+            continue
+        w = str(v.get("wrong") or "").strip()
+        c = str(v.get("correct") or "").strip()
+        if not w:
+            continue
+        d = str(v.get("decision") or "uncertain").lower()
+        d = d if d in _DECISIONS else "uncertain"
+        by_key[(w.lower(), c.lower())] = d
+    for c in changes:
+        w = str(c.get("wrong") or "").strip()
+        cc = str(c.get("correct") or "").strip()
+        d = by_key.get((w.lower(), cc.lower()), "uncertain")
+        decisions[f"{w}->{cc}"] = d
+        mark = "verified_local" if d == "accept" else (
+            "rejected_local" if d == "reject" else "uncertain")
+        groups[mark].append(dict(c))
+    return {**groups, "decisions": decisions, "per_change": True}
+
+
+__all__ = ["verify", "verify_changes", "build_verify_prompt"]
+
+
 def verify(original: str, corrected: str,
            changes: Optional[List[Dict]] = None,
            raw_call: Optional[Callable[[str], str]] = None) -> Dict:
@@ -81,6 +161,3 @@ def verify(original: str, corrected: str,
         "confidence": max(0.0, min(0.99, conf)),
         "reason": str(data.get("reason") or ""),
     }
-
-
-__all__ = ["verify", "build_verify_prompt"]

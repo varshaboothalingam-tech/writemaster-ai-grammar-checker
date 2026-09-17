@@ -7081,7 +7081,7 @@ class CorrectionValidator:
         if not a or not b:
             return 0.0
         import difflib
-        return difflib.SequenceMatcher(None, a, b).ratio()
+        return difflib.SequenceMatcher(None, a, b, autojunk=False).ratio()
 
     def _content_words(self, doc, wstart, wend):
         words = []
