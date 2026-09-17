@@ -5,6 +5,7 @@ __pycache__/
 stderr.txt
 .env
 .env.*
+!.env.example
 *.log
 .vscode/
 .idea/
@@ -12,3 +13,4 @@ node_modules/
 *.egg-info/
 dist/
 build/
+data/feedback/

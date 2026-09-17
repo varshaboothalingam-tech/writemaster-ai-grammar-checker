@@ -1,10 +1,16 @@
 import os
+import re
 import json
 from flask import Flask, render_template, request, jsonify
 from grammar_engine import GrammarChecker
 from ai_engine import AIEngine
 from writing_engine import WritingAnalyzer
 from scoring_engine import compute_scores
+
+# AI-first pipeline (Gemini neural-network brain + rule feeders)
+from pipeline.ai_core import check_ai_text
+from pipeline.feedback import record_feedback
+from pipeline.aggregator import relocate_candidates as _relocate_candidates
 
 # New pipeline (removed — unified pipeline replaces it)
 new_pipeline_available = False
@@ -61,17 +67,20 @@ def rules():
 
 @app.route('/api/check', methods=['POST'])
 def api_check():
-    """Spec §10: /api/check runs the COMPLETE pipeline and returns ONLY
-    approved errors (detection -> filtering -> dedup -> correction validation
-    -> Gemini final validation -> final results)."""
+    """AI-first: Gemini reads the COMPLETE text + context and produces the
+    final corrections (verified in a second pass). Falls back to the
+    deterministic v4 pipeline when Gemini is unavailable."""
     data = request.get_json() or {}
     text = data.get('text', '')
-    if not v4_pipeline_available:
-        return jsonify({'error': 'v4 pipeline not available', 'issues': []}), 503
+    use_ai = data.get('use_ai')
+    if use_ai is None:
+        use_ai = True
     try:
-        return _v4_check_response(text, use_ai=data.get('use_ai'))
-    except Exception as e:
-        return jsonify({'error': str(e), 'pipeline': 'v4', 'issues': [], 'meta': {}}), 500
+        return _ai_check_response(text, use_ai=use_ai)
+    except Exception:
+        if v4_pipeline_available:
+            return _v4_check_response(text, use_ai=False)
+        return jsonify({'error': 'check failed', 'issues': [], 'meta': {}}), 500
 
 
 @app.route('/api/health', methods=['GET'])
@@ -194,6 +203,139 @@ def _v4_frontend_issues(errors):
     return issues
 
 
+# ---------------------------------------------------------------------------
+# AI-first pipeline response shaping
+# ---------------------------------------------------------------------------
+
+def _ai_frontend_type(error_type):
+    """Map a granular AI error type to the frontend 'type' bucket."""
+    t = (error_type or '').lower()
+    if t == 'spelling':
+        return 'spelling'
+    if t == 'punctuation':
+        return 'punctuation'
+    if t in ('redundancy', 'style'):
+        return 'style'
+    if t in ('word_choice', 'context'):
+        return 'context'
+    return 'grammar'
+
+
+def _severity_from_conf(conf, error_type='grammar'):
+    if conf >= 0.79 or error_type == 'spelling':
+        return 'error'
+    if conf >= 0.6:
+        return 'warning'
+    return 'info'
+
+
+def _split_sentence_spans(text):
+    """Split text into (start, end, sentence) chunks on sentence terminators."""
+    out, start = [], 0
+    for m in re.finditer(r'[.!?]+[\"\'\u201d\u2019]?(?=\s+|$)', text):
+        end = m.end()
+        out.append((start, end, text[start:end]))
+        start = end
+    if start < len(text):
+        out.append((start, len(text), text[start:]))
+    return out
+
+
+def _ai_frontend_issues(text, errors):
+    sentence_spans = _split_sentence_spans(text)
+    issues = []
+    for err in errors:
+        start = err.get('start', 0)
+        sentence = next((s for s0, e0, s in sentence_spans if s0 <= start < e0), text)
+        item = dict(err)
+        item['word'] = err.get('wrong', '')
+        item['replacement'] = err.get('correct', '')
+        item['suggestions'] = [err.get('correct', '')] if err.get('correct') else []
+        item['corrected_text'] = err.get('correct', '')
+        item['position'] = start
+        item['start_position'] = start
+        item['end_position'] = err.get('end', 0)
+        item['original_text'] = err.get('wrong', '')
+        item['sentence'] = sentence
+        item['type'] = _ai_frontend_type(err.get('type', ''))
+        item['severity'] = _severity_from_conf(err.get('confidence', 0.8), err.get('type', ''))
+        item['rule'] = err.get('type', 'grammar')
+        item['can_add_to_dict'] = err.get('type') == 'spelling'
+        issues.append(item)
+    return issues
+
+
+def _relocate_v4_errors(text, errors):
+    """Guarantee v4 errors carry spans that match their 'original' text so the
+    frontend position-based fixer never corrupts a sentence."""
+    out = []
+    for e in errors:
+        wrong = e.get('original') or ''
+        s, en = e.get('start'), e.get('end')
+        if wrong and isinstance(s, int) and isinstance(en, int) and 0 <= s < en <= len(text):
+            if text[s:en].strip().lower() == wrong.lower():
+                out.append(e)
+                continue
+        located = _relocate_candidates(
+            [{'wrong': wrong, 'correct': e.get('replacement') or ' ', 'start': s, 'end': en}],
+            text)
+        if not located:
+            out.append(e)
+            continue
+        fixed = dict(e)
+        fixed['start'] = fixed['start_position'] = located[0]['start']
+        fixed['end'] = fixed['end_position'] = located[0]['end']
+        out.append(fixed)
+    return out
+
+
+def _ai_check_response(text, use_ai=True):
+    """Run the AI-first pipeline AND return the legacy-compatible 'issues'
+    list (unchanged v4 shape: rule_id/original/replacement/type) so the
+    existing frontend keeps working, plus the clean AI contract
+    (corrected_text, errors, grammar_status, processing_time_ms)."""
+    v4res = None
+    if v4_pipeline_available:
+        try:
+            v4res = check_v4(text, use_ai=False)
+        except Exception:
+            v4res = None
+
+    result = check_ai_text(text, use_ai=use_ai, v4_result=v4res)
+    readability = ReadabilityEngine().calculate(text) if text.strip() else {}
+    word_count = readability.get('words', 0)
+    sentence_count = readability.get('sentences', 0)
+
+    if v4res and v4res.get('errors'):
+        issues = _v4_frontend_issues(_relocate_v4_errors(text, v4res['errors']))
+        meta = v4res['meta']
+    else:
+        issues = _ai_frontend_issues(text, result['errors'])
+        meta = result['meta']
+
+    score_errors = [{
+        'category': (i.get('category') or i.get('type') or 'grammar').lower(),
+        'error_type': i.get('rule_id') or i.get('type') or 'grammar',
+        'severity': i.get('severity', 'warning').upper(),
+        'confidence': i.get('confidence', 0.8),
+    } for i in issues]
+
+    return jsonify({
+        'success': True,
+        'original_text': result['original_text'],
+        'corrected_text': result['corrected_text'],
+        'errors': result['errors'],
+        'issues': issues,
+        'readability': readability,
+        'scores': compute_scores(score_errors, readability, word_count, sentence_count),
+        'meta': meta,
+        'ai_meta': result['meta'],
+        'grammar_status': result['grammar_status'],
+        'processing_time_ms': result['processing_time_ms'],
+        'pipeline': 'ai',
+    })
+
+
 @app.route('/api/check-v2', methods=['POST'])
 def api_check_v2():
     """New pipeline: candidate detection → context analysis → FP filter → validation."""
@@ -288,18 +430,17 @@ def api_check_v3():
 
 @app.route('/api/check-v4', methods=['POST'])
 def api_check_v4():
-    """v4: evidence-merged detection + optional AI final validation.
-    Alias of /api/check — returns ONLY approved errors."""
+    """AI-first pipeline (kept name for frontend compatibility). Returns the
+    frontend shape {issues, readability, scores, meta, pipeline}."""
     data = request.get_json() or {}
     text = data.get('text', '')
 
-    if not v4_pipeline_available:
-        return jsonify({'error': 'v4 pipeline not available', 'issues': []}), 503
-
     try:
-        return _v4_check_response(text, use_ai=data.get('use_ai'))
+        return _ai_check_response(text, use_ai=data.get('use_ai'))
     except Exception as e:
-        return jsonify({'error': str(e), 'pipeline': 'v4', 'issues': [], 'meta': {}}), 500
+        if v4_pipeline_available:
+            return _v4_check_response(text, use_ai=False)
+        return jsonify({'error': str(e), 'pipeline': 'ai', 'issues': [], 'meta': {}}), 500
 
 
 def _to_frontend_issue(err):
@@ -350,6 +491,36 @@ def api_ignore_all():
         return jsonify({'success': False, 'message': 'No word provided.'})
     writing_analyzer.spelling.add_custom_word(word)
     return jsonify({'success': True, 'message': f'All instances of "{word}" will be ignored.'})
+
+
+@app.route('/api/feedback', methods=['POST'])
+def api_feedback():
+    """User accept/reject feedback → quality gate → data/feedback/feedback.jsonl.
+
+    Body:
+        {original, corrected, wrong, correct, error_type,
+         accepted: bool, source?, explanation?, reason?}
+    The record must contain at least: original, corrected, wrong, correct, error_type.
+    Refresh the page to see the clean data/feedback/ dir in a fresh checkout.
+    """
+    data = request.get_json() or {}
+    required = ['original', 'corrected', 'wrong', 'correct', 'error_type']
+    missing = [k for k in required if not data.get(k)]
+    if missing:
+        return jsonify({'success': False, 'message': f'Missing fields: {missing}'}), 400
+    result = record_feedback(
+        original_text=str(data.get('original', '')),
+        corrected_text=str(data.get('corrected', '')),
+        wrong=str(data.get('wrong', '')),
+        correct=str(data.get('correct', '')),
+        error_type=str(data.get('error_type', 'grammar')),
+        accepted=bool(data.get('accepted', True)),
+        source=str(data.get('source', 'ai')),
+        explanation=str(data.get('explanation', '')),
+        reason=str(data.get('reason', '')),
+    )
+    status = 200 if result['success'] else 422
+    return jsonify({'success': result['success'], 'message': result.get('rejected', 'recorded')}), status
 
 
 def _map_legacy_type(etype, rule):
@@ -431,53 +602,27 @@ def api_fix_all():
     if not text.strip():
         return jsonify({'corrected': '', 'issues_fixed': 0, 'changes': []})
 
-    if unified_pipeline_available:
-        try:
-            errors = unified_check(text)
-        except Exception:
-            errors = []
-    else:
-        result = writing_analyzer.analyze(text)
+    try:
+        result = check_ai_text(text, use_ai=True)
         errors = result['errors']
+        corrected = result['corrected_text']
+    except Exception:
+        errors = []
+        corrected = text
 
-    high_conf = [e for e in errors if e.get('confidence', 0) >= 0.70
-                 and e.get('replacement') and e['replacement'].strip()]
-    high_conf.sort(key=lambda e: -(e.get('start', e.get('start_position', 0))))
-
-    corrected = text
     changes = []
-    applied_ranges = []
-    for e in high_conf:
-        start = e.get('start', e.get('start_position', 0))
-        end = e.get('end', e.get('end_position', 0))
-        replacement = e['replacement']
-        original = e.get('original', e.get('original_text', ''))
-        overlap = False
-        for a_start, a_end in applied_ranges:
-            if start < a_end and end > a_start:
-                overlap = True
-                break
-            if abs(start - a_end) <= 1 or abs(end - a_start) <= 1:
-                if replacement.lower() in corrected[a_start:a_end].lower():
-                    overlap = True
-                    break
-        if overlap:
-            continue
-        if 0 <= start < end <= len(corrected):
-            segment = corrected[start:end]
-            if segment.lower() == original.lower():
-                corrected = corrected[:start] + replacement + corrected[end:]
-                changes.append({'original': original, 'corrected': replacement})
-                applied_ranges.append((start, start + len(replacement)))
+    for e in errors:
+        conf = e.get('confidence', 0)
+        wrong = e.get('wrong', '')
+        correct = e.get('correct', '')
+        if conf >= 0.79 and wrong and correct and wrong.lower() != correct.lower():
+            changes.append({'original': wrong, 'corrected': correct})
 
     issues_before = len(errors)
-    if unified_pipeline_available:
-        try:
-            issues_after = len(unified_check(corrected))
-        except Exception:
-            issues_after = 0
-    else:
-        issues_after = len(writing_analyzer.analyze(corrected)['errors'])
+    try:
+        issues_after = len(check_ai_text(corrected, use_ai=True)['errors'])
+    except Exception:
+        issues_after = 0
 
     return jsonify({
         'corrected': corrected,
