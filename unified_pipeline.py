@@ -763,9 +763,9 @@ class FastDetector:
                              "own", "way", "time", "place", "purpose", "paw", "paws",
                              "wings", "feathers", "tail", "fur", "bark", "leaves",
                              "roots", "branches", "trunk", "blossoms", "flowers"}
-            det_followers = {"the", "a", "an", "this", "that", "these", "those",
-                           "my", "your", "his", "her", "our", "their"}
-            if next_word in possessive_followers or next_word in det_followers:
+            # "it's" + a determiner is ALWAYS "it is a/..." — possessive "its"
+            # never precedes a determiner, so only flag possession nouns.
+            if next_word in possessive_followers:
                 candidates.append(ErrorCandidate(
                     start=m.start(), end=m.end(),
                     original=m.group(0), replacement=re.sub(r"\bit'?s\b", "its", m.group(0), count=1, flags=re.I),
