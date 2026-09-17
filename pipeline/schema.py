@@ -183,10 +183,17 @@ def to_legacy(err: Dict) -> Dict:
 
 def from_candidate(c: Dict, sentence_id: int = 0, index: int = 0) -> Dict:
     """Upgrade any detector/legacy candidate dict into the canonical object."""
-    original = str(c.get("original", c.get("wrong", ""))).strip()
-    correction = str(c.get("correction", c.get("correct", c.get("replacement", "")))).strip()
+    original = c.get("original", c.get("wrong", ""))
+    if not isinstance(original, str):
+        original = str(original)
+    correction = c.get("correction", c.get("correct", c.get("replacement", "")))
+    if not isinstance(correction, str):
+        correction = str(correction)
+    # NOTE: do NOT strip correction/original — spans may deliberately cover a
+    # trailing space (e.g. QUESTION_INVERSION replacement "When will she " is
+    # 14 chars matching span 0..14); stripping breaks span reconstruction.
     start = int(c.get("start", c.get("start_position", 0)))
-    end = int(c.get("end", c.get("end_position", start + len(original))))
+    end = int(c.get("end", c.get("end_position", start + len(original.strip()))))
     category = normalize_category(str(c.get("category", c.get("type", "grammar"))))
     sources = c.get("sources") or ([c.get("source", "rule")] if c.get("source") else ["rule"])
     evidence = c.get("evidence") or []

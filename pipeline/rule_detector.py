@@ -200,10 +200,19 @@ class RuleDetector:
     # ------------------------------------------------------------ repetition
     def _repeated_words(self, text: str) -> List[Dict]:
         out = []
+        # "had had" is the past-perfect of "have" ("They had had enough") and
+        # is legitimately ambiguous — never auto-flag it.
+        _ALLOWED_DOUBLES = {
+            "had had", "that that", "do do", "this this",
+            "so so", "much much", "many many",
+        }
         for m in re.finditer(r"\b(\w+)(\s+)\1\b", text, re.I):
             word = m.group(1)
             start = m.start()
             end = m.end()
+            punct = re.sub(r"[^a-z0-9\s]", "", f"{word} {word}").lower()
+            if punct in _ALLOWED_DOUBLES:
+                continue
             correct = word
             out.append(self._cand(text[start:end], correct, "redundancy", m, 0.97,
                                   "REPEATED_WORD",
@@ -289,17 +298,25 @@ class RuleDetector:
         for m in re.finditer(rf"\b(has|have|had|is|are|was|were|am|be|being)\s+({past})\b", text, re.I):
             aux, verb = m.group(1).lower(), m.group(2).lower()
             part = _PAST_PARTICIPLE[verb]
-            if aux in _HAVE_FORMS:
+            if aux in _HAVE_FORMS and part != verb:
                 out.append(self._cand(m.group(2), part, "verb_form", _span(m, 2), 0.95,
                                       "AUX_PAST_PARTICIPLE",
                                       f"After '{aux}', use the past participle '{part}'."))
         return out
 
     def _be_plus_past(self, text: str) -> List[Dict]:
-        """'They is went home' → 'They went home' (drop the be-verb)."""
+        """'They is went home' → 'They went home' (drop the be-verb).
+
+        A verb that is itself a valid past participle (identity participle, e.g.
+        "sold", "left") is a PASSIVE construction ("were sold") and must NOT be
+        rewritten."""
         out = []
         past = "|".join(_PAST_SIMPLE)
         for m in re.finditer(rf"\b(is|are|was|were|am)\s+({past})\b", text, re.I):
+            word = m.group(2).lower()
+            part = _PAST_PARTICIPLE.get(word)
+            if part is not None and part == word:
+                continue  # passive, not a learner error
             out.append(self._cand(m.group(0), m.group(2), "verb_form", _span(m, 0), 0.9,
                                   "BE_PLUS_PAST",
                                   f"Remove '{m.group(1)}'; the past tense '{m.group(2)}' stands alone."))
@@ -317,10 +334,16 @@ class RuleDetector:
     def _tense_past_marker(self, text: str) -> List[Dict]:
         out = []
         bases = "|".join(_IRREGULAR_PAST)
+        # A modal/auxiliary immediately before the base requires the base form
+        # ("could have arrived earlier" -> NOT "had arrived earlier").
+        _AUX = {"have", "has", "had", "will", "would", "shall", "should",
+                "can", "could", "may", "might", "must", "do", "does", "did", "to"}
         for marker in _PAST_MARKERS.finditer(text):
-            # search the 12 words before the marker
             window = text[max(0, marker.start() - 120): marker.start()]
             for m in re.finditer(rf"\b({bases})\b", window, re.I):
+                preceding = m.string[:m.start(1)].rstrip().rsplit(None, 1)
+                if preceding and preceding[-1].strip(".,;:!?").lower() in _AUX:
+                    continue
                 abs_start = max(0, marker.start() - 120) + m.start(1)
                 abs_end = abs_start + len(m.group(1))
                 out.append({

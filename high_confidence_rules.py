@@ -521,17 +521,27 @@ class HighConfidenceDetector:
                 0.82)
 
         # 33. embedded wh-question inversion ("please tell me where is the station")
-        for m in re.finditer(
-                r"\b(i wonder|do you know|can you tell|please tell me|please tell|"
-                r"tell me|she asked|he asked|i asked|he wondered|she wondered)\s+"
-                r"(what time|what|where|when|why|how|who)\s+"
-                r"(is|are|was|were|will|would|does|do|did)\s+([^,.!?;]+)",
-                text, re.I):
+        _EMBEDDED_WH_RE = re.compile(
+            r"\b(i wonder|do you know|can you tell|please tell me|please tell|"
+            r"tell me|she asked|he asked|i asked|he wondered|she wondered)\s+"
+            r"(what time|what|where|when|why|how|who)\s+"
+            r"(is|are|was|were|will|would|does|do|did)\s+([^,.!?;]+)",
+            re.IGNORECASE)
+        for m in _EMBEDDED_WH_RE.finditer(text):
             lead, wh, aux, rest = m.group(1), m.group(2), m.group(3), m.group(4).strip()
-            add(m, f"{lead} {wh} {rest} {aux}", ErrorCategory.SENTENCE_STRUCTURE,
+            words = rest.split()
+            # subject = determiner + noun (the/a/an/this/that/...), else first word
+            det = {"the", "a", "an", "this", "that", "these", "those",
+                   "my", "your", "his", "her", "our", "their", "its"}
+            if len(words) > 1 and words[0].lower() in det:
+                subject, tail = " ".join(words[:2]), " ".join(words[2:])
+            else:
+                subject, tail = words[0], " ".join(words[1:])
+            fixed = f"{lead} {wh} {subject} {aux}{(' ' + tail) if tail else ''}"
+            add(m, fixed, ErrorCategory.SENTENCE_STRUCTURE,
                 _P + "EMBEDDED_WH",
                 f'Do not invert subject and verb in an embedded question: '
-                f'"...{wh} {rest} {aux}...".', 0.85)
+                f'"...{wh} {subject} {aux}...".', 0.85)
 
         # 34. return back -> return
         for m in re.finditer(r"\breturn\s+back\b", text, re.I):
