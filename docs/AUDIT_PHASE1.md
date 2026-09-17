@@ -4,7 +4,7 @@
 > (keep / merge / rename / remove). See `ARCHITECTURE_REVIEW.md` and
 > `ARCHITECTURE_REPORT.txt` for earlier analysis this document supersedes.
 >
-> **Status: 5a EXECUTED; Phases 2–8 DONE; Phases 12–14 DONE; Phase 16 pending**
+> **Status: 5a EXECUTED; Phases 2–8 DONE; Phases 12–14 DONE; Phase 16 DONE**
 > (see below). Dead cluster removed (git history preserves all 96 archive
 > scripts + dead modules). 179 unit tests + serverless import verified green.
 > `results/` + stale benchmark output JSONs removed; `results/` now
@@ -26,13 +26,19 @@
 > be+participle, span-preserving from_candidate) committed `0ef6549`;
 > `docs/MODEL_EVALUATION.md` updated with honest method + numbers.
 >
-> **Phase 16 — ONE OPEN DECISION:** the v1–v4 legacy stack (`app.py` +
-> grammar/writing/scoring engines + 17 checker/engine modules) is live ONLY
-> through `tests/unit/test_api_v4.py` importing `app`; nothing in the Vercel
-> surface or benchmark harness imports it. RECOMMENDED: migrate `test_api_v4`
-> to the `api/index.py` contract and then `git rm` `app.py` + the 21-module
-> legacy closure (history preserves everything). NOT executed yet — awaiting
-> confirmation because `app.py` is the manual local-Flask entry.
+> **Phase 16 EXECUTED** (commit `5b889d5`): migrated `test_api_v4.py` onto the
+> production `api/index.py` contract and `git rm`'d `app.py` + the 21-module
+> legacy closure (grammar/writing/scoring/suggestion agents, all 8
+> `*_checker.py`, `pos_tagger`, `preprocessor`, `correction_engine`,
+> `intelligent_engine`, `nlp_engine`, `error_manager`, `grammar_analyzer`,
+> `contextual_engine`). Also removed the two HTTP harnesses that pointed at the
+> deleted app server (`run_tests.py`, `run_benchmark.py`). 180 tests green;
+> serverless import green. Kept (production-live): `pipeline/`, `api/index.py`,
+> `ai_validator.py`, `evidence.py`, `high_confidence_rules.py`,
+> `new_pipeline.py`, `unified_pipeline.py`, `text_preprocessor.py`.
+>
+> **Status: COMPLETE** — single canonical master pipeline; gold benchmark
+> (offline F1 99.68%); 180 unit tests green; repo reduced to one engine.
 
 Audit method: AST import-graph reachability from the four real entry points,
 then a targeted grep cross-check on every "dead" candidate (no dynamic
