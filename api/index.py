@@ -242,22 +242,30 @@ function render(j){
     html += '<div class="card"><h3><span class="dot"></span>Corrected text</h3>' +
       '<div class="corrected diff">'+esc(j.corrected_text)+'</div></div>';
   }
-  if(errors.length){
-    let items = '';
-    for(const e of errors){
-      items += '<li>' +
-        '<span class="iw">'+esc(e.wrong)+'</span>' +
-        '<span class="arrow">&rarr;</span>' +
-        '<span class="ic">'+esc(e.correct)+'</span>' +
-        '<span class="it"><span class="chip">'+esc(e.type||'grammar')+'</span></span>' +
-        '<span class="why">'+esc(e.message||e.explanation||'')+'</span></li>';
+if(errors.length){
+      let items = '';
+      for(const e of errors){
+        const tag = e.consensus ? esc(e.consensus.toLowerCase()) : '';
+        items += '<li>' +
+          '<span class="iw">'+esc(e.wrong)+'</span>' +
+          '<span class="arrow">&rarr;</span>' +
+          '<span class="ic">'+esc(e.correct)+'</span>' +
+          '<span class="it"><span class="chip">'+esc(e.type||'grammar')+
+            (tag ? ' &middot; '+tag : '')+'</span></span>' +
+          '<span class="why">'+esc(e.message||e.explanation||'')+'</span></li>';
+      }
+      html += '<div class="card"><h3><span class="dot"></span>Issues</h3><ul class="issues">'+items+'</ul></div>';
     }
-    html += '<div class="card"><h3><span class="dot"></span>Issues</h3><ul class="issues">'+items+'</ul></div>';
-  }
-  html += '<div class="card"><div class="meta">' +
-    '<span>brain: <b>'+(j.ai_used?'Google Gemini':'local rules')+'</b></span>' +
-    '<span>status: <b>'+esc(j.grammar_status||'')+'</b></span>' +
-    '<span>took: <b>'+j.processing_time_ms+' ms</b></span></div></div>';
+    const consensus = j.consensus||{}, metaChips = [];
+    for(const k of ['agreed','ai_only','local_only']){
+      if((consensus[k]||0) > 0) metaChips.push(k.replace('_','-')+': <b>'+consensus[k]+'</b>');
+    }
+    html += '<div class="card"><div class="meta">' +
+      '<span>brain: <b>'+(j.ai_used?'Google Gemini':'local rules')+'</b></span>' +
+      '<span>status: <b>'+esc(j.grammar_status||'')+'</b></span>' +
+      '<span>took: <b>'+j.processing_time_ms+' ms</b></span>' +
+      (metaChips.length ? '<span>' + metaChips.join(' &middot; ') + '</span>' : '') +
+      '</div></div>';
   out.innerHTML = html;
 }
 </script>
@@ -283,6 +291,8 @@ def api_check():
     try:
         result = check_ai_text(text, use_ai=payload.get("use_ai", True)
                                if ai_key_configured() else False)
+        meta = result.get("meta", {})
+        verification = meta.get("verification", {}) or {}
         return Response(
             json.dumps({
                 "success": True,
@@ -290,8 +300,12 @@ def api_check():
                 "corrected_text": result["corrected_text"],
                 "errors": result["errors"],
                 "grammar_status": result["grammar_status"],
-                "ai_used": result["meta"]["ai_used"],
-                "pipeline": result["meta"]["pipeline"],
+                "ai_used": meta.get("ai_used", False),
+                "pipeline": meta.get("pipeline", "master"),
+                "schema": result.get("schema", "v2_error_object"),
+                "quality": result.get("quality", {}),
+                "consensus": result.get("consensus", {}),
+                "verification": verification.get("decision"),
                 "processing_time_ms": result["processing_time_ms"],
             }, ensure_ascii=False),
             status=200, mimetype="application/json")

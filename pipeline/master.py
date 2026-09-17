@@ -188,7 +188,7 @@ def check_master(text: str,
     errors_map = {}   # key: (start,end) -> error
     error_list: List[Dict] = []
     ai_used = False
-    verification = {"decision": "uncertain", "confidence": 0.5, "reason": "skipped"}
+    verification = {"decision": "offline", "confidence": 1.0, "reason": "AI unavailable"}
     offline = True
 
     ai_result = None

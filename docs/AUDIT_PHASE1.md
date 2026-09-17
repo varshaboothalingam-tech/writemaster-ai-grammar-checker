@@ -4,12 +4,19 @@
 > (keep / merge / rename / remove). See `ARCHITECTURE_REVIEW.md` and
 > `ARCHITECTURE_REPORT.txt` for earlier analysis this document supersedes.
 >
-> **Status: 5a EXECUTED** — dead cluster removed (git history preserves all 96
-> archive scripts + dead modules). 169 unit tests + serverless import verified
-> green after removal. `results/` + stale benchmark output JSONs removed;
-> `benchmark/{clean,error}_cases.json`, `test_cases.json`,
-> `grammar_error_dataset_1000.csv`, `data/jfleg_test.json` KEPT as input
-> datasets (Phases 12–14).
+> **Status: 5a EXECUTED; Phases 2–8 in progress** — dead cluster removed (git
+> history preserves all 96 archive scripts + dead modules). 169 unit tests +
+> serverless import verified green after removal. `results/` + stale benchmark
+> output JSONs removed; `benchmark/{clean,error}_cases.json`,
+> `test_cases.json`, `grammar_error_dataset_1000.csv`, `data/jfleg_test.json`
+> KEPT as input datasets (Phases 12–14).
+>
+> Master pipeline built: `pipeline/master.py` (check_master, single entry;
+> `ai_core.check_ai_text` now delegates to it), `pipeline/schema.py` (canonical
+> v2 error object + taxonomy), consensus engine AGREED/AI_ONLY/LOCAL_ONLY with
+> AI-authoritative default and opt-in `report_local_only` discovery mode;
+> character-similarity meaning guard (handles word splits). 179 unit tests
+> green, serverless import green. Commit `36140e7`.
 
 Audit method: AST import-graph reachability from the four real entry points,
 then a targeted grep cross-check on every "dead" candidate (no dynamic
@@ -188,12 +195,12 @@ tests/unit/   tests/grammar_accuracy/*.py + test_cases.json   benchmark/generate
    before and after to prove no import broke.
 2. **`pipeline_v4.py` rename** (`new_pipeline.py`), update `app.py`, `test_api_v4.py`,
    `tests/grammar_accuracy/run_benchmark_v4.py`, `docs/*`.
-3. Build the **single master pipeline** (`pipeline/core.py`, ~29-step flow) with
+3. Build the **single master pipeline** (`pipeline/master.py`, 15-step flow) with
    the standard error object; keep `/api/check` response shape backwards
-   compatible (Phases 2–4).
+   compatible (**DONE** — Phases 2–4).
 4. Add **consensus engine** (rule + AI + optional spaCy-v4 evidence) and
    **offline local detectors as evidence providers**, not separate endpoints
-   (Phases 5–8).
+   (**DONE** — Phases 5–8; `report_local_only` discovery mode backend-complete).
 5. Build **datasets / gold test set**, then measure precision / recall / F1
    (Phases 12–14).
 6. Remove verified `test_*.py`+dead modules at the **end**, after gold tests
