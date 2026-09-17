@@ -17,3 +17,6 @@ data/feedback/
 
 .vercel
 .env*
+
+# regenerable eval outputs (inputs stay tracked under benchmark/, tests/, data/)
+results/
