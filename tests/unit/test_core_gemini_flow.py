@@ -203,18 +203,18 @@ class TestRepeatedWords:
 class TestStatistics:
     def test_statistics_block_present_and_consistent(self):
         analysis = {
-            "original_text": "She go to school everyday.",
-            "corrected_text": "She goes to school every day.",
+            "original_text": "She go to school. I very like music.",
+            "corrected_text": "She goes to school. I really like music.",
             "errors": [
                 {"wrong": "go", "correct": "goes", "type": "subject_verb_agreement",
                  "explanation": "SVA", "confidence": 0.97},
-                {"wrong": "everyday", "correct": "every day", "type": "spelling",
-                 "explanation": "typo", "confidence": 0.9},
+                {"wrong": "very", "correct": "really", "type": "word_choice",
+                 "explanation": "use 'really' before a verb", "confidence": 0.9},
             ],
             "grammar_status": "errors_found",
             "meaning_preserved": True,
         }
-        res = check_master("She go to school everyday.", use_ai=True,
+        res = check_master("She go to school. I very like music.", use_ai=True,
                            raw_call=_fake_gemini(analysis))
         s = res["statistics"]
         assert s["final_errors"] == len(res["errors"]) == 2
@@ -225,7 +225,7 @@ class TestStatistics:
         assert s["passes"] == 1
         g = res["meta"]["groups"]
         assert any(i["wrong"] == "go" for i in g["verified_local"])
-        assert any(i["wrong"] == "everyday" for i in g["gemini_only"])
+        assert any(i["wrong"] == "very" for i in g["gemini_only"])
 
 
 class TestSecondPass:
@@ -318,10 +318,11 @@ class TestVerifyChangesGroups:
 class TestMissedErrorsCorpus:
     def _ai_only_analysis(self):
         return {
-            "original_text": "She go to school everyday.",
-            "corrected_text": "She goes to school every day.",
-            "errors": [{"wrong": "everyday", "correct": "every day",
-                        "type": "spelling", "explanation": "typo", "confidence": 0.9}],
+            "original_text": "She go to school. I very like music.",
+            "corrected_text": "She goes to school. I really like music.",
+            "errors": [{"wrong": "very", "correct": "really",
+                        "type": "word_choice",
+                        "explanation": "use 'really' before a verb", "confidence": 0.9}],
             "grammar_status": "errors_found",
             "meaning_preserved": True,
         }
@@ -330,22 +331,22 @@ class TestMissedErrorsCorpus:
         path = tmp_path / "missed_errors.jsonl"
         monkeypatch.setenv("MISSED_ERRORS_PATH", str(path))
         monkeypatch.setenv("COLLECT_MISSED_ERRORS", "1")
-        res = check_master("She go to school everyday.", use_ai=True,
+        res = check_master("She go to school. I very like music.", use_ai=True,
                            raw_call=_fake_gemini(self._ai_only_analysis()))
         assert res["statistics"]["missed_logged"] == 1
         lines = [json.loads(l) for l in path.read_text(encoding="utf-8").splitlines()]
         assert len(lines) == 1
         rec = lines[0]
-        assert rec["wrong"] == "everyday"
-        assert rec["correct"] == "every day"
-        assert rec["category"] == "spelling"
-        assert rec["original_text"] == "She go to school everyday."
+        assert rec["wrong"] == "very"
+        assert rec["correct"] == "really"
+        assert rec["category"] == "semantic"
+        assert rec["original_text"] == "She go to school. I very like music."
 
     def test_logging_disabled_by_default(self, tmp_path, monkeypatch):
         path = tmp_path / "missed_errors.jsonl"
         monkeypatch.setenv("MISSED_ERRORS_PATH", str(path))
         monkeypatch.setenv("COLLECT_MISSED_ERRORS", "0")
-        check_master("She go to school everyday.", use_ai=True,
+        check_master("She go to school. I very like music.", use_ai=True,
                      raw_call=_fake_gemini(self._ai_only_analysis()))
         assert not path.exists()
 

@@ -77,31 +77,31 @@ class TestSchema:
 class TestDiscoveryMode:
     def test_agreed_and_ai_only_in_ai_mode(self):
         analysis = {
-            "original_text": "She go to school everyday.",
-            "corrected_text": "She goes to school every day.",
+            "original_text": "She go to school. I very like music.",
+            "corrected_text": "She goes to school. I really like music.",
             "errors": [
                 {"wrong": "go", "correct": "goes", "type": "subject_verb_agreement",
                  "explanation": "SVA", "confidence": 0.97},
-                {"wrong": "everyday", "correct": "every day", "type": "spelling",
-                 "explanation": "typo", "confidence": 0.9},
+                {"wrong": "very", "correct": "really", "type": "word_choice",
+                 "explanation": "use 'really' before a verb", "confidence": 0.9},
             ],
             "grammar_status": "errors_found",
             "meaning_preserved": True,
         }
         raw = _fake_gemini(analysis)
-        res = check_master("She go to school everyday.", use_ai=True, raw_call=raw,
-                           report_local_only=True)
+        res = check_master("She go to school. I very like music.", use_ai=True,
+                           raw_call=raw, report_local_only=True)
         tags = {e["consensus"] for e in res["errors"]}
         assert "AGREED" in tags   # go -> goes is both AI and rule
-        assert "AI_ONLY" in tags  # everyday -> every day is AI-only
-        assert res["corrected_text"] == "She goes to school every day."
+        assert "AI_ONLY" in tags  # very -> really is AI-only (no local rule)
+        assert res["corrected_text"] == "She goes to school. I really like music."
         assert res["consensus"]["agreed"] >= 1
         assert res["consensus"]["ai_only"] >= 1
 
     def test_ai_authoritative_by_default_no_local_only(self):
         analysis = {
-            "original_text": "She go to school everyday.",
-            "corrected_text": "She goes to school every day.",
+            "original_text": "She go to school.",
+            "corrected_text": "She goes to school.",
             "errors": [
                 {"wrong": "go", "correct": "goes", "type": "subject_verb_agreement",
                  "explanation": "SVA", "confidence": 0.97},
@@ -110,7 +110,7 @@ class TestDiscoveryMode:
             "meaning_preserved": True,
         }
         raw = _fake_gemini(analysis)
-        res = check_master("She go to school everyday.", use_ai=True, raw_call=raw)
+        res = check_master("She go to school.", use_ai=True, raw_call=raw)
         assert all(e["consensus"] != "LOCAL_ONLY" for e in res["errors"])
         assert res["errors"][0]["consensus"] == "AGREED"
 

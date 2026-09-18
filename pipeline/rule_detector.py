@@ -138,6 +138,26 @@ _PASTABLE_VERBS = set(_PLURAL_FORM.values()) | set(_IRREGULAR_PAST) | {
     "open", "close", "bring", "become", "walk", "study", "live", "play",
     "need", "want", "call", "sleep", "work", "read", "write", "speak",
     "arrive", "ask", "visit", "enjoy", "clean", "start", "teach", "learn",
+    # silent-e verbs (past tense adds only -d: like->liked, love->loved)
+    "like", "love", "move", "hope", "notice", "change", "provide",
+    "receive", "believe", "invite", "describe", "improve", "include",
+    "produce", "reduce", "refuse", "save", "smile", "dance", "face",
+    "place", "race", "share", "prepare", "compare", "create", "complete",
+    "increase", "decrease", "exercise", "balance", "praise", "achieve",
+    "agree", "argue", "ensure", "imagine", "introduce", "manage",
+    "mention", "observe", "participate", "announce", "convince",
+    "examine", "explore", "practice", "apologize", "realize", "recognize",
+    "arrange", "escape", "influence", "communicate", "celebrate",
+    "educate", "relate", "separate", "translate", "emphasize", "tie",
+    "die", "lie", "hate", "care", "share",
+    # single-syllable verbs with doubled final consonants (stop->stopped)
+    "stop", "plan", "skip", "drop", "shop", "beg", "grab", "rub", "hug",
+    "jog", "pat", "nod", "tip", "wrap", "swap", "trap", "clap", "dip",
+    "step", "pop", "rob", "spot", "slip", "log", "plot", "trim", "slap",
+    "snap", "pet", "chat", "trip", "mop", "brag", "bar", "bat", "cop",
+    "crop", "drum", "drag", "flag", "flip", "grip", "grin", "hop", "jam",
+    "kiss", "map", "nag", "pin", "plug", "rag", "scan", "ship", "slam",
+    "smug", "stab", "stir", "strip", "tan", "tap", "tag", "twig", "zip",
 }
 
 # A modal/auxiliary before "and" keeps the coordinated verb in the base form
@@ -246,6 +266,28 @@ _HABITUAL_RE = re.compile(
     r"\b(every\s+day|everyday|every\s+\w+|always|usually|often|sometimes|never|"
     r"generally|normally|now|today|tomorrow|currently|rarely|frequent(ly)?)\b", re.I)
 
+# Invariant verbs whose past tense is spelled identically to the present
+# ("he read", "he put"). Never fabricate a visible past form for them.
+_INVARIANT_VERBS = {
+    "read", "put", "cut", "set", "hit", "cost", "hurt", "let",
+    "spread", "bet", "upset", "cast", "split",
+}
+
+# Known plural noun forms (dictionary plurals + high-frequency vocabulary)
+# used by the plural/agreement rules to avoid false positives on singular
+# words that merely end in '-s' ("news", "bus", "status", "glass").
+_KNOWN_PLURALS = set(_PLURAL_NOUNS.values())
+_COMMON_PLURALS = _KNOWN_PLURALS | {
+    "computers", "teachers", "parents", "animals", "things", "words",
+    "reasons", "rooms", "tables", "chairs", "doors", "windows", "bags",
+    "shoes", "kids", "rules", "letters", "phones", "pictures", "photos",
+    "games", "movies", "songs", "messages", "emails", "calls", "jobs",
+    "numbers", "colors", "colours", "names", "places", "countries",
+    "languages", "stories", "bottles", "cups", "plates", "keys",
+    "flowers", "trees", "birds", "fishes", "efforts", "goals", "rights",
+    "achievements", "skills", "habits", "hours", "books",
+}
+
 
 def _load_json(name: str) -> Dict:
     try:
@@ -311,6 +353,26 @@ def _is_verb_form(word: str) -> bool:
     return False
 
 
+def _regular_base_from_past(word: str) -> str:
+    """Recover the base form of a REGULAR-looking past-tense verb, used when the
+    base form is required in context ("didn't liked" -> "like", "couldn't
+    stopped" -> "stop"). Handles silent-e verbs ('liked'->'like'),
+    y->i ('studied'->'study') and doubled final consonants ('stopped'->'stop').
+    Never strips a doubled consonant blindly, so 'rolled' stays 'roll'."""
+    low = word.lower()
+    if low.endswith("ed"):
+        if low[:-1].endswith("e") and _is_verb_form(low[:-1]):
+            return low[:-1]
+        if low.endswith("ied"):
+            return low[:-3] + "y"
+        base = low[:-2]
+        if (len(base) >= 2 and base[-1] == base[-2]
+                and _is_verb_form(base[:-1])):
+            base = base[:-1]
+        return base if len(base) >= 2 else low
+    return low
+
+
 class RuleDetector:
     """Deterministic, high-precision candidate generator."""
 
@@ -363,6 +425,8 @@ class RuleDetector:
             self._day_month_cap,
             self._irregular_past_ed,
             self._common_typos,
+            self._word_confusions,
+            self._person_noun_be,
             self._missing_apostrophe,
             self._who_were,
             self._singular_noun_were,
@@ -567,13 +631,7 @@ class RuleDetector:
             word = m.group(2)
             if word.lower() in _IRREGULAR_PAST_ED:
                 continue
-            base = word[:-2]
-            if base.endswith("i"):
-                base = base[:-1] + "y"
-            elif len(base) >= 2 and base[-1] == base[-2]:
-                base = base[:-1]
-            if len(base) < 2 or base[-1] == "e":
-                base = word[:-1]
+            base = _regular_base_from_past(word)
             if word.lower() == base.lower():
                 continue
             out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
@@ -601,13 +659,7 @@ class RuleDetector:
             low = word.lower()
             if low in _IRREGULAR_PAST_ED or low in _PAST_SIMPLE:
                 continue
-            base = word[:-2]
-            if base.endswith("i"):
-                base = base[:-1] + "y"
-            elif len(base) >= 2 and base[-1] == base[-2]:
-                base = base[:-1]
-            if len(base) < 2 or base[-1] == "e":
-                base = word[:-1]
+            base = _regular_base_from_past(word)
             if low == base.lower():
                 continue
             out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
@@ -792,7 +844,9 @@ class RuleDetector:
                     if (_HABITUAL_RE.search(sent[max(0, m.start(2) - 40):m.end(2) + 24])
                             or verb in _IRREGULAR_PAST
                             or verb.endswith("ing") or verb in _AUX
-                            or verb in _ALREADY_ROUGH or verb.endswith("ed")):
+                            or verb in _ALREADY_ROUGH or verb.endswith("ed")
+                            or verb.endswith("ly") or verb in _INVARIANT_VERBS
+                            or not _is_verb_form(verb)):
                         continue
                     past = _past_of_verb(verb)
                     if past == verb:
@@ -1085,6 +1139,40 @@ class RuleDetector:
                                   f"Common misspelling; use '{corr}'."))
         return out
 
+    def _word_confusions(self, text: str) -> List[Dict]:
+        """High-precision, context-aware word confusions without a POS tagger.
+
+        'everyday' used adverbially ('I go there everyday') is almost always a
+        learner error for 'every day' — but only flag it when it is NOT the
+        attributive adjective ('everyday life', 'everyday routine')."""
+        out = []
+        _NOUN_Y = {"life", "routine", "use", "basis", "chores", "tasks", "work",
+                   "wear", "items", "things", "clothes", "people", "activities",
+                   "problems", "objects", "events", "occurrence", "occurrences",
+                   "experience", "experiences", "decision", "decisions",
+                   "activity", "habits", "thing", "object", "task", "problem",
+                   "event", "item", "clothing", "chores"}
+        for m in re.finditer(r"\beveryday\b(?![-\w])", text, re.I):
+            after = text[m.end():m.end() + 30].lstrip()
+            nxt = re.match(r"[a-z]+", after, re.I)
+            if nxt and nxt.group(0).lower() in _NOUN_Y:
+                continue  # "an everyday life" — attributive adjective, correct
+            out.append(self._cand(m.group(0), "every day", "word_choice", m, 0.85,
+                                  "EVERYDAY_DAY",
+                                  "The adverbial phrase for 'each day' is 'every day'."))
+        return out
+
+    def _person_noun_be(self, text: str) -> List[Dict]:
+        """3rd-person singular 'person' noun + wrong be-form: 'My brother are...'
+        -> 'My brother is...'; 'were' -> 'was'."""
+        out = []
+        for m in re.finditer(rf"\b({_PERSON_NOUNS})\s+(are|were)\b", text, re.I):
+            repl = "was" if m.group(2).lower() == "were" else "is"
+            out.append(self._cand(m.group(2), repl, "subject_verb", _span(m, 2), 0.82,
+                                  "PERSON_NOUN_BE",
+                                  f"'{m.group(1)}' is singular, so use '{repl}'."))
+        return out
+
     def _missing_apostrophe(self, text: str) -> List[Dict]:
         out = []
         _APOS = {"dont": "don't", "doesnt": "doesn't", "didnt": "didn't",
@@ -1111,6 +1199,12 @@ class RuleDetector:
     def _who_were(self, text: str) -> List[Dict]:
         out = []
         for m in re.finditer(r"\b(a|an|the|one)\s+(\w+)\s+who\s+(were)\b", text, re.I):
+            noun = m.group(2).lower()
+            # "the children who were" — a plural head keeps 'were'.
+            if (noun in _COMMON_PLURALS
+                    or (noun.endswith("s")
+                        and not noun.endswith("ss") and not noun.endswith("is"))):
+                continue
             out.append(self._cand(m.group(3), "was", "subject_verb", _span(m, 3), 0.75,
                                   "WHO_WAS",
                                   f"'{m.group(2)}' is singular, so use 'was'."))
@@ -1127,18 +1221,20 @@ class RuleDetector:
         # determiner/possessive + plural-noun + "was" -> "were"
         for m in re.finditer(
                 r"\b((?:my|our|your|their|these|those)\s+\w+s)\s+(was)\b", text, re.I):
+            noun = m.group(1).rsplit(" ", 1)[-1].lower()
+            if noun not in _COMMON_PLURALS:
+                continue
             out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.83,
                                   "PLURAL_NOUN_WAS",
                                   f"'{m.group(1)}' is plural, so use 'were'."))
-        # "the monkeys was" / "the other birds was" (skip words that just end in -s)
-        _SINGULAR_S = {"news", "maths", "math", "physics", "gymnastics", "economics",
-                       "politics", "series", "means", "innings", "species",
-                       "headquarters", "crossroads", "statistics", "ethics", "tactics",
-                       "measles", "diabetes", "logistics"}
+        # "the monkeys was" / "the other birds was" — only when the noun is a
+        # known plural form; singular words merely ending in '-s' stay untouched.
         for m in re.finditer(
                 r"\b(the)\s+(?:\w+\s+)?(\w+s)\s+(was)\b", text, re.I):
             noun = m.group(2).lower()
-            if noun in _SINGULAR_S or noun.endswith("ss") or noun.endswith("is"):
+            if (noun not in _COMMON_PLURALS
+                    and not (noun.endswith(("ies", "ves"))
+                             and noun not in ("series", "species"))):
                 continue
             out.append(self._cand(m.group(3), "were", "subject_verb", _span(m, 3), 0.83,
                                   "PLURAL_NOUN_WAS",
@@ -1148,7 +1244,9 @@ class RuleDetector:
                 r"\b((?:many|several|both|few|various|numerous|all|some|two|three|"
                 r"four|five|six|seven|eight|nine|ten|\d+)\s+\w+s)\s+(was)\b", text, re.I):
             noun = m.group(1).rsplit(" ", 1)[-1].lower()
-            if noun in _SINGULAR_S or noun.endswith("ss") or noun.endswith("is"):
+            if (noun not in _COMMON_PLURALS
+                    and not (noun.endswith(("ies", "ves"))
+                             and noun not in ("series", "species"))):
                 continue
             out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.85,
                                   "PLURAL_NOUN_WAS",
@@ -1182,10 +1280,16 @@ class RuleDetector:
     # -------------------------------------------------------------- pronouns
     def _reflexive_subject(self, text: str) -> List[Dict]:
         out = []
-        m = re.search(r"\b(myself|yourself|himself|herself|ourselves|themselves)\b", text, re.I)
-        if m:
-            out.append(self._cand(m.group(0), "", "pronoun", m, 0.5, "REFLEXIVE_SUBJECT",
-                                  f"'{m.group(0)}' is usually not a subject pronoun."))
+        # A reflexive is never a subject pronoun; flag it only when it sits in
+        # subject position (sentence start or right after a coordinating
+        # conjunction). Object/emphatic reflexives ("I did it myself") stay.
+        for m in re.finditer(
+                r"(?:^|[.!?;]\s+|\band\s+|\bor\s+|\bbut\s+|\bso\s+)"
+                r"(myself|yourself|himself|herself|ourselves|themselves)\b",
+                text, re.I):
+            out.append(self._cand(m.group(1), "", "pronoun", _span(m, 1), 0.6,
+                                  "REFLEXIVE_SUBJECT",
+                                  f"'{m.group(1)}' is usually not a subject pronoun."))
         return out
 
     # -------------------------------------------------------- capitalization
