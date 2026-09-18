@@ -30,7 +30,7 @@ from .rule_detector import detect_rules as _detect_rules  # re-export safety
 def check_ai_text(text: str,
                   use_ai: bool = True,
                   raw_call: Optional[Callable[[str], str]] = None,
-                  include_v4_hints: bool = True,
+                  include_v4_hints: bool = False,
                   v4_result: Optional[Dict] = None,
                   max_passes: int = 1) -> Dict:
     """Full master-pipeline check (public API — shape unchanged)."""

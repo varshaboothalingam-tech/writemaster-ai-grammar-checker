@@ -59,6 +59,7 @@ _IRREGULAR_PAST = {
     "lose": "lost", "win": "won", "sit": "sat", "stand": "stood",
     "begin": "began", "drink": "drank", "swim": "swam", "fly": "flew",
     "ride": "rode", "wear": "wore", "draw": "drew", "throw": "threw",
+    "spend": "spent",
 }
 _PAST_SIMPLE = set(_IRREGULAR_PAST.values())
 
@@ -107,6 +108,144 @@ _PLURAL_NOUNS = {"book": "books", "car": "cars", "cat": "cats", "dog": "dogs",
                  "problem": "problems", "question": "questions", "answer": "answers",
                  "year": "years", "month": "months", "week": "weeks", "minute": "minutes"}
 
+_DAY_MONTH_NAMES = {
+    "monday", "tuesday", "wednesday", "thursday", "friday", "saturday", "sunday",
+    "january", "february", "march", "april", "may", "june", "july", "august",
+    "september", "october", "november", "december",
+}
+
+# Irregular bases whose PAST form is also a common noun ("take a break",
+# "have a drink") — never convert them right after a determiner.
+_NOUNY_IRREGULAR = {"break", "drink", "sleep", "leave", "ride", "catch",
+                    "feel", "run", "find", "swim", "draw"}
+_DETERMINERS = {"a", "an", "the", "my", "your", "our", "his", "her", "its",
+                "their", "this", "that", "these", "those", "some", "any",
+                "every", "each", "no", "one", "two"}
+
+# 3rd-person-singular person nouns — a base verb right after one is a learner
+# tense error in a past narrative ("My friend explain ...").
+_PERSON_NOUNS = ("friend|classmate|student|teacher|professor|librarian|brother|"
+                 "sister|mother|father|parent|uncle|aunt|grandmother|grandfather|"
+                 "doctor|nurse|driver|waiter|chef|boy|girl|man|woman|kid|child|"
+                 "neighbor|colleague|manager|boss|coach|writer|artist|player|"
+                 "member|guest|pal|cook|worker")
+
+# Verb bases the coordination/person-noun rules may tense-shift.
+_PASTABLE_VERBS = set(_PLURAL_FORM.values()) | set(_IRREGULAR_PAST) | {
+    "ask", "finish", "talk", "start", "search", "wait", "help", "listen",
+    "watch", "use", "look", "try", "explain", "decide", "continue", "return",
+    "remember", "forget", "promise", "leave", "stay", "arrive", "enter",
+    "open", "close", "bring", "become", "walk", "study", "live", "play",
+    "need", "want", "call", "sleep", "work", "read", "write", "speak",
+    "arrive", "ask", "visit", "enjoy", "clean", "start", "teach", "learn",
+}
+
+# A modal/auxiliary before "and" keeps the coordinated verb in the base form
+# ("we will meet again tomorrow and finish") — shared by the tense rules.
+_MODAL_IN_BETWEEN_RE = re.compile(
+    r"\b(will|would|shall|should|can|could|may|might|must|"
+    r"do|does|did|have|has|had|to)\b", re.I)
+
+# Wrongly "-ed"-inflected irregular verbs ("flyed", "forgetted" ...).
+_IRREGULAR_PAST_ED = {
+    "flyed": "flew", "forgetted": "forgot", "runned": "ran", "catched": "caught",
+    "buyed": "bought", "breaked": "broke", "taked": "took", "goed": "went",
+    "sitted": "sat", "swimmed": "swam", "swimed": "swam", "singed": "sang",
+    "drinked": "drank", "throwed": "threw", "drawed": "drew", "writed": "wrote",
+    "speaked": "spoke", "telled": "told", "selled": "sold", "teached": "taught",
+    "winned": "won", "standed": "stood", "sleeped": "slept", "feeled": "felt",
+    "leaved": "left", "meeted": "met", "keeped": "kept", "payed": "paid",
+    "sayed": "said", "finded": "found", "getted": "got", "hitted": "hit",
+    "hurted": "hurt", "cutted": "cut", "putted": "put", "eated": "ate",
+    "comed": "came", "maked": "made", "haved": "had", "begined": "began",
+    "chosed": "chose", "losed": "lost", "stoled": "stole", "broked": "broke",
+    "seed": "saw", "feeded": "fed", "seed": "saw", "knewed": "knew",
+    "selled": "sold",
+}
+
+# Common learner misspellings of verbs/nouns ("slepping", "wonderfull").
+_COMMON_TYPO_FIXES = {
+    "slepping": "sleeping", "sleepingg": "sleeping", "wonderfull": "wonderful",
+    "wonderfuly": "wonderfully", "beautifull": "beautiful", "succesfull": "successful",
+    "occured": "occurred", "untill": "until", "littel": "little", "freinds": "friends",
+    "becuase": "because", "recieve": "receive", "tommorow": "tomorrow",
+    "morroco": "morocco", "definately": "definitely", "familar": "familiar",
+    "govenment": "government", "enviroment": "environment", "assistant": "assistant",
+}
+
+# Wrong pluralisations of irregular nouns ("peoples", "childrens" ...).
+_IRREGULAR_PLURAL_FORMS = {
+    "peoples": "people", "persons": "people", "childrens": "children",
+    "childs": "children", "childes": "children", "mans": "men", "mens": "men",
+    "womans": "women", "womens": "women", "foots": "feet", "feets": "feet",
+    "tooths": "teeth", "mouses": "mice", "sheeps": "sheep", "deers": "deer",
+    "fishs": "fish", "gooses": "geese", "mices": "mice", "oxes": "oxen",
+}
+
+# Non-standard reflexive pronouns.
+_REFLEXIVE_FORMS = {
+    "theirselves": "themselves", "theirselfs": "themselves", "themselfs": "themselves",
+    "hisself": "himself", "hershelves": "herself", "youself": "yourself",
+    "youreself": "yourself", "meself": "myself", "ourselves": "ourselves",
+    "ourselfs": "ourselves",
+}
+
+# Forms that cannot follow a negated auxiliary ("don't likes" -> "don't like").
+_DONT_BASE = {
+    "likes": "like", "liked": "like", "wants": "want", "wanted": "want",
+    "needs": "need", "needed": "need", "goes": "go", "went": "go", "knows": "know",
+    "knew": "know", "does": "do", "did": "do", "has": "have", "had": "have",
+    "came": "come", "took": "take", "takes": "take", "saw": "see", "seen": "see",
+    "said": "say", "says": "say", "made": "make", "got": "get", "gotten": "get",
+    "played": "play", "works": "work", "worked": "work", "studies": "study",
+    "studied": "study", "watches": "watch", "watched": "watch", "feels": "feel",
+    "felt": "feel", "tells": "tell", "told": "tell", "thinks": "think",
+    "thought": "think", "eats": "eat", "ate": "eat", "runs": "run", "ran": "run",
+}
+
+# Base verb -> -ing form used by the "be + base" rule ("I am go").
+_BE_BASE_ING = {
+    "go": "going", "come": "coming", "eat": "eating", "play": "playing",
+    "run": "running", "work": "working", "study": "studying", "read": "reading",
+    "write": "writing", "take": "taking", "make": "making", "watch": "watching",
+    "walk": "walking", "swim": "swimming", "sing": "singing", "dance": "dancing",
+    "drive": "driving", "sleep": "sleeping", "talk": "talking", "speak": "speaking",
+    "listen": "listening", "learn": "learning", "teach": "teaching",
+    "find": "finding", "get": "getting", "see": "seeing", "shower": "showering",
+    "eat": "eating", "sit": "sitting", "shop": "shopping", "travel": "traveling",
+    "wait": "waiting", "fly": "flying", "swim": "swimming", "visit": "visiting",
+    "use": "using", "help": "helping", "call": "calling", "tell": "telling",
+    "send": "sending", "give": "giving", "buy": "buying", "cook": "cooking",
+}
+
+# Base verb -> past participle, for "have/has/had + base" ("have ever spend").
+_HAVE_BASE_PARTICIPLE = {
+    "go": "gone", "do": "done", "see": "seen", "eat": "eaten", "write": "written",
+    "speak": "spoken", "break": "broken", "choose": "chosen", "spend": "spent",
+    "send": "sent", "build": "built", "buy": "bought", "bring": "brought",
+    "catch": "caught", "teach": "taught", "think": "thought", "know": "known",
+    "get": "gotten", "give": "given", "find": "found", "feel": "felt",
+    "sleep": "slept", "keep": "kept", "leave": "left", "meet": "met",
+    "lose": "lost", "win": "won", "run": "run", "sing": "sung", "drink": "drunk",
+    "swim": "swum", "fly": "flown", "ride": "ridden", "wear": "worn",
+    "throw": "thrown", "draw": "drawn", "forget": "forgotten",
+    "understand": "understood", "tell": "told", "sell": "sold", "cut": "cut",
+    "put": "put", "hurt": "hurt", "hit": "hit", "cost": "cost", "take": "taken",
+    "make": "made", "come": "come",
+}
+
+# Past-tense signals that set a narrative in the past.
+_PAST_SIGNAL_RE = re.compile(
+    r"\b(went|saw|came|took|made|said|told|was|were|had|did|got|gave|knew|met|"
+    r"left|felt|taught|bought|brought|found|forgot|flew|ate|ran|sat|stood|wrote|"
+    r"spoke|missed|enjoyed|arrived|started|finished|talked|walked|played|helped|"
+    r"called|visited|wanted|liked)\b", re.I)
+
+# Words that mark the present/habitual and veto past-tense suggestions.
+_HABITUAL_RE = re.compile(
+    r"\b(every\s+day|everyday|every\s+\w+|always|usually|often|sometimes|never|"
+    r"generally|normally|now|today|tomorrow|currently|rarely|frequent(ly)?)\b", re.I)
+
 
 def _load_json(name: str) -> Dict:
     try:
@@ -114,6 +253,62 @@ def _load_json(name: str) -> Dict:
             return json.load(f)
     except (OSError, ValueError):
         return {}
+
+
+def _regular_past(base: str) -> str:
+    """Simple past of a REGULAR verb ('try'->'tried', 'stop'->'stopped')."""
+    low = base.lower()
+    if len(low) > 2 and low.endswith("y") and low[-2] not in "aeiouy":
+        return low[:-1] + "ied"
+    if low.endswith("e"):
+        return low + "d"
+    if (len(low) >= 3 and low[-1] not in "aeiouy" and low[-1] not in "xw"
+            and low[-2] in "aeiou" and low[-3] not in "aeiou"):
+        return low + low[-1] + "ed"
+    return low + "ed"
+
+
+_3SG_BASE = {v: k for k, v in _THIRD_SINGULAR.items()}
+_IRREGULAR_BASE_BY_PAST = {v: k for k, v in _IRREGULAR_PAST.items()}
+_BASE_BY_PARTICIPLE = {}
+for _k, _v in _PAST_PARTICIPLE.items():
+    _base = _IRREGULAR_BASE_BY_PAST.get(_k, _k)
+    _BASE_BY_PARTICIPLE[_v] = _base
+    _BASE_BY_PARTICIPLE.setdefault(_k, _base)
+
+
+def _past_of_verb(word: str) -> str:
+    """Past tense of a base or 3rd-person-singular present verb form
+    ('calls'->'called', 'goes'->'went', 'study'->'studied', 'starts'->'started')."""
+    low = word.lower()
+    spec = _3SG_BASE.get(low)
+    if spec:
+        base = spec
+    elif low.endswith("ies") and len(low) > 3:
+        base = low[:-3] + "y"
+    elif low.endswith("es"):
+        base = low[:-2]
+    elif low.endswith("s") and not low.endswith("ss"):
+        base = low[:-1]
+    else:
+        base = low
+    if base in _IRREGULAR_PAST:
+        return _IRREGULAR_PAST[base]
+    return _regular_past(base)
+
+
+def _is_verb_form(word: str) -> bool:
+    """Is ``word`` a base or 3rd-person-singular present verb we know?"""
+    low = word.lower()
+    if low in _PASTABLE_VERBS or _IRREGULAR_BASE_BY_PAST.get(low):
+        return True
+    if low.endswith("ies") and low[:-3] + "y" in _PASTABLE_VERBS:
+        return True
+    if low.endswith("es") and low[:-2] in _PASTABLE_VERBS:
+        return True
+    if low.endswith("s") and not low.endswith("ss") and low[:-1] in _PASTABLE_VERBS:
+        return True
+    return False
 
 
 class RuleDetector:
@@ -144,17 +339,35 @@ class RuleDetector:
             self._repeated_words,
             self._high_confidence,
             self._subject_verb_agreement,
+            self._be_plus_base,
             self._be_agreement,
             self._aux_past_participle,
             self._be_plus_past,
             self._did_plus_past,
+            self._modal_past_base,
+            self._double_negative,
             self._tense_past_marker,
+            self._tense_past_marker_after,
+            self._aux_base_participle,
+            self._narrative_past,
+            self._tense_coordination,
             self._articles,
             self._prepositions,
             self._homophones,
             self._count_plurals,
+            self._irregular_plural,
             self._missing_auxiliary,
             self._reflexive_subject,
+            self._reflexive_irregular,
+            self._dont_base,
+            self._day_month_cap,
+            self._irregular_past_ed,
+            self._common_typos,
+            self._missing_apostrophe,
+            self._who_were,
+            self._singular_noun_were,
+            self._plural_was,
+            self._tense_consistency,
             self._capitalization,
             self._punctuation,
         ):
@@ -246,6 +459,11 @@ class RuleDetector:
         verbs = "|".join(_THIRD_SINGULAR)
         for m in re.finditer(rf"\b(he|she|it)\s+({verbs})\b", text, re.I):
             verb = m.group(2).lower()
+            past_ctx = _PAST_SIGNAL_RE.search(text[max(0, m.start(2) - 140):m.start(2) + 24])
+            if past_ctx:
+                # in a past narrative "he say" -> "he said", "he suggest" ->
+                # "he suggested"; leave the tense to NARRATIVE_PAST.
+                continue
             out.append(self._cand(m.group(2), _THIRD_SINGULAR[verb], "subject_verb",
                                   _span(m, 2), 0.9, "SVA_3SG",
                                   f"'{m.group(1)}' is singular, so use '{_THIRD_SINGULAR[verb]}'."))
@@ -263,12 +481,25 @@ class RuleDetector:
         for m in re.finditer(r"\b(he|she|it)\s+(have)\b", text, re.I):
             out.append(self._cand(m.group(2), "has", "subject_verb", _span(m, 2), 0.92,
                                   "SVA_HAVE", f"'{m.group(1)}' takes 'has'."))
-        # he/she/it + don't → doesn't (learner error; MEDIUM so AI decides)
+        # he/she/it + don't → doesn't (learner error)
         for m in re.finditer(r"\b(he|she|it)\s+(don't|do not)\b", text, re.I):
             word = text[m.start(2):m.end(2)]
             repl = "doesn't" if word.lower() == "don't" else "does not"
-            out.append(self._cand(word, repl, "subject_verb", _span(m, 2), 0.6,
+            out.append(self._cand(word, repl, "subject_verb", _span(m, 2), 0.9,
                                   "SVA_DOESNT", f"'{m.group(1)}' takes '{repl}'."))
+        return out
+
+    def _be_plus_base(self, text: str) -> List[Dict]:
+        out = []
+        bases = "|".join(_BE_BASE_ING)
+        for m in re.finditer(rf"\b(am|is|are|was|were|be)\s+({bases})\b", text, re.I):
+            be, base = m.group(1).lower(), m.group(2).lower()
+            if be == "be":
+                continue
+            ing = _BE_BASE_ING[base]
+            out.append(self._cand(m.group(2), ing, "verb_form", _span(m, 2), 0.85,
+                                  "BE_PLUS_BASE",
+                                  f"After '{be}', use the -ing form '{ing}'."))
         return out
 
     def _be_agreement(self, text: str) -> List[Dict]:
@@ -324,11 +555,76 @@ class RuleDetector:
 
     def _did_plus_past(self, text: str) -> List[Dict]:
         out = []
-        past = "|".join(_PAST_SIMPLE)
-        for m in re.finditer(rf"\b(did)\s+({past})\b", text, re.I):
-            out.append(self._cand(m.group(0), m.group(2), "verb_form", _span(m, 0), 0.9,
-                                  "DID_PLUS_PAST",
-                                  f"After 'did', use the base verb or drop 'did' here."))
+        _base_of = {v: k for k, v in _IRREGULAR_PAST.items()}
+        pat = "|".join(sorted(_base_of, key=len, reverse=True))
+        for m in re.finditer(rf"\b(did|didn'?t|did not)\s+({pat})\b", text, re.I):
+            base = _base_of[m.group(2).lower()]
+            out.append(self._cand(m.group(2), base, "verb_form", _span(m, 2), 0.92,
+                                  "DIDNT_PAST_FORM",
+                                  f"After '{m.group(1)}', use the base form '{base}'."))
+        # regular verbs: "didn't wanted" -> "didn't want"
+        for m in re.finditer(r"\b(did|didn'?t|did not)\s+([a-z]{2,}ed)\b", text, re.I):
+            word = m.group(2)
+            if word.lower() in _IRREGULAR_PAST_ED:
+                continue
+            base = word[:-2]
+            if base.endswith("i"):
+                base = base[:-1] + "y"
+            elif len(base) >= 2 and base[-1] == base[-2]:
+                base = base[:-1]
+            if len(base) < 2 or base[-1] == "e":
+                base = word[:-1]
+            if word.lower() == base.lower():
+                continue
+            out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
+                                  "DIDNT_PAST_FORM",
+                                  f"After '{m.group(1)}', use the base form '{base}'."))
+        return out
+
+    def _modal_past_base(self, text: str) -> List[Dict]:
+        """'I couldn't understood the lesson.' -> modal verbs take the base form
+        ('couldn't understand'). Also 'should have went' -> 'should have gone'."""
+        out = []
+        _MODAL = (r"\b(can|could|may|might|must|shall|should|will|would|"
+                  r"can't|cannot|couldn't|shouldn't|wouldn't|won't|mustn't|"
+                  r"daren't|needn't)\b")
+        for past, base in _BASE_BY_PARTICIPLE.items():
+            for m in re.finditer(rf"{_MODAL}\s+({re.escape(past)})\b", text, re.I):
+                if base.lower() == m.group(2).lower():
+                    continue
+                out.append(self._cand(m.group(2), base, "verb_form", _span(m, 2), 0.9,
+                                      "MODAL_PAST_BASE",
+                                      f"After '{m.group(1)}', use the base form '{base}'."))
+        # regular verbs: "couldn't wanted" -> "couldn't want"
+        for m in re.finditer(rf"{_MODAL}\s+([a-z]{{2,}}ed)\b", text, re.I):
+            word = m.group(2)
+            low = word.lower()
+            if low in _IRREGULAR_PAST_ED or low in _PAST_SIMPLE:
+                continue
+            base = word[:-2]
+            if base.endswith("i"):
+                base = base[:-1] + "y"
+            elif len(base) >= 2 and base[-1] == base[-2]:
+                base = base[:-1]
+            if len(base) < 2 or base[-1] == "e":
+                base = word[:-1]
+            if low == base.lower():
+                continue
+            out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
+                                  "MODAL_PAST_BASE",
+                                  f"After '{m.group(1)}', use the base form '{base}'."))
+        return out
+
+    def _double_negative(self, text: str) -> List[Dict]:
+        out = []
+        neg = r"don'?t|doesn'?t|didn'?t|isn'?t|aren'?t|ain'?t|cannot|can'?t|never|nobody|nothing"
+        repl = {"no": "any", "nothing": "anything", "never": "ever",
+                "nobody": "anybody", "nowhere": "anywhere"}
+        words = "|".join(repl)
+        for m in re.finditer(rf"\b({neg})\s+[a-z']+\s+({words})\b", text, re.I):
+            out.append(self._cand(m.group(2), repl[m.group(2).lower()], "double_negative",
+                                  _span(m, 2), 0.85, "DOUBLE_NEGATIVE",
+                                  "Double negatives are incorrect; use a single negative."))
         return out
 
     def _tense_past_marker(self, text: str) -> List[Dict]:
@@ -337,12 +633,20 @@ class RuleDetector:
         # A modal/auxiliary immediately before the base requires the base form
         # ("could have arrived earlier" -> NOT "had arrived earlier").
         _AUX = {"have", "has", "had", "will", "would", "shall", "should",
-                "can", "could", "may", "might", "must", "do", "does", "did", "to"}
+                "can", "could", "may", "might", "must", "do", "does", "did", "to",
+                # negative contractions — a base verb after these is already
+                # correct ("she doesn't eat", "they couldn't go")
+                "don't", "doesn't", "didn't", "can't", "cannot", "won't",
+                "wouldn't", "couldn't", "shouldn't", "mustn't", "ain't"}
         for marker in _PAST_MARKERS.finditer(text):
             window = text[max(0, marker.start() - 120): marker.start()]
             for m in re.finditer(rf"\b({bases})\b", window, re.I):
-                preceding = m.string[:m.start(1)].rstrip().rsplit(None, 1)
-                if preceding and preceding[-1].strip(".,;:!?").lower() in _AUX:
+                tokens = m.string[:m.start(1)].rstrip().split()
+                if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
+                    continue
+                if len(tokens) >= 2 \
+                        and tokens[-2].strip(".,;:!?").lower() in _AUX \
+                        and tokens[-1].strip(".,;:!?").lower() in ("not", "never"):
                     continue
                 abs_start = max(0, marker.start() - 120) + m.start(1)
                 abs_end = abs_start + len(m.group(1))
@@ -357,6 +661,240 @@ class RuleDetector:
                     "rule_id": "TENSE_PAST_MARKER",
                     "message": f"With '{marker.group(0)}', use the past tense '{_IRREGULAR_PAST[m.group(1).lower()]}'.",
                 })
+        return out
+
+    def _tense_past_marker_after(self, text: str) -> List[Dict]:
+        """'Last sunday my friends and I go' -> the marker comes FIRST and the
+        base verb AFTER it. Catch irregular base verbs a few words after a
+        past-time marker in the same sentence."""
+        out = []
+        bases = "|".join(_IRREGULAR_PAST)
+        _AUX = {"have", "has", "had", "will", "would", "shall", "should",
+                "can", "could", "may", "might", "must", "do", "does", "did", "to",
+                # negative contractions — a base verb after these is already
+                # correct ("she doesn't eat", "they couldn't go")
+                "don't", "doesn't", "didn't", "can't", "cannot", "won't",
+                "wouldn't", "couldn't", "shouldn't", "mustn't", "ain't"}
+        for marker in _PAST_MARKERS.finditer(text):
+            after = text[marker.end():marker.end() + 80]
+            cut = min([i for i in (after.find("."), after.find("!"), after.find("?"),
+                                   after.find(";")) if i != -1] or [len(after)])
+            after = after[:cut]
+            for m in re.finditer(rf"\b({bases})\b", after, re.I):
+                tokens = m.string[:m.start(1)].rstrip().split()
+                if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
+                    continue
+                if len(tokens) >= 2 \
+                        and tokens[-2].strip(".,;:!?").lower() in _AUX \
+                        and tokens[-1].strip(".,;:!?").lower() in ("not", "never"):
+                    continue
+                abs_start = marker.end() + m.start(1)
+                if _HABITUAL_RE.search(text[max(0, abs_start - 40):abs_start + 24]):
+                    continue
+                out.append({
+                    "wrong": m.group(1),
+                    "correct": _IRREGULAR_PAST[m.group(1).lower()],
+                    "type": "tense",
+                    "start": abs_start,
+                    "end": abs_start + len(m.group(1)),
+                    "confidence": 0.8,
+                    "source": "rule",
+                    "rule_id": "TENSE_PAST_MARKER_AFTER",
+                    "message": f"With '{marker.group(0)}', use the past tense '{_IRREGULAR_PAST[m.group(1).lower()]}'.",
+                })
+        return out
+
+    def _aux_base_participle(self, text: str) -> List[Dict]:
+        """'have/has/had + base irregular verb' -> past participle ('have ever
+        spend' -> 'have ever spent')."""
+        out = []
+        bases = "|".join(_HAVE_BASE_PARTICIPLE)
+        for m in re.finditer(
+                rf"\b(has|have|had)\s+(ever|never|just|already|always|also)?\s*({bases})\b",
+                text, re.I):
+            aux, verb = m.group(1).lower(), m.group(3).lower()
+            part = _HAVE_BASE_PARTICIPLE[verb]
+            if part == verb:
+                continue
+            out.append(self._cand(m.group(3), part, "verb_form", _span(m, 3), 0.9,
+                                  "HAVE_PAST_PARTICIPLE",
+                                  f"After '{aux}', use the past participle '{part}'."))
+        return out
+
+    def _narrative_past(self, text: str) -> List[Dict]:
+        """In a past-tense narrative, present-tense irregular verbs are usually
+        past-tense errors. Uses a sticky narrative state: once past, it stays
+        past until a present-tense adverb resets it."""
+        out = []
+        bases = "|".join(_IRREGULAR_PAST)
+        _AUX = {"have", "has", "had", "will", "would", "shall", "should",
+                "can", "could", "may", "might", "must", "do", "does", "did", "to",
+                # negative contractions — a base verb after these is already
+                # correct ("she doesn't eat", "they couldn't go")
+                "don't", "doesn't", "didn't", "can't", "cannot", "won't",
+                "wouldn't", "couldn't", "shouldn't", "mustn't", "ain't"}
+        _RESET = {"now", "today", "tomorrow", "present", "currently", "right now",
+                  "daily", "everyday"}
+        _ALREADY_ROUGH = _PAST_SIMPLE | set(_PAST_PARTICIPLE) | {
+            "was", "were", "is", "are", "am", "be", "been", "being", "been",
+            "became", "become"}
+        narrative_past = False
+        for sm in re.finditer(r"[^.!?\n]+[.!?]*", text):
+            sent, sbase = sm.group(0), sm.start()
+            sent_past = narrative_past or _PAST_MARKERS.search(sent) is not None \
+                or _PAST_SIGNAL_RE.search(sent) is not None
+            if sent_past:
+                for m in re.finditer(rf"\b({bases})\b", sent, re.I):
+                    verb = m.group(1).lower()
+                    tokens = sent[:m.start(1)].rstrip().split()
+                    if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
+                        continue
+                    # "I could not understand" — the AUX is two tokens back,
+                    # separated by a negator; the base form stays ("could not
+                    # understand", "might not come").
+                    if len(tokens) >= 2 \
+                            and tokens[-2].strip(".,;:!?").lower() in _AUX \
+                            and tokens[-1].strip(".,;:!?").lower() in ("not", "never"):
+                        continue
+                    # "We take a SHORT BREAK" / "have a drink" — the word is a
+                    # NOUN when a determiner sits 1-2 words back ("a short
+                    # break", "a break"), never rewrite it to its past form.
+                    if verb in _NOUNY_IRREGULAR:
+                        lookback = sent[max(0, m.start(1) - 30):m.start(1)]
+                        if any(t.strip(".,;:!?()\"'").lower() in _DETERMINERS
+                               for t in lookback.split()[-2:]):
+                            continue
+                    if _HABITUAL_RE.search(sent[max(0, m.start(1) - 40):m.end(1) + 24]):
+                        continue
+                    after = sent[m.end(1):m.end(1) + 40].lstrip().split(None, 1)
+                    if verb in ("have", "has", "had"):
+                        nxt = (after[0].strip(".,;:!?") if after else "").lower()
+                        if (nxt in _PAST_PARTICIPLE or nxt in _PAST_SIMPLE
+                                or nxt in ("ever", "never", "just", "already",
+                                           "always", "also", "been")):
+                            continue
+                    out.append({
+                        "wrong": m.group(1),
+                        "correct": _IRREGULAR_PAST[verb],
+                        "type": "tense",
+                        "start": sbase + m.start(1),
+                        "end": sbase + m.end(1),
+                        "confidence": 0.8,
+                        "source": "rule",
+                        "rule_id": "NARRATIVE_PAST",
+                        "message": f"The narrative is in the past; use '{_IRREGULAR_PAST[verb]}'.",
+                    })
+                # 3rd-person + regular/base verb -> past ('he calls' -> 'he called',
+                # 'he start' -> 'he started'); a 3sg -s ending is handled through
+                # _past_of_verb so 'calls' becomes 'called', never 'callsed'.
+                for m in re.finditer(r"\b(he|she|it)\s+([a-z]{2,})\b", sent, re.I):
+                    word, verb = m.group(2), m.group(2).lower()
+                    if (_HABITUAL_RE.search(sent[max(0, m.start(2) - 40):m.end(2) + 24])
+                            or verb in _IRREGULAR_PAST
+                            or verb.endswith("ing") or verb in _AUX
+                            or verb in _ALREADY_ROUGH or verb.endswith("ed")):
+                        continue
+                    past = _past_of_verb(verb)
+                    if past == verb:
+                        continue
+                    out.append(self._cand(word, past, "tense",
+                                          (sbase + m.start(2), sbase + m.end(2)), 0.8,
+                                          "NARRATIVE_REGULAR",
+                                          f"The narrative is in the past; use '{past}'."))
+                # 3rd-person person-noun + base verb ('My friend explain ...').
+                for m in re.finditer(rf"\b({_PERSON_NOUNS})\s+([a-z]{{2,}})\b", sent, re.I):
+                    word, verb = m.group(2), m.group(2).lower()
+                    if (_HABITUAL_RE.search(sent[max(0, m.start(2) - 50):m.end(2) + 24])
+                            or verb in _IRREGULAR_PAST
+                            or verb.endswith("ing") or verb in _AUX
+                            or verb in _ALREADY_ROUGH or verb.endswith("ed")):
+                        continue
+                    if not _is_verb_form(verb):
+                        continue
+                    past = _past_of_verb(verb)
+                    if past == verb:
+                        continue
+                    out.append(self._cand(word, past, "tense",
+                                          (sbase + m.start(2), sbase + m.end(2)), 0.8,
+                                          "NARRATIVE_PERSON_3SG",
+                                          f"'{m.group(1)}' is singular; in past narration use '{past}'."))
+                for m in re.finditer(r"\b(will)\b", sent, re.I):
+                    out.append(self._cand(m.group(1), "would", "tense",
+                                          (sbase + m.start(1), sbase + m.end(1)), 0.79,
+                                          "NARRATIVE_WOULD",
+                                          "In reported past narration, 'will' is usually 'would'."))
+                # coordinated verb after 'and' in a past narrative: 'another
+                # student come into the library and starts talking' ->
+                # 'came ... and started'. A modal before it ('we will meet
+                # again tomorrow and finish') keeps the base form.
+                for m in re.finditer(
+                        rf"\band\s+(?:(then|also|suddenly|quickly|immediately|still|"
+                        rf"just|soon|later|finally|slowly)\s+)?([a-z]{{2,}})\b",
+                        sent, re.I):
+                    word, verb = m.group(2), m.group(2).lower()
+                    if _MODAL_IN_BETWEEN_RE.search(sent[:m.start(2)]):
+                        continue
+                    if (verb in _PAST_SIMPLE or verb.endswith("ed")
+                            or verb.endswith("ing") or verb in _AUX
+                            or verb in _ALREADY_ROUGH):
+                        continue
+                    if not _is_verb_form(verb):
+                        continue
+                    past = _past_of_verb(verb)
+                    if past == verb:
+                        continue
+                    out.append(self._cand(word, past, "tense",
+                                          (sbase + m.start(2), sbase + m.end(2)), 0.8,
+                                          "TENSE_COORD",
+                                          f"The narrative is in the past; use '{past}'."))
+            if _RESET & set(re.findall(_WORD, sent.lower())):
+                narrative_past = False
+            elif _PAST_SIGNAL_RE.search(sent):
+                narrative_past = True
+        return out
+
+    def _tense_coordination(self, text: str) -> List[Dict]:
+        """'The student came into the library and starts talking.' — a verb
+        coordinated with a past verb stays in the past ('started'). Skips when a
+        modal sits between them: 'we will meet again tomorrow and finish ...'."""
+        out = []
+        _ADV = r"(?:then|also|suddenly|quickly|immediately|still|just|soon|later|finally|slowly)\s+"
+        past_list = sorted(_PAST_SIMPLE, key=len, reverse=True)
+        for v1 in past_list:
+            for m in re.finditer(
+                    rf"\b({re.escape(v1)})\b([^.!?;]{{0,100}}?)\band\s+(?:{_ADV})?([a-z]{{2,}})\b",
+                    text, re.I):
+                between = m.group(2)
+                word, verb = m.group(3), m.group(3).lower()
+                if _MODAL_IN_BETWEEN_RE.search(between):
+                    continue
+                if verb in _PAST_SIMPLE or verb.endswith("ed"):
+                    continue
+                if not _is_verb_form(verb):
+                    continue
+                past = _past_of_verb(verb)
+                if past == verb:
+                    continue
+                out.append(self._cand(word, past, "tense", _span(m, 3), 0.8,
+                                      "TENSE_COORD",
+                                      f"Coordinate with '{m.group(1)}': use the past '{past}'."))
+        for m in re.finditer(
+                rf"\b([a-z]{{3,}}ed)\b([^.!?;]{{0,100}}?)\band\s+(?:{_ADV})?([a-z]{{2,}})\b",
+                text, re.I):
+            v1, word, verb = m.group(1), m.group(3), m.group(3).lower()
+            between = m.group(2)
+            if _MODAL_IN_BETWEEN_RE.search(between):
+                continue
+            if verb in _PAST_SIMPLE or verb.endswith("ed"):
+                continue
+            if not _is_verb_form(verb):
+                continue
+            past = _past_of_verb(verb)
+            if past == verb:
+                continue
+            out.append(self._cand(word, past, "tense", _span(m, 3), 0.8,
+                                  "TENSE_COORD",
+                                  f"Coordinate with '{v1}': use the past '{past}'."))
         return out
 
     # -------------------------------------------------------------- articles
@@ -425,6 +963,209 @@ class RuleDetector:
             out.append(self._cand(m.group(2), _PLURAL_NOUNS[noun], "plural",
                                   _span(m, 2), 0.8, "COUNT_PLURAL",
                                   f"'{m.group(1)}' needs the plural '{_PLURAL_NOUNS[noun]}'."))
+        return out
+
+    def _irregular_plural(self, text: str) -> List[Dict]:
+        out = []
+        for m in re.finditer(_WORD, text):
+            low = m.group(0).lower()
+            if low in _IRREGULAR_PLURAL_FORMS:
+                corr = _IRREGULAR_PLURAL_FORMS[low]
+                out.append(self._cand(m.group(0), corr, "plural", m, 0.9,
+                                      "IRREGULAR_PLURAL",
+                                      f"'{m.group(0)}' is already plural; use '{corr}'."))
+        return out
+
+    def _reflexive_irregular(self, text: str) -> List[Dict]:
+        out = []
+        pat = r"\b(" + "|".join(_REFLEXIVE_FORMS) + r")\b"
+        for m in re.finditer(pat, text, re.I):
+            w = m.group(1)
+            corr = _REFLEXIVE_FORMS[w.lower()]
+            out.append(self._cand(w, corr, "pronoun", m, 0.9, "REFLEXIVE_FORM",
+                                  f"Use '{corr}'."))
+        return out
+
+    def _dont_base(self, text: str) -> List[Dict]:
+        out = []
+        forms = "|".join(_DONT_BASE)
+        for m in re.finditer(rf"\b(don'?t|do not|doesn'?t|does not)\s+({forms})\b",
+                             text, re.I):
+            word = m.group(2)
+            corr = _DONT_BASE[word.lower()]
+            if word[0].isupper():
+                corr = corr[0].upper() + corr[1:]
+            out.append(self._cand(word, corr, "verb_form", _span(m, 2), 0.85,
+                                  "DONT_BASE",
+                                  f"After '{m.group(1)}', use the base form '{corr}'."))
+        return out
+
+    def _day_month_cap(self, text: str) -> List[Dict]:
+        out = []
+        names = "|".join(sorted(_DAY_MONTH_NAMES, key=len, reverse=True))
+        for m in re.finditer(rf"\b({names})\b", text, re.I):
+            w = m.group(1)
+            if w[0].isupper():
+                continue
+            repl = w[0].upper() + w[1:]
+            out.append(self._cand(w, repl, "capitalization", m, 0.9,
+                                  "PROPER_NOUN_CAP",
+                                  f"Days and months are capitalized: '{repl}'."))
+        return out
+
+    def _irregular_past_ed(self, text: str) -> List[Dict]:
+        out = []
+        for m in re.finditer(_WORD, text):
+            low = m.group(0).lower()
+            if low in _IRREGULAR_PAST_ED:
+                corr = _IRREGULAR_PAST_ED[low]
+                if m.group(0)[0].isupper():
+                    corr = corr[0].upper() + corr[1:]
+                out.append(self._cand(m.group(0), corr, "verb_form", m, 0.95,
+                                      "IRREGULAR_PAST_ED",
+                                      f"The past form is '{corr}', not '{m.group(0)}'."))
+        return out
+
+    def _singular_noun_were(self, text: str) -> List[Dict]:
+        out = []
+        for m in re.finditer(
+                r"\b(a|an|the|this|that|my|your|our|his|her|its|one)\s+(\w+)\s+(were)\b",
+                text, re.I):
+            noun = m.group(2).lower()
+            if noun.endswith("s") or noun in ("information", "news", "staff",
+                                              "team", "family"):
+                continue
+            out.append(self._cand(m.group(3), "was", "subject_verb", _span(m, 3), 0.8,
+                                  "SVA",
+                                  f"'{m.group(2)}' is singular, so use 'was'."))
+        return out
+
+    def _tense_consistency(self, text: str) -> List[Dict]:
+        """'Yesterday, the team has attended the meeting.' -> the past-time
+        marker clashes with the present-perfect, so drop the auxiliary."""
+        out = []
+        for marker in _PAST_MARKERS.finditer(text):
+            window = text[marker.end():marker.end() + 90]
+            cut = min([i for i in (window.find("."), window.find("!"),
+                                   window.find("?"), window.find(";"))
+                       if i != -1] or [len(window)])
+            window = window[:cut]
+            for m in re.finditer(
+                    r"\b(has|have|had)\s+(also|just|already|ever|never)?\s*"
+                    r"([a-z]+(?:ed|n|t))\b", window, re.I):
+                verb = m.group(3).lower()
+                plain = verb if verb in _PAST_SIMPLE or verb.endswith("ed") else None
+                if plain is None or plain == m.group(1).lower() == "had":
+                    continue
+                start = marker.end() + m.start(1)
+                end = marker.end() + m.end(0)
+                wrong = text[start:end]
+                out.append({
+                    "wrong": wrong,
+                    "correct": plain,
+                    "type": "tense",
+                    "start": start,
+                    "end": end,
+                    "confidence": 0.85,
+                    "source": "rule",
+                    "rule_id": "TENSE_CONSISTENCY",
+                    "message": f"With '{marker.group(0)}', use the simple past '{plain}' instead of '{wrong}'.",
+                })
+        return out
+
+    def _common_typos(self, text: str) -> List[Dict]:
+        out = []
+        pat = r"\b(" + "|".join(_COMMON_TYPO_FIXES) + r")\b"
+        for m in re.finditer(pat, text, re.I):
+            w = m.group(1)
+            corr = _COMMON_TYPO_FIXES[w.lower()]
+            if w[0].isupper():
+                corr = corr[0].upper() + corr[1:]
+            out.append(self._cand(w, corr, "spelling", m, 0.88, "COMMON_TYPO",
+                                  f"Common misspelling; use '{corr}'."))
+        return out
+
+    def _missing_apostrophe(self, text: str) -> List[Dict]:
+        out = []
+        _APOS = {"dont": "don't", "doesnt": "doesn't", "didnt": "didn't",
+                 "cant": "can't", "wont": "won't", "wouldnt": "wouldn't",
+                 "couldnt": "couldn't", "shouldnt": "shouldn't", "isnt": "isn't",
+                 "arent": "aren't", "wasnt": "wasn't", "werent": "weren't"}
+        pat = r"\b(" + "|".join(_APOS) + r")\b"
+        for m in re.finditer(pat, text, re.I):
+            w = m.group(1).lower()
+            prev = ""
+            if m.start() > 0:
+                prev = text[max(0, m.start() - 14):m.start()].split()[-1]
+                prev = prev.lower().strip(".,;:!?()\"'")
+            rep = _APOS[w]
+            if w == "dont" and prev in ("he", "she", "it"):
+                rep = "doesn't"
+            if w == "wont" and prev in ("i", "you", "we", "they"):
+                rep = "won't"
+            out.append(self._cand(m.group(0), rep, "spelling", m, 0.92,
+                                  "MISSING_APOSTROPHE",
+                                  f"The word '{m.group(0)}' is missing an apostrophe; use '{rep}'."))
+        return out
+
+    def _who_were(self, text: str) -> List[Dict]:
+        out = []
+        for m in re.finditer(r"\b(a|an|the|one)\s+(\w+)\s+who\s+(were)\b", text, re.I):
+            out.append(self._cand(m.group(3), "was", "subject_verb", _span(m, 3), 0.75,
+                                  "WHO_WAS",
+                                  f"'{m.group(2)}' is singular, so use 'was'."))
+        return out
+
+    def _plural_was(self, text: str) -> List[Dict]:
+        out = []
+        # irregular plurals + "was" -> "were"
+        for m in re.finditer(r"\b(childrens?|peoples?|men|women|friends?|they)\s+(was)\b",
+                             text, re.I):
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.87,
+                                  "PLURAL_WAS",
+                                  f"'{m.group(1)}' is plural, so use 'were'."))
+        # determiner/possessive + plural-noun + "was" -> "were"
+        for m in re.finditer(
+                r"\b((?:my|our|your|their|these|those)\s+\w+s)\s+(was)\b", text, re.I):
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.83,
+                                  "PLURAL_NOUN_WAS",
+                                  f"'{m.group(1)}' is plural, so use 'were'."))
+        # "the monkeys was" / "the other birds was" (skip words that just end in -s)
+        _SINGULAR_S = {"news", "maths", "math", "physics", "gymnastics", "economics",
+                       "politics", "series", "means", "innings", "species",
+                       "headquarters", "crossroads", "statistics", "ethics", "tactics",
+                       "measles", "diabetes", "logistics"}
+        for m in re.finditer(
+                r"\b(the)\s+(?:\w+\s+)?(\w+s)\s+(was)\b", text, re.I):
+            noun = m.group(2).lower()
+            if noun in _SINGULAR_S or noun.endswith("ss") or noun.endswith("is"):
+                continue
+            out.append(self._cand(m.group(3), "were", "subject_verb", _span(m, 3), 0.83,
+                                  "PLURAL_NOUN_WAS",
+                                  f"'{m.group(2)}' is plural, so use 'were'."))
+        # plural quantifier + plural noun + "was": "several students was trying"
+        for m in re.finditer(
+                r"\b((?:many|several|both|few|various|numerous|all|some|two|three|"
+                r"four|five|six|seven|eight|nine|ten|\d+)\s+\w+s)\s+(was)\b", text, re.I):
+            noun = m.group(1).rsplit(" ", 1)[-1].lower()
+            if noun in _SINGULAR_S or noun.endswith("ss") or noun.endswith("is"):
+                continue
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.85,
+                                  "PLURAL_NOUN_WAS",
+                                  f"'{m.group(1)}' is plural, so use 'were'."))
+        # "there wasn't many tables" -> "there weren't many tables"
+        for m in re.finditer(
+                r"\b(wasn'?t|was not)\s+(many|several|both|a few|two|three|four|five|"
+                r"six|seven|eight|nine|ten)\b", text, re.I):
+            repl = "weren't" if "n't" in m.group(1) else "were not"
+            out.append(self._cand(m.group(1), repl, "subject_verb", _span(m, 1), 0.88,
+                                  "WASNT_MANY",
+                                  f"After a plural quantifier use '{repl}'."))
+        # proper name + "don't" -> "doesn't" (learner error)
+        for m in re.finditer(r"\b([A-Z][a-z]{2,})\s+(don'?t)\b", text):
+            out.append(self._cand(m.group(2), "doesn't", "subject_verb", _span(m, 2), 0.87,
+                                  "NAME_DOESNT",
+                                  f"'{m.group(1)}' is singular, so use 'doesn't'."))
         return out
 
     # --------------------------------------------------------- missing words
@@ -517,9 +1258,12 @@ class RuleDetector:
     @staticmethod
     def _cand(wrong: str, correct: str, type_: str, m, confidence: float,
               rule_id: str, message: str) -> Dict:
-        start, end = m.start(), m.end()
         if isinstance(m, re.Match):
             start, end = m.span()
+        elif hasattr(m, "span"):
+            start, end = m.span()
+        else:
+            start, end = m[0], m[1]
         return {
             "wrong": wrong,
             "correct": correct,
@@ -564,15 +1308,13 @@ def _normalize_type(value: str) -> str:
 
 
 def _dedup(items: List[Dict]) -> List[Dict]:
-    seen = set()
-    out = []
+    best: Dict[Tuple, Dict] = {}
     for it in items:
         key = (it["start"], it["end"], it["correct"].lower())
-        if key in seen:
-            continue
-        seen.add(key)
-        out.append(it)
-    return out
+        cur = best.get(key)
+        if cur is None or it["confidence"] > cur["confidence"]:
+            best[key] = it
+    return list(best.values())
 
 
 _default_detector: Optional[RuleDetector] = None

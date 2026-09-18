@@ -132,7 +132,8 @@ class TestDiscoveryMode:
         assert res["meta"]["verification"]["decision"] == "reject"
 
     def test_missing_past_tense_ai_only(self):
-        # "Yesterday, I go" — rules may not flag the tense; AI catches it.
+        # "Yesterday, I go" — either the local marker-first rule (AGREED) or the
+        # AI alone (AI_ONLY) must surface the past-tense fix.
         analysis = {
             "original_text": "Yesterday, I go to the market.",
             "corrected_text": "Yesterday, I went to the market.",
@@ -143,7 +144,8 @@ class TestDiscoveryMode:
         }
         raw = _fake_gemini(analysis)
         res = check_master("Yesterday, I go to the market.", use_ai=True, raw_call=raw)
-        assert any(e["consensus"] == "AI_ONLY" and e["correct"] == "went"
+        assert any(e["correct"] == "went"
+                   and e["consensus"] in ("AI_ONLY", "AGREED")
                    for e in res["errors"])
 
     def test_quality_block(self):

@@ -81,13 +81,18 @@ def build_prompt(text: str, candidates: Optional[List[Dict]] = None) -> str:
 
 
 def _provider_callable() -> Optional[Callable[[str], str]]:
-    """Return the default Gemini transport, or None when unavailable."""
+    """Return the default AI transport (provider chain / ensemble), or None."""
     try:
-        from ai_validator import get_validator
+        from ai_validator import get_validator, AIValidator
         v = get_validator()
-        if not v.is_enabled():
-            return None
-        return v._call
+        if v.is_enabled():
+            return v.call_any
+        # The singleton may have been built before Ollama came up or with a
+        # different provider set — re-resolve the current env fresh.
+        fresh = AIValidator()
+        if fresh.is_enabled():
+            return fresh.call_any
+        return None
     except Exception:
         return None
 
@@ -111,7 +116,22 @@ def _extract_json(raw: str) -> Optional[Dict]:
         try:
             return json.loads(s[a:b + 1])
         except ValueError:
-            return None
+            pass
+    # truncated-JSON repair: the model sometimes gets cut off mid-list; the
+    # outer structure is always {..., "errors": [...]}, so repair by closing
+    # the unclosed brackets and walking closing braces backwards.
+    for suffix in ("", "]}"):
+        end = len(s)
+        for _ in range(300):
+            end = s.rfind("}", 0, end)
+            if end == -1:
+                break
+            try:
+                obj = json.loads(s[a:end + 1] + suffix)
+                if isinstance(obj, dict):
+                    return obj
+            except ValueError:
+                continue
     return None
 
 
@@ -268,4 +288,21 @@ def analyze(text: str,
 
 
 def ai_key_configured() -> bool:
-    return bool(os.environ.get("GEMINI_API_KEY") or os.environ.get("AI_API_KEY"))
+    """True when any AI provider is usable for the full-text analysis pass.
+
+    A remote provider counts only when its API key is present; local Ollama
+    counts when a provider config selects it (or it is reachable by default).
+    AI_PROVIDER=none / off / disabled always returns False and wins over any
+    configured keys.
+    """
+    if (os.environ.get("AI_PROVIDER") or "").lower() in ("none", "off", "disabled"):
+        return False
+    if any(os.environ.get(k) for k in (
+            "GEMINI_API_KEY", "AI_API_KEY", "OPENAI_API_KEY",
+            "GROQ_API_KEY", "OPENROUTER_API_KEY", "ANTHROPIC_API_KEY")):
+        return True
+    try:
+        from ai_validator import _enabled_providers
+        return "ollama" in _enabled_providers()
+    except Exception:
+        return False

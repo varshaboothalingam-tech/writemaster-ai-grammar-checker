@@ -145,18 +145,22 @@ def _meaning_preserved_ok(original: str, corrected: str, errors: List[Dict]) -> 
 def check_master(text: str,
                  use_ai: bool = True,
                  raw_call: Optional[Callable[[str], str]] = None,
-                 include_v4_hints: bool = True,
+                 include_v4_hints: bool = False,
                  v4_result: Optional[Dict] = None,
                  min_auto_apply: float = _AUTO_APPLY_MIN,
                  auto_correct_only: bool = True,
-                 report_local_only: bool = False,
+                 report_local_only: bool = True,
                  max_passes: int = 1) -> Dict:
     """Run the single master pipeline.
 
     ``report_local_only`` (Phase 5 discovery mode): when a rule candidate with
-    high confidence is not covered by the AI verdict it is ADDED to the result
-    as a ``LOCAL_ONLY`` suggestion (never auto-applied). Default False keeps
-    the AI-authoritative contract (AI errors win outright).
+    confidence at or above the offline floor (0.75) is not covered by the AI
+    verdict it is ADDED to the result as a ``LOCAL_ONLY`` suggestion and — when
+    above the auto-apply gate (default 0.79) — applied to the corrected text.
+    This keeps the high-precision rule layer active even when Gemini's short
+    verdict misses a low-frequency error (e.g. ``feeded -> fed``,
+    ``slepping -> sleeping``). Legacy behaviour (default False) drops every
+    uncovered local candidate below 0.95.
 
     ``max_passes`` (second full check, §15/§16): when > 1 in AI mode, the
     corrected text is re-checked up to ``max_passes`` (spec cap 3) to catch

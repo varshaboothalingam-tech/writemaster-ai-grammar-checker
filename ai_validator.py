@@ -38,15 +38,24 @@ Fail-safe semantics:
 
 Policy (configurable via environment):
     AI_PROVIDER      ollama | gemini | openai | anthropic | none/off(disabled)
-    AI_MODEL         model name
+    AI_MODEL         model name (or <PROVIDER>_MODEL for a specific provider)
     AI_API_KEY       key (NOT required for local ollama)
     GEMINI_API_KEY   priority key for the gemini provider (falls back to AI_API_KEY)
     AI_BASE_URL      optional override (defaults per provider)
+    GC_AI_PROVIDERS  comma-separated ensemble (e.g. "gemini,ollama"). With a
+                     single provider you can set AI_PROVIDER instead. Providers
+                     without a key (ollama) are always candidates; remote ones
+                     are included only when their key is present.
     GC_AI_THRESHOLD  minimum AI confidence to ACCEPT a correction (default 0.90)
     GC_AI_STRICT     "1" (default) reject when the AI verdict is missing/malformed
                      while the provider is enabled + reachable; "0" falls back to
                      local confidence in that case.
     GC_AI_PERMISSIVE alias kept for compatibility with GC_AI_STRICT=0.
+
+Auto-detection: when AI_PROVIDER is unset and no API keys are configured but a
+local Ollama server is reachable on AI_BASE_URL (default http://localhost:11434),
+Ollama is used automatically so the checker gets a real AI judge with zero setup.
+A bare AI_PROVIDER=none / off / disabled always disables AI outright.
 
 Keys are read from the process environment OR a .env file in the project root
 (loaded lazily on first use; python-dotenv is optional). No provider = feature
@@ -324,7 +333,21 @@ def _enabled_providers() -> List[str]:
         if _provider_configured(name):
             names.append(name)
     if not names:
-        return [_detect_provider()]
+        # Nothing explicitly configured: fall back to the default remote judge
+        # (gemini when a key exists) or auto-detect a reachable local Ollama.
+        base = _detect_provider()
+        if base in ("ollama",):
+            return ["ollama"]
+        if _api_key(base):
+            return [base]
+        if not any(_api_key(k) for k in ("gemini", "openai", "anthropic",
+                                         "groq", "openrouter")):
+            try:
+                if _ollama_available():
+                    return ["ollama"]
+            except Exception:
+                pass
+        return [base]
     return names
 
 
@@ -341,8 +364,8 @@ def _ollama_available() -> bool:
     try:
         import urllib.request
         base = _cfg("AI_BASE_URL", "http://localhost:11434")
-        req = urllib.request.Request(base + "/api/tags", method="GET", timeout=2)
-        with urllib.request.urlopen(req) as resp:
+        req = urllib.request.Request(base + "/api/tags", method="GET")
+        with urllib.request.urlopen(req, timeout=2) as resp:
             return resp.status == 200
     except Exception:
         return False
@@ -419,6 +442,33 @@ class AIValidator:
 
     def is_enabled(self) -> bool:
         return self.provider is not None
+
+    def call_any(self, prompt: str) -> str:
+        """Call configured providers in order; fall back to the next on any
+        failure (rate limit, model retired, network error, ...).
+
+        Returns the first successful response. If every configured provider
+        fails, the last exception is re-raised.
+        """
+        last: Optional[Exception] = None
+        for name in self.providers:
+            prev_active = self._active_provider
+            prev_model = self.model
+            try:
+                self._active_provider = name
+                if name == "gemini":
+                    self.model = _cfg("AI_MODEL", self._default_model(name))
+                else:
+                    self.model = _cfg(f"{name.upper()}_MODEL", self._default_model(name))
+                return self._call(prompt)
+            except Exception as exc:  # try the next provider
+                last = exc
+            finally:
+                self._active_provider = prev_active
+                self.model = prev_model
+        if last is not None:
+            raise last
+        raise RuntimeError("no AI provider available")
 
     def validate(self, candidates: List[Dict]) -> List[ValidationResult]:
         """Validate each candidate individually (one model call per candidate).
@@ -723,30 +773,37 @@ class AIValidator:
             previous_sentence=prev, next_sentence=next_,
         )
 
-    def _call(self, prompt: str) -> str:
-        if self.provider == "ollama":
-            return self._call_ollama(prompt)
-        if self.provider == "gemini":
-            return self._call_gemini(prompt)
-        if self.provider == "anthropic":
-            return self._call_anthropic(prompt)
-        return self._call_openai(prompt)
-
     def _call_ollama(self, prompt: str) -> str:
+        import time as _time
+        import urllib.error
         import urllib.request
         base = _cfg("AI_BASE_URL", "http://localhost:11434")
         body = json.dumps({
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "stream": False,
-            "options": {"temperature": 0, "num_predict": 512},
+            "options": {"temperature": 0, "num_predict": 4096},
         }).encode()
-        req = urllib.request.Request(
-            base + "/api/chat", data=body,
-            headers={"Content-Type": "application/json"}, method="POST")
-        with urllib.request.urlopen(req, timeout=60) as resp:
-            data = json.loads(resp.read().decode())
-            return data.get("message", {}).get("content", "")
+        last_err: Optional[Exception] = None
+        for attempt in range(3):
+            req = urllib.request.Request(
+                base + "/api/chat", data=body,
+                headers={"Content-Type": "application/json"}, method="POST")
+            try:
+                with urllib.request.urlopen(req, timeout=120) as resp:
+                    data = json.loads(resp.read().decode())
+                return data.get("message", {}).get("content", "")
+            except urllib.error.HTTPError as e:
+                last_err = e
+                if e.code in (404, 429, 500, 502, 503, 504):
+                    _time.sleep(2.0 * (attempt + 1))
+                    continue
+                raise
+            except (urllib.error.URLError, OSError) as e:
+                # unreachable (or refused) -> do not retry; fail fast so the
+                # fallback provider chain (gemini/groq/...) takes over.
+                raise e
+        raise last_err if last_err else RuntimeError("ollama call failed")
 
     def _call_openai(self, prompt: str) -> str:
         import urllib.request
@@ -755,7 +812,7 @@ class AIValidator:
             "model": self.model,
             "messages": [{"role": "user", "content": prompt}],
             "temperature": 0,
-            "max_tokens": 512,
+            "max_tokens": 2048,
         }).encode()
         req = urllib.request.Request(
             base + "/chat/completions", data=body,
@@ -767,10 +824,11 @@ class AIValidator:
             return data["choices"][0]["message"]["content"]
 
     def _call_gemini(self, prompt: str) -> str:
+        import re
         import time as _time
         import urllib.error
         import urllib.request
-        model = self.model or "gemini-2.0-flash"
+        model = self.model or "gemini-3.6-flash"
         url = (f"https://generativelanguage.googleapis.com/v1beta/models/{model}"
                f":generateContent?key={_api_key('gemini')}")
         body = json.dumps({
@@ -778,22 +836,49 @@ class AIValidator:
             "generationConfig": {"temperature": 0, "maxOutputTokens": 2048},
         }).encode()
         last_err: Optional[Exception] = None
-        for attempt in range(3):
+        deadline = _time.monotonic() + 45.0
+        attempt = 0
+        while _time.monotonic() < deadline:
+            attempt += 1
             req = urllib.request.Request(
                 url, data=body, headers={"Content-Type": "application/json"}, method="POST")
             try:
-                with urllib.request.urlopen(req, timeout=90) as resp:
+                with urllib.request.urlopen(req, timeout=120) as resp:
                     data = json.loads(resp.read().decode())
                 return data["candidates"][0]["content"]["parts"][0]["text"]
             except urllib.error.HTTPError as e:
                 last_err = e
-                if e.code in (429, 500, 502, 503, 504):
-                    _time.sleep(3.0 * (attempt + 1))
+                if e.code == 429:
+                    delay = None
+                    if getattr(e, "headers", None):
+                        try:
+                            delay = float(e.headers.get("Retry-After"))
+                        except (TypeError, ValueError):
+                            delay = None
+                    if delay is None:
+                        try:
+                            hint = e.read().decode()[:500]
+                            m = re.search(r"retry in ([\d.]+)s", hint, re.IGNORECASE)
+                            delay = float(m.group(1)) if m else None
+                        except Exception:
+                            delay = None
+                    if delay is None:
+                        delay = 5.0
+                    delay = min(delay, 15.0)
+                    if _time.monotonic() + delay < deadline:
+                        _time.sleep(delay)
+                    continue
+                if e.code in (500, 502, 503, 504):
+                    delay = min(4.0 * attempt, 15.0)
+                    if _time.monotonic() + delay < deadline:
+                        _time.sleep(delay)
                     continue
                 raise
             except (urllib.error.URLError, OSError) as e:
                 last_err = e
-                _time.sleep(3.0 * (attempt + 1))
+                delay = min(4.0 * attempt, 15.0)
+                if _time.monotonic() + delay < deadline:
+                    _time.sleep(delay)
         raise last_err if last_err else RuntimeError("gemini call failed")
 
     def _call_anthropic(self, prompt: str) -> str:

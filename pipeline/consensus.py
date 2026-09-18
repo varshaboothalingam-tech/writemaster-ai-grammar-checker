@@ -81,7 +81,8 @@ def merge(local_candidates: List[Dict],
           ai_errors: List[Dict],
           report_local_only: bool = True,
           reference: str = "gemini",
-          agree_sources: Optional[set] = None) -> Dict:
+          agree_sources: Optional[set] = None,
+          local_only_floor: float = 0.75) -> Dict:
     """Combine local + Gemini candidates into one consensus record set.
 
     Arguments:
@@ -90,9 +91,15 @@ def merge(local_candidates: List[Dict],
         ai_errors: Gemini error dicts with ``wrong/correct/type/confidence``
             already located on the ORIGINAL text (offsets never trusted raw
             from the model).
-        report_local_only: when False (AI-authoritative default), Case B
-            candidates are counted but not returned. When True (discovery
-            mode) they are reported as low-priority suggestions.
+        report_local_only: when False (legacy AI-authoritative default), Case B
+            candidates are counted but not returned except above the (old)
+            0.95 hard floor. When True (used by the master pipeline), Case B
+            candidates at or above ``local_only_floor`` are reported as
+            LOCAL_ONLY suggestions — local high-confidence rules still catch
+            what the model's short verdict misses.
+        local_only_floor: minimum confidence for a CASE B local-only candidate
+            to be reported when ``report_local_only`` is True (default 0.75,
+            the same floor the offline path uses).
         reference: which side decides Case D ties ("gemini" default).
         agree_sources: source names that count as "Case A agreement" between
             local NLP and Gemini. ``None`` means any local source counts;
@@ -182,7 +189,10 @@ def merge(local_candidates: List[Dict],
             continue
         # Case B — local only.
         if report_local_only:
-            records.append(_record(local, LOCAL_ONLY, reference))
+            if float(local.get("confidence", 0)) >= local_only_floor:
+                records.append(_record(local, LOCAL_ONLY, reference))
+            else:
+                rejected.append(_record(local, LOCAL_ONLY, reference))
         elif float(local.get("confidence", 0)) < 0.95:
             rejected.append(_record(local, LOCAL_ONLY, reference))
 
@@ -196,11 +206,41 @@ def merge(local_candidates: List[Dict],
             "conflicts": conflicts, "statistics": stats}
 
 
+def _contraction_completion(a: str, b: str):
+    """If one normalized fix is the other plus a trailing apostrophe segment
+    ("doesn" vs "doesn't", "don" vs "don't"), return (winner, loser) where the
+    winner is the completed (longer) form. Otherwise None."""
+    if not a or not b or a == b:
+        return None
+    short, long_ = (a, b) if len(a) <= len(b) else (b, a)
+    if len(short) < 2 or not long_.startswith(short):
+        return None
+    tail = long_[len(short):]
+    if tail.startswith("'"):
+        return long_, short
+    return None
+
+
 def _resolve_conflict(local: Dict, ai: Dict, reference: str) -> tuple:
     """Case D: the Gemini verdict is the bias-free reference (§6), so it wins
     the same-span conflict outright (unless a non-gemini reference was chosen).
+    Exception: when the two fixes differ only by a missing apostrophe segment
+    (AI "doesn" / "disnt" vs local "doesn't"), the completed form wins — tuned
+    vector decoders frequently truncate contractions in short completions.
     The loser is counted in ``rejected``.
     """
+    lc = _norm(local.get("correct") or "")
+    ac = _norm(ai.get("correct") or "")
+    comp = _contraction_completion(lc, ac)
+    if comp:
+        long_norm, _short_norm = comp
+        w, l = (local, ai) if lc == long_norm else (ai, local)
+        rec = _record(w, CONFLICT, reference)
+        rec["confidence"] = min(0.99, max(float(w.get("confidence", 0)),
+                                          float(l.get("confidence", 0.5))))
+        rec["sources"] = list(dict.fromkeys(
+            ["ai"] + (w.get("sources") or [w.get("source", "rule")])))
+        return rec, _record(l, CONFLICT, reference)
     if reference != "gemini":
         lc = float(local.get("confidence", 0))
         ac = float(ai.get("confidence", 0.5))

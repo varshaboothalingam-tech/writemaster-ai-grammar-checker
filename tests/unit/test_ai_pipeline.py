@@ -227,8 +227,14 @@ class TestAiPath:
         }
         raw_call, _ = _fake_gemini(analysis)
         res = check_ai_text("She go to school evry day.", use_ai=True, raw_call=raw_call)
-        (e,) = res["errors"]
+        go_errors = [e for e in res["errors"]
+                     if e["wrong"] == "go" and e["correct"] == "goes"]
+        assert go_errors, res["errors"]
+        e = go_errors[0]
         assert e["start"] == 4 and e["end"] == 6
+        # the model only reported 'go' (bogus offsets); local rules (spelling)
+        # may still surface other high-confidence fixes such as evry -> every.
+        assert any(ev["wrong"] == "evry" for ev in res["errors"])
 
 
 # --------------------------------------------------------------------------
@@ -283,3 +289,53 @@ class TestImports:
             [dict(base, wrong="go", source="fast", id="x")])
         assert len(merged) == 1
         assert merged[0]["sources"] == ["fast", "rule"]
+
+
+# --------------------------------------------------------------------------
+# Local Ollama provider awareness (no API key needed)
+# --------------------------------------------------------------------------
+
+class TestOllamaAwareConfig:
+    def _no_ai_env(self, monkeypatch):
+        for k in ("AI_PROVIDER", "GC_AI_PROVIDERS", "AI_API_KEY",
+                  "GEMINI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY",
+                  "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "AI_MODEL",
+                  "OLLAMA_MODEL"):
+            monkeypatch.delenv(k, raising=False)
+        # Never let an enabled singleton leak into the rest of the suite
+        # (check_v4 uses get_validator() and would hit real Ollama).
+        monkeypatch.setattr("ai_validator._instance", None)
+
+    def test_ai_configured_autodetect_ollama(self, monkeypatch):
+        self._no_ai_env(monkeypatch)
+        monkeypatch.setattr("ai_validator._ollama_available", lambda: True)
+        assert ai_analyzer.ai_key_configured() is True
+        assert ai_analyzer._provider_callable() is not None
+
+    def test_ai_disabled_with_explicit_none_even_if_ollama_up(self, monkeypatch):
+        self._no_ai_env(monkeypatch)
+        monkeypatch.setenv("AI_PROVIDER", "none")
+        monkeypatch.setattr("ai_validator._ollama_available", lambda: True)
+        assert ai_analyzer.ai_key_configured() is False
+
+    def test_ai_configured_with_explicit_ollama_provider(self, monkeypatch):
+        self._no_ai_env(monkeypatch)
+        monkeypatch.setenv("AI_PROVIDER", "ollama")
+        assert ai_analyzer.ai_key_configured() is True
+
+    def test_ai_configured_with_remote_key(self, monkeypatch):
+        self._no_ai_env(monkeypatch)
+        monkeypatch.setenv("GEMINI_API_KEY", "gkey")
+        assert ai_analyzer.ai_key_configured() is True
+
+    def test_ai_yield_from_local_ollama_via_pipeline(self, monkeypatch):
+        """End-to-end: ollama auto-detected -> full AI judge path is reachable."""
+        self._no_ai_env(monkeypatch)
+        monkeypatch.setattr("ai_validator._ollama_available", lambda: True)
+        from ai_validator import get_validator
+        v = get_validator()
+        assert v.is_enabled()
+        call = ai_analyzer._provider_callable()
+        assert call is not None
+        # No network calls happen here; we only assert the transport is wired.
+        assert any(p == "ollama" for p in v.providers)

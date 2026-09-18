@@ -123,8 +123,14 @@ def resolve_overlaps(candidates: List[Dict]) -> List[Dict]:
                     dropped = True
                     break
                 continue
-            # one span inside the other → the wider correction wins
+            # one span inside the other → the wider correction wins UNLESS the
+            # narrower candidate is materially more confident (gap >= 0.05).
+            # Without this, a low-confidence wide candidate like "goes to the
+            # college" (0.72) silently swallows the precise "goes" -> "go" (0.9).
             if _contained(c, k):
+                if c["confidence"] - k["confidence"] >= 0.05:
+                    kept.remove(k)
+                    continue
                 dropped = True
                 break
             if _contained(k, c):

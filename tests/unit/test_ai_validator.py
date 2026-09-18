@@ -308,3 +308,157 @@ def test_env_parser_ignores_comments_and_quotes(tmp_path):
     assert "NO_EQUALS_LINE" not in cfg
     assert cfg["EMPTYVAL"] == ""
     assert cfg["WITH_SPACES"] == "spaced-value"
+
+
+# ─── provider fallback (call_any) ──────────────────────────────────────────
+
+class ScriptedFallback(AIValidator):
+    """Multi-provider stub: dispatch per active provider via a script dict."""
+
+    def __init__(self, script):
+        os.environ["GEMINI_API_KEY"] = "gtest"
+        os.environ["GROQ_API_KEY"] = "qtest"
+        os.environ["OPENROUTER_API_KEY"] = "otest"
+        super().__init__(providers=["gemini", "groq", "openrouter"])
+        self.script = script
+
+    def _call(self, prompt):
+        name = getattr(self, "_active_provider", None) or self.provider
+        fn = self.script.get(name)
+        if fn is None:
+            raise RuntimeError(f"{name} not scripted")
+        return fn(prompt)
+
+
+def test_call_any_uses_primary_when_healthy():
+    ai = ScriptedFallback({
+        "gemini": lambda p: "gemini-ok",
+        "groq": lambda p: "groq-ok",
+    })
+    assert ai.call_any("hi") == "gemini-ok"
+
+
+def test_call_any_falls_back_when_primary_fails():
+    def boom(prompt):
+        raise RuntimeError("HTTP Error 429: Too Many Requests")
+
+    ai = ScriptedFallback({
+        "gemini": boom,
+        "groq": lambda p: '{"verdict": 1}',
+    })
+    assert ai.call_any("hi") == '{"verdict": 1}'
+
+
+def test_call_any_skips_down_providers_and_raises_last_error():
+    def boom(prompt):
+        raise RuntimeError("down")
+
+    ai = ScriptedFallback({"gemini": boom, "groq": boom, "openrouter": boom})
+    with pytest.raises(RuntimeError, match="down"):
+        ai.call_any("hi")
+
+
+def test_call_any_restores_active_provider_after_call():
+    ai = ScriptedFallback({
+        "gemini": lambda p: "a",
+        "groq": lambda p: "b",
+    })
+    assert ai.call_any("hi") == "a"
+    assert ai._active_provider is None
+    assert ai.provider == "gemini"
+
+
+# ─── local Ollama auto-detection + provider selection ─────────────────────
+
+def _clear_provider_env(monkeypatch):
+    for k in ("AI_PROVIDER", "GC_AI_PROVIDERS", "AI_API_KEY",
+              "GEMINI_API_KEY", "GROQ_API_KEY", "OPENROUTER_API_KEY",
+              "OPENAI_API_KEY", "ANTHROPIC_API_KEY", "OLLAMA_MODEL",
+              "AI_MODEL", "AI_BASE_URL"):
+        monkeypatch.delenv(k, raising=False)
+
+
+def test_enabled_providers_autodetect_local_ollama(monkeypatch):
+    from ai_validator import _enabled_providers
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setattr("ai_validator._ollama_available", lambda: True)
+    assert _enabled_providers() == ["ollama"]
+
+
+def test_enabled_providers_disabled_never_autodetects(monkeypatch):
+    from ai_validator import _enabled_providers
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("AI_PROVIDER", "none")
+    monkeypatch.setattr("ai_validator._ollama_available", lambda: True)
+    assert _enabled_providers() == ["none"]
+
+
+def test_enabled_providers_ollama_explicit(monkeypatch):
+    from ai_validator import _enabled_providers
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("AI_PROVIDER", "ollama")
+    assert _enabled_providers() == ["ollama"]
+
+
+def test_enabled_providers_ensemble_ollama_gemini(monkeypatch):
+    from ai_validator import _enabled_providers
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("GC_AI_PROVIDERS", "ollama,gemini,groq")
+    monkeypatch.setenv("GEMINI_API_KEY", "gkey")
+    monkeypatch.setenv("GROQ_API_KEY", "qkey")
+    monkeypatch.setattr("ai_validator._ollama_available", lambda: False)
+    assert _enabled_providers() == ["ollama", "gemini", "groq"]
+
+
+def test_enabled_providers_remote_requires_key(monkeypatch):
+    from ai_validator import _enabled_providers
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("GC_AI_PROVIDERS", "gemini,groq")
+    monkeypatch.setenv("GEMINI_API_KEY", "gkey")
+    monkeypatch.setattr("ai_validator._ollama_available", lambda: False)
+    assert _enabled_providers() == ["gemini"]
+
+
+def test_ollama_model_uses_ai_model_env_for_init(monkeypatch):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("AI_MODEL", "phi3:mini")
+    v = AIValidator(providers=["ollama"])
+    assert v.provider == "ollama"
+    assert v.model == "phi3:mini"
+
+
+def test_ollama_model_per_provider_env_via_call_any(monkeypatch):
+    _clear_provider_env(monkeypatch)
+    monkeypatch.setenv("OLLAMA_MODEL", "qwen2.5:3b")
+    captured = {}
+
+    class M(AIValidator):
+        def __init__(self):
+            super().__init__(providers=["ollama"])
+
+        def _call(self, prompt):
+            captured["model"] = self.model
+            raise RuntimeError("injected")
+
+    ai = M()
+    with pytest.raises(RuntimeError, match="injected"):
+        ai.call_any("hi")
+    assert captured["model"] == "qwen2.5:3b"
+
+
+def test_call_any_uses_ollama_then_falls_back_to_gemini(monkeypatch):
+    class Dispatch(AIValidator):
+        def __init__(self):
+            super().__init__(providers=["ollama", "gemini"])
+            self.calls = []
+
+        def _call(self, prompt):
+            self.calls.append(self._active_provider)
+            if self._active_provider == "ollama":
+                raise RuntimeError("connection refused")
+            return "gemini-result"
+
+    monkeypatch.setattr("ai_validator._ollama_available", lambda: False)
+    ai = Dispatch()
+    assert ai.call_any("hi") == "gemini-result"
+    assert ai.calls == ["ollama", "gemini"]
