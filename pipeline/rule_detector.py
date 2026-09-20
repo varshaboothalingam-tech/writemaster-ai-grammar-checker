@@ -445,12 +445,17 @@ class RuleDetector:
             self._irregular_past_ed,
             self._common_typos,
             self._word_confusions,
+            self._sometime_split,
             self._word_form,
             self._person_noun_be,
             self._missing_apostrophe,
             self._who_were,
             self._singular_noun_were,
             self._plural_was,
+            self._for_to_infinitive,
+            self._since_for,
+            self._there_was_plural,
+            self._one_of_were,
             self._tense_consistency,
             self._capitalization,
             self._punctuation,
@@ -657,6 +662,28 @@ class RuleDetector:
             out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
                                   "DIDNT_PAST_FORM",
                                   f"After '{m.group(1)}', use the base form '{base}'."))
+        # "he don't answered the phone" -> "he didn't answer" (double error:
+        # auxiliary tense + base form after 'did'). The past form after a
+        # negative auxiliary is wrong regardless of subject.
+        for m in re.finditer(r"\b(don'?t|doesn'?t|do not|does not)\s+([a-z]{2,}ed)\b",
+                             text, re.I):
+            word = m.group(2)
+            if word.lower() in _IRREGULAR_PAST_ED:
+                continue
+            base = _regular_base_from_past(word)
+            if word.lower() == base.lower():
+                continue
+            out.append(self._cand(m.group(2), base, "verb_form", _span(m, 2), 0.9,
+                                  "DONT_PAST_FORM",
+                                  f"After '{m.group(1)}', use the base form '{base}' "
+                                  f"(and usually 'didn't' here)."))
+        # "he don't answered" -> auxiliary should be "didn't" (past narrative),
+        # not "doesn't". Only when the following verb is a past form.
+        for m in re.finditer(r"\b(i|you|we|they|he|she|it|my friend|everyone)\s+"
+                             r"(don'?t|doesn'?t)\s+[a-z]{2,}ed\b", text, re.I):
+            out.append(self._cand(m.group(2), "didn't", "verb_form", _span(m, 2), 0.8,
+                                  "SVA_DOESNT_DIDNT",
+                                  f"Keep the past tense: use 'didn't' here."))
         return out
 
     def _modal_past_base(self, text: str) -> List[Dict]:
@@ -1112,6 +1139,16 @@ class RuleDetector:
                                   f"Days and months are capitalized: '{repl}'."))
         return out
 
+    def _sometime_split(self, text: str) -> List[Dict]:
+        # "After sometime" -> "After some time" (learner duration error).
+        out = []
+        for m in re.finditer(r"\b(after|in|later|since|until)\s+(sometime)\b",
+                             text, re.I):
+            out.append(self._cand(m.group(2), "some time", "word_choice", m, 0.8,
+                                  "SOMETIME_SPLIT",
+                                  "With a duration, use 'some time'."))
+        return out
+
     def _irregular_past_ed(self, text: str) -> List[Dict]:
         out = []
         for m in re.finditer(_WORD, text):
@@ -1273,11 +1310,78 @@ class RuleDetector:
                                       f"Use the adjective form '{adj}' after a linking verb."))
         return out
 
+    def _for_to_infinitive(self, text: str) -> List[Dict]:
+        # "for enjoy our holiday" -> "to enjoy our holiday". A very common
+        # ESL error: 'for' + base verb. Only fires when the verb is directly
+        # after 'for' and is a real base-verb form, not a noun/adjective.
+        out = []
+        bases = set(_IRREGULAR_PAST) | set(_THIRD_SINGULAR)
+        # Regular activity/leisure verbs very common in the ESL 'for + verb'
+        # error ('for enjoy our holiday'). Regular verbs are NOT in the
+        # irregular-past or 3sg maps, so add them explicitly.
+        _PURPOSE_VERBS = {"enjoy", "buy", "eat", "drink", "play", "go", "come",
+                          "see", "visit", "learn", "study", "rest", "sleep",
+                          "travel", "swim", "run", "walk", "exercise",
+                          "celebrate", "relax", "shop", "dance", "sing",
+                          "watch", "explore", "meet", "help", "get", "make",
+                          "spend", "take", "build", "start", "finish"}
+        verbs = "|".join(sorted({v for v in bases if _is_verb_form(v)}
+                                | _PURPOSE_VERBS))
+        for m in re.finditer(rf"\bfor\s+({verbs})\b", text, re.I):
+            verb = m.group(1).lower()
+            # 'for' is the flagged token -> 'to' (yields "to enjoy our holiday").
+            if len(m.group(0)) != 3 + 1 + len(m.group(1)):
+                continue  # defensive: match exactly 'for <verb>'
+            out.append(self._cand("for", "to", "preposition",
+                                  (m.start(0), m.start(1)), 0.8,
+                                  "FOR_TO_INFINITIVE",
+                                  f"Use 'to {m.group(1)}' to express purpose."))
+        return out
+
+    def _since_for(self, text: str) -> List[Dict]:
+        # "since many months" -> "for many months": 'since' needs a POINT in
+        # time; 'for' measures a duration.
+        out = []
+        units = r"(?:days?|weeks?|months?|years?|hours?|minutes?|centuries?)"
+        for m in re.finditer(
+                rf"\bsince\s+(?:many|several|a\s+few|few|some|two|three|four|"
+                rf"five|six|seven|eight|nine|ten|\d+)\s+{units}\b", text, re.I):
+            seg = text[m.start():m.end()]
+            out.append(self._cand(seg, "for " + seg[6:].lstrip(), "preposition",
+                                  m, 0.85, "SINCE_FOR",
+                                  f"Use 'for' with a duration ('{seg[6:].lstrip()}')."))
+        return out
+
+    def _there_was_plural(self, text: str) -> List[Dict]:
+        # "There was many people" -> "There were many people"
+        out = []
+        quant = (r"\b(many|several|few|some|both|all|twenty|dozens?|hundreds?|"
+                 r"thousands?|millions?|two|three|four|five|six)\b")
+        for m in re.finditer(rf"\b(there)\s+(was)\s+{quant}\b", text, re.I):
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 3), 0.9,
+                                  "THERE_WAS_PLURAL",
+                                  f"With '{m.group(3)}' (plural), use 'there were'."))
+        return out
+
+    def _one_of_were(self, text: str) -> List[Dict]:
+        # "One of my friends were" -> "was"
+        out = []
+        for m in re.finditer(
+                r"\b(one)\s+of\s+(?:the\s+|my\s+|our\s+|their\s+|your\s+|"
+                r"his\s+|her\s+|its\s+)?(\w+)\s+(were)\b", text, re.I):
+            noun = m.group(2).lower()
+            if not noun.endswith("s"):
+                continue
+            out.append(self._cand(m.group(3), "was", "subject_verb", _span(m, 3), 0.9,
+                                  "ONE_OF_WAS",
+                                  f"'One of {m.group(2)}' is singular, so use 'was'."))
+        return out
+
     def _plural_was(self, text: str) -> List[Dict]:
         out = []
-        # irregular plurals + "was" -> "were"
-        for m in re.finditer(r"\b(childrens?|peoples?|men|women|friends?|they)\s+(was)\b",
-                             text, re.I):
+        # irregular plurals + "was" -> "were" ("others", "both" included)
+        for m in re.finditer(r"\b(childrens?|peoples?|men|women|friends?|others|"
+                             r"both|we|they)\s+(was)\b", text, re.I):
             out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.87,
                                   "PLURAL_WAS",
                                   f"'{m.group(1)}' is plural, so use 'were'."))
