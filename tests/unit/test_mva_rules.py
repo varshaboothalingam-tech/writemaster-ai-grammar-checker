@@ -46,3 +46,16 @@ def test_compound_subject_sva():
     assert ("goes", "go", "SVA_COMPOUND") in rows
     rows = _rows("my brother and I plays football.")
     assert ("plays", "play", "SVA_COMPOUND") in rows
+from pipeline.aggregator import _remove_doubling
+
+
+def test_remove_doubling_collapses_adjacent_rewrite():
+    cands = [
+        {"start": 0, "end": 5, "wrong": "There", "correct": "There were",
+         "confidence": 0.9},
+        {"start": 6, "end": 9, "wrong": "was", "correct": "were",
+         "confidence": 0.95},
+    ]
+    out = _remove_doubling(cands)
+    assert len(out) == 1
+    assert out[0]["wrong"] == "was" and out[0]["correct"] == "were"

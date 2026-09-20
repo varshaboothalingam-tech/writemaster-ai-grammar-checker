@@ -104,6 +104,43 @@ def _dedup(items: List[Dict]) -> List[Dict]:
     return out
 
 
+def _tail(correct: str) -> str:
+    return (correct or "").strip().rsplit(maxsplit=1)[-1].lower()
+
+
+def _remove_doubling(candidates: List[Dict]) -> List[Dict]:
+    """Collapse adjacent fixes where one correction ends with the next one's
+    correction or target word (e.g. AI "There"->"There were" next to rule
+    "was"->"were" would render "There were were many").  Keep the
+    smaller-span member of the pair (the precise fix wins over the rewrite).
+    """
+    out: List[Dict] = list(candidates)
+    changed = True
+    while changed:
+        changed = False
+        for i, a in enumerate(out):
+            if changed:
+                break
+            for j in range(i + 1, len(out)):
+                b = out[j]
+                lo, hi = sorted((a, b), key=lambda x: x["start"])
+                if _overlap(lo, hi):
+                    continue
+                if not (lo["end"] <= hi["start"]):
+                    continue
+                tails = (_tail(lo["correct"]), _tail(hi["correct"]))
+                targets = ((hi.get("wrong") or "").strip().lower(),
+                           (hi["correct"] or "").strip().lower(),
+                           (lo.get("wrong") or "").strip().lower(),
+                           (lo["correct"] or "").strip().lower())
+                if tails[0] in targets[0:2] or tails[1] in targets[2:4]:
+                    wide = a if (a["end"] - a["start"]) >= (b["end"] - b["start"]) else b
+                    out.remove(wide)
+                    changed = True
+                    break
+    return out
+
+
 def resolve_overlaps(candidates: List[Dict]) -> List[Dict]:
     """Drop candidates fully contained in an earlier (wider/higher-conf) span.
 
@@ -230,6 +267,7 @@ def aggregate(rule_candidates: List[Dict],
         combined.extend(normalize_candidates(extra_candidates))
     combined = _dedup(normalize_candidates(combined))
     combined = resolve_overlaps(combined)
+    combined = _remove_doubling(combined)
     combined = multi_source_bonus(combined)
     combined.sort(key=lambda c: (-c["confidence"], c["start"]))
     return combined
