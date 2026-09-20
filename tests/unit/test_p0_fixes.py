@@ -198,3 +198,43 @@ def test_no_mangled_bases_smoke():
         for wrong, correct, rule in _rows(text):
             assert correct != wrong
             assert correct.strip()
+
+
+# ────────────────────────────────────────────────────────────────────────
+# TENSE_PAST_MARKER negative-habitual guard
+def test_tense_past_marker_keeps_base_after_negative_auxiliary():
+    rows = _rows("He don't usually get sick.")
+    assert ("get", "got", "TENSE_PAST_MARKER") not in rows
+    assert ("get", "got", "TENSE_PAST_MARKER") not in _rows("She doesn't often come here.")
+
+
+def test_tense_past_marker_still_fixes_real_past_errors():
+    rows = _rows("Yesterday I go to the market.")
+    assert ("go", "went", "TENSE_PAST_MARKER_AFTER") in rows
+
+
+# WORD_FORM_EMOTION_ADJ (was very worry -> was very worried)
+def test_word_form_emotion_adjective():
+    assert ("worry", "worried", "WORD_FORM_EMOTION_ADJ") in _rows("I was very worry.")
+    assert ("worry", "worried", "WORD_FORM_EMOTION_ADJ") in _rows("She is so worry about it.")
+    assert ("surprise", "surprised", "WORD_FORM_EMOTION_ADJ") in _rows("They were quite surprise.")
+    # nominal use of the noun must NOT be touched
+    assert ("worry", "worried", "WORD_FORM_EMOTION_ADJ") not in _rows("Worry is a feeling.")
+    assert ("tire", "tired", "WORD_FORM_EMOTION_ADJ") in _rows("He feels very tire.")
+
+
+# MODAL_GERUND_BASE (would going -> would go)
+def test_modal_gerund_base():
+    assert ("going", "go", "MODAL_GERUND_BASE") in _rows("She told me she would going home early.")
+    assert ("eating", "eat", "MODAL_GERUND_BASE") in _rows("We will eating soon.")
+    assert ("running", "run", "MODAL_GERUND_BASE") in _rows("They could running faster.")
+
+
+# NARRATIVE_PAST nested-clause habitual guard (my friend say that she has
+# never seen -> say uses PRESENT habitual, so it must be… wait, gold expects
+# 'said'; the nested 'never' must not rescue 'say')
+def test_narrative_past_nested_clause_habitual():
+    rows = _rows(
+        "While we were walking, I saw an elephant and my friend say that she "
+        "has never seen one before.")
+    assert ("say", "said", "NARRATIVE_PAST") in rows

@@ -373,6 +373,25 @@ def _regular_base_from_past(word: str) -> str:
     return low
 
 
+def _gerund_base(word: str) -> Optional[str]:
+    """Recover the base form of a gerund for modal contexts ('going'->'go',
+    'eating'->'eat', 'running'->'run', 'studying'->'study'). Returns None if the
+    word doesn't look like a gerund or its base isn't a real verb. Handles
+    doubled consonants ('running'->'run') and y->i ('studying'->'study')."""
+    low = word.lower()
+    if not low.endswith("ing") or len(low) <= 4:
+        return None
+    base = low[:-3]
+    candidates = [base, base[:-1]]
+    # 'studying' = study + ing (y->i): restore the trailing y
+    if low.endswith("ying") and len(low) > 5:
+        candidates.append(base[:-1] + "y")
+    for candidate in candidates:
+        if len(candidate) >= 2 and _is_verb_form(candidate):
+            return candidate
+    return None
+
+
 class RuleDetector:
     """Deterministic, high-precision candidate generator."""
 
@@ -426,6 +445,7 @@ class RuleDetector:
             self._irregular_past_ed,
             self._common_typos,
             self._word_confusions,
+            self._word_form,
             self._person_noun_be,
             self._missing_apostrophe,
             self._who_were,
@@ -665,6 +685,16 @@ class RuleDetector:
             out.append(self._cand(word, base, "verb_form", _span(m, 2), 0.85,
                                   "MODAL_PAST_BASE",
                                   f"After '{m.group(1)}', use the base form '{base}'."))
+        # gerund after modal: "would going" -> "would go", "will eating" -> "will eat"
+        for m in re.finditer(rf"{_MODAL}\s+([a-z]{{2,}}ing)\b", text, re.I):
+            ger = m.group(2)
+            low = ger.lower()
+            base = _gerund_base(low)
+            if base is None or base == low:
+                continue
+            out.append(self._cand(ger, base, "verb_form", _span(m, 2), 0.85,
+                                  "MODAL_GERUND_BASE",
+                                  f"After '{m.group(1)}', use the base form '{base}'."))
         return out
 
     def _double_negative(self, text: str) -> List[Dict]:
@@ -696,9 +726,12 @@ class RuleDetector:
                 tokens = m.string[:m.start(1)].rstrip().split()
                 if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
                     continue
-                if len(tokens) >= 2 \
-                        and tokens[-2].strip(".,;:!?").lower() in _AUX \
-                        and tokens[-1].strip(".,;:!?").lower() in ("not", "never"):
+                skip_tail = [t.strip(".,;:!?").lower() for t in tokens][-3:]
+                # "he don't (usually) get sick": a negative auxiliary anywhere
+                # in the previous 3 words means the base verb is CORRECT.
+                if any(t in ("don't", "doesn't", "didn't", "can't", "cannot",
+                             "won't", "wouldn't", "couldn't", "shouldn't",
+                             "mustn't", "ain't", "not", "never") for t in skip_tail):
                     continue
                 abs_start = max(0, marker.start() - 120) + m.start(1)
                 abs_end = abs_start + len(m.group(1))
@@ -816,7 +849,19 @@ class RuleDetector:
                         if any(t.strip(".,;:!?()\"'").lower() in _DETERMINERS
                                for t in lookback.split()[-2:]):
                             continue
-                    if _HABITUAL_RE.search(sent[max(0, m.start(1) - 40):m.end(1) + 24]):
+                    # Habitual adverbs rescue a present-tense base VERB ("she
+                    # usually go", "they never leave"). A genuine habit marker
+                    # sits BEFORE the verb. An adverb AFTER the verb only
+                    # rescues if it does NOT open a nested clause ("my friend
+                    # say [that she has never seen]" -> habitual 'never' belongs
+                    # to the embedded clause and must NOT rescue 'say').
+                    before = sent[max(0, m.start(1) - 40):m.start(1)]
+                    if _HABITUAL_RE.search(before):
+                        continue
+                    after = sent[m.end(1):m.end(1) + 40].lstrip()
+                    if _HABITUAL_RE.search(after) and not re.match(
+                            r"(?i)^(that|which|who|whom|where|when|while|"
+                            r"after|before)\b", after):
                         continue
                     after = sent[m.end(1):m.end(1) + 40].lstrip().split(None, 1)
                     if verb in ("have", "has", "had"):
@@ -1208,6 +1253,24 @@ class RuleDetector:
             out.append(self._cand(m.group(3), "was", "subject_verb", _span(m, 3), 0.75,
                                   "WHO_WAS",
                                   f"'{m.group(2)}' is singular, so use 'was'."))
+        return out
+
+    def _word_form(self, text: str) -> List[Dict]:
+        # "I was very worry" -> "I was very worried"; "so worry", "really worry"
+        # A closed set of noun/adjective confusions that are safe and specific.
+        out = []
+        _NOUN_ADJ = {"worry": "worried", "tire": "tired", "disappoint":
+                     "disappointed", "surprise": "surprised", "excite":
+                     "excited", "confuse": "confused", "interest":
+                     "interested"}
+        for noun, adj in _NOUN_ADJ.items():
+            for m in re.finditer(
+                    rf"\b(?:is|are|am|was|were|be|been|become|feel|feels|felt)\s+"
+                    rf"(?:very|so|really|quite|too|extremely|more)\s+\b({noun})\b",
+                    text, re.I):
+                out.append(self._cand(m.group(1), adj, "word_form", m, 0.8,
+                                      "WORD_FORM_EMOTION_ADJ",
+                                      f"Use the adjective form '{adj}' after a linking verb."))
         return out
 
     def _plural_was(self, text: str) -> List[Dict]:
