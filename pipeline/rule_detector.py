@@ -558,11 +558,25 @@ class RuleDetector:
                                   f"'{m.group(1)}' is singular, so use '{_THIRD_SINGULAR[verb]}'."))
         # i/we/you/they + 3rd-person singular → plural form
         plurals = "|".join(_PLURAL_FORM)
-        for m in re.finditer(rf"\b(i|we|you|they)\s+({plurals})\b", text, re.I):
+        for m in re.finditer(r"\b(i|we|you|they)\s+({plurals})\b", text, re.I):
             verb = m.group(2).lower()
             out.append(self._cand(m.group(2), _PLURAL_FORM[verb], "subject_verb",
                                   _span(m, 2), 0.9, "SVA_PLURAL",
                                   f"'{m.group(1)}' requires the base form '{_PLURAL_FORM[verb]}'."))
+        # compound/plural subjects + 3rd-singular verb -> base form
+        # ("me and my friends goes" -> "go", "my brother and I plays" -> "play")
+        _COMPOUND_BASES = {k: v for k, v in _PLURAL_FORM.items()
+                           if k not in _IRREGULAR_PAST}
+        _CB_RE = "|".join(sorted(re.escape(k) for k in _COMPOUND_BASES))
+        for m in re.finditer(
+                rf"\b(\w+)\s+and\s+(?:(?:\w+\s+){{0,2}})({_CB_RE})\b",
+                text, re.I):
+            if m.group(1).lower() in ("i", "you", "we", "they", "he", "she", "it"):
+                continue
+            base = _COMPOUND_BASES[m.group(2).lower()]
+            out.append(self._cand(m.group(2), base, "subject_verb", _span(m, 2), 0.85,
+                                  "SVA_COMPOUND",
+                                  f"A compound subject is plural, so use the base form '{base}'."))
         # I has → I have ; she/he/it have → has
         for m in re.finditer(r"\b(i)\s+(has)\b", text, re.I):
             out.append(self._cand(m.group(2), "have", "subject_verb", _span(m, 2), 0.92,
@@ -681,7 +695,7 @@ class RuleDetector:
         # not "doesn't". Only when the following verb is a past form.
         for m in re.finditer(r"\b(i|you|we|they|he|she|it|my friend|everyone)\s+"
                              r"(don'?t|doesn'?t)\s+[a-z]{2,}ed\b", text, re.I):
-            out.append(self._cand(m.group(2), "didn't", "verb_form", _span(m, 2), 0.8,
+            out.append(self._cand(m.group(2), "didn't", "verb_form", _span(m, 2), 0.92,
                                   "SVA_DOESNT_DIDNT",
                                   f"Keep the past tense: use 'didn't' here."))
         return out
@@ -1333,7 +1347,7 @@ class RuleDetector:
             if len(m.group(0)) != 3 + 1 + len(m.group(1)):
                 continue  # defensive: match exactly 'for <verb>'
             out.append(self._cand("for", "to", "preposition",
-                                  (m.start(0), m.start(1)), 0.8,
+                                  (m.start(0), m.start(0) + 3), 0.8,
                                   "FOR_TO_INFINITIVE",
                                   f"Use 'to {m.group(1)}' to express purpose."))
         return out

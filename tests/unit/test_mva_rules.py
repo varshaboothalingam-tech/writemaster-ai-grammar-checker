@@ -41,3 +41,8 @@ def test_dont_past_form():
     rows = _rows("he don't answered my phone.")
     assert ("answered", "answer", "DONT_PAST_FORM") in rows
     assert ("don't", "didn't", "SVA_DOESNT_DIDNT") in rows
+def test_compound_subject_sva():
+    rows = _rows("me and my friends goes to the beach.")
+    assert ("goes", "go", "SVA_COMPOUND") in rows
+    rows = _rows("my brother and I plays football.")
+    assert ("plays", "play", "SVA_COMPOUND") in rows
