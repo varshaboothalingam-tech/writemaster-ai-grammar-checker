@@ -1,0 +1,23 @@
+﻿name: regression
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+jobs:
+  test:
+    strategy:
+      matrix: { python-version: ["3.11", "3.12"] }
+    runs-on: ubuntu-latest
+    env: { AI_PROVIDER: "none", COLLECT_MISSED_ERRORS: "0" }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "${{ matrix.python-version }}" }
+      - name: deps
+        run: |
+          pip install -q -r requirements.txt
+          python -m spacy download en_core_web_sm
+      - name: unit suite (no AI, deterministic)
+        run: python -X utf8 -m pytest tests/unit -q
+      - name: offline scoreboard smoke
+        run: python -X utf8 scripts/run_scoreboard.py --after --json --limit 200
