@@ -286,6 +286,17 @@ _COMMON_PLURALS = _KNOWN_PLURALS | {
     "languages", "stories", "bottles", "cups", "plates", "keys",
     "flowers", "trees", "birds", "fishes", "efforts", "goals", "rights",
     "achievements", "skills", "habits", "hours", "books",
+    "sandwiches", "wallets", "tickets", "papers", "pencils", "bags",
+    "bottles", "glasses", "watches", "boxes", "buses", "bikes",
+    "sweets", "cookies", "chips", "pizzas", "apples", "bananas",
+    "vegetables", "fruits", "eggs", "toys", "gifts", "presents",
+    "drivers", "doctors", "nurses", "children", "families", "villages",
+    "cities", "towns", "roads", "streets", "buildings", "shops",
+    "markets", "restaurants", "hotels", "parks", "beaches", "mountains",
+    "rivers", "lakes", "islands", "fields", "crops", "cows", "goats",
+    "chickens", "birds", "insects", "wings", "clothes", "shirts",
+    "trousers", "socks", "shoes", "jackets", "caps", "hats",
+    "dishes", "glasses", "forks", "knives", "spoons",
 }
 
 
@@ -441,6 +452,7 @@ class RuleDetector:
             self._reflexive_subject,
             self._reflexive_irregular,
             self._dont_base,
+            self._dont_agreement,
             self._day_month_cap,
             self._irregular_past_ed,
             self._common_typos,
@@ -1165,6 +1177,22 @@ class RuleDetector:
                                   f"After '{m.group(1)}', use the base form '{corr}'."))
         return out
 
+    def _dont_agreement(self, text: str) -> List[Dict]:
+        # "my brother don't want" -> "my brother doesn't want" (3sg subject +
+        # don't). Catches the exact case the possessive rule must NOT turn into
+        # "my brother's don't".
+        out = []
+        for m in re.finditer(
+                rf"\b((?:he|she|it|this|that)|(?:my|our|your|his|her|their)\s+"
+                rf"(?:uncle|aunt|father|mother|brother|sister|grandfather|"
+                rf"grandmother|grandpa|grandma|son|daughter|cousin|friend|"
+                rf"neighbor|neighbour|wife|husband|dad|mom))\s+(do not|don't)\b",
+                text, re.I):
+            out.append(self._cand(m.group(2), "doesn't", "subject_verb", m, 0.88,
+                                  "DONT_AGREEMENT",
+                                  f"The subject '{m.group(1)}' is singular — use 'doesn't'."))
+        return out
+
     def _day_month_cap(self, text: str) -> List[Dict]:
         out = []
         names = "|".join(sorted(_DAY_MONTH_NAMES, key=len, reverse=True))
@@ -1370,7 +1398,12 @@ class RuleDetector:
                       "were", "has", "have", "had", "will", "would", "can",
                       "could", "should", "may", "might", "this", "that",
                       "these", "those", "my", "our", "your", "his", "her",
-                      "their", "its", "who", "what", "when", "where", "why"}
+                      "their", "its", "who", "what", "when", "where", "why",
+                      # negative-auxiliary stems: "my brother don't want" is a
+                      # subject, never a possessive ("my brother's don't")
+                      "don", "doesn", "didn", "won", "wouldn", "couldn",
+                      "shouldn", "isn", "aren", "wasn", "weren", "hasn",
+                      "haven", "hadn", "can't", "ain"}
         kin = "|".join(_KIN)
         pat = rf"\b(my|our|your|his|her|their)\s+({kin})\s+([a-z]\w+)\b"
         for m in re.finditer(pat, text):
@@ -1462,7 +1495,8 @@ class RuleDetector:
         return out
 
     def _there_was_plural(self, text: str) -> List[Dict]:
-        # "There was many people" -> "There were many people"
+        # "There was many people" -> "There were many people";
+        # "There was sandwiches" -> "There were sandwiches"
         out = []
         quant = (r"\b(many|several|few|some|both|all|twenty|dozens?|hundreds?|"
                  r"thousands?|millions?|two|three|four|five|six)\b")
@@ -1470,6 +1504,22 @@ class RuleDetector:
             out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.9,
                                   "THERE_WAS_PLURAL",
                                   f"With '{m.group(3)}' (plural), use 'there were'."))
+        # a KNOWN plural noun directly after "was": "there was sandwiches".
+        # Only dictionary-known plurals — never guess from an '-s' suffix so
+        # singulars like 'news', 'bus', 'glass' are safe.
+        for m in re.finditer(r"\b(there)\s+(was)\s+([a-z-]+)\b", text, re.I):
+            noun = m.group(3).lower()
+            if noun in _COMMON_PLURALS:
+                out.append(self._cand(m.group(2), "were", "subject_verb",
+                                      _span(m, 2), 0.85,
+                                      "THERE_WAS_PLURAL",
+                                      f"The noun '{noun}' is plural, so use 'there were'."))
+        # "there was lots of ..." / "a lot of ..." — inherently plural
+        for m in re.finditer(r"\b(there)\s+(was)\s+(?:a\s+)?lots?\s+of\b",
+                             text, re.I):
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.85,
+                                  "THERE_WAS_PLURAL",
+                                  "'lots of' is plural, so use 'there were'."))
         return out
 
     def _one_of_were(self, text: str) -> List[Dict]:

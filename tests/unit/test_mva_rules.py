@@ -116,3 +116,29 @@ def test_tense_consistency_marker_after_verb():
 def test_possessive_no_fp_on_conjunction():
     rows = _rows("He called his brother and asked him to search the room.")
     assert not any(r[2] == "POSSESSIVE_APOSTROPHE" for r in rows)
+
+
+def test_there_was_plural_known_noun():
+    rows = _rows("There was sandwiches on the table. There was problems with it.")
+    assert rows.count(("was", "were", "THERE_WAS_PLURAL")) >= 2
+
+
+def test_there_was_plural_no_fp_singulars():
+    rows = _rows("There was a bus waiting. There was glass on the floor. "
+                 "There was news on TV.")
+    assert not any(r[2] == "THERE_WAS_PLURAL" for r in rows)
+
+
+def test_there_was_plural_lots_of():
+    rows = _rows("There was lots of people at the market.")
+    assert ("was", "were", "THERE_WAS_PLURAL") in rows
+
+
+def test_dont_agreement_3sg():
+    rows = _rows("my brother don't want to come and he don't like it.")
+    assert rows.count(("don't", "doesn't", "DONT_AGREEMENT")) == 2
+
+
+def test_dont_agreement_no_fp_plural():
+    rows = _rows("My friends don't want to come.")
+    assert not any(r[2] == "DONT_AGREEMENT" for r in rows)
