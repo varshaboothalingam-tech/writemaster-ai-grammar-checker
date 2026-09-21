@@ -194,7 +194,7 @@ def check_master(text: str,
     if include_v4_hints:
         hints = ((v4_result or {}).get("errors") if v4_result is not None
                  else _v4_candidates(text))
-    candidates = aggregate(rules, hints)
+    candidates = aggregate(rules, hints, text)
     candidates = relocate_candidates(candidates, text)
 
     errors_map = {}   # key: (start,end) -> error

@@ -108,11 +108,16 @@ def _tail(correct: str) -> str:
     return (correct or "").strip().rsplit(maxsplit=1)[-1].lower()
 
 
-def _remove_doubling(candidates: List[Dict]) -> List[Dict]:
+def _remove_doubling(candidates: List[Dict], text: str = "") -> List[Dict]:
     """Collapse adjacent fixes where one correction ends with the next one's
     correction or target word (e.g. AI "There"->"There were" next to rule
     "was"->"were" would render "There were were many").  Keep the
     smaller-span member of the pair (the precise fix wins over the rewrite).
+
+    Doubling only occurs when the two spans are IMMEDIATELY adjacent
+    (whitespace-only gap): fixing "There"->"There were" puts 'were' right
+    before the rule's 'was'->'were' target.  Distant spans that merely share a
+    correction word (two separate "was"->"were") are NOT collapsed.
     """
     out: List[Dict] = list(candidates)
     changed = True
@@ -127,6 +132,9 @@ def _remove_doubling(candidates: List[Dict]) -> List[Dict]:
                 if _overlap(lo, hi):
                     continue
                 if not (lo["end"] <= hi["start"]):
+                    continue
+                gap = text[lo["end"]:hi["start"]] if text else ""
+                if gap.strip() != "":
                     continue
                 tails = (_tail(lo["correct"]), _tail(hi["correct"]))
                 targets = ((hi.get("wrong") or "").strip().lower(),
@@ -260,14 +268,15 @@ def relocate_candidates(candidates: List[Dict], text: str) -> List[Dict]:
 
 
 def aggregate(rule_candidates: List[Dict],
-              extra_candidates: Optional[List[Dict]] = None) -> List[Dict]:
+              extra_candidates: Optional[List[Dict]] = None,
+              text: str = "") -> List[Dict]:
     """Merge, dedup, resolve overlaps and boost multi-source confidence."""
     combined = list(rule_candidates or [])
     if extra_candidates:
         combined.extend(normalize_candidates(extra_candidates))
     combined = _dedup(normalize_candidates(combined))
     combined = resolve_overlaps(combined)
-    combined = _remove_doubling(combined)
+    combined = _remove_doubling(combined, text)
     combined = multi_source_bonus(combined)
     combined.sort(key=lambda c: (-c["confidence"], c["start"]))
     return combined

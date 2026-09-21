@@ -1372,7 +1372,7 @@ class RuleDetector:
         quant = (r"\b(many|several|few|some|both|all|twenty|dozens?|hundreds?|"
                  r"thousands?|millions?|two|three|four|five|six)\b")
         for m in re.finditer(rf"\b(there)\s+(was)\s+{quant}\b", text, re.I):
-            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 3), 0.9,
+            out.append(self._cand(m.group(2), "were", "subject_verb", _span(m, 2), 0.9,
                                   "THERE_WAS_PLURAL",
                                   f"With '{m.group(3)}' (plural), use 'there were'."))
         return out
