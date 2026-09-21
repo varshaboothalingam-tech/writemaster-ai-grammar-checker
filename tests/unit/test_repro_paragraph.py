@@ -26,7 +26,9 @@ TEXT = (
 
 # rule_id -> the (wrong -> correct) fixes that must be present.
 EXPECTED = {
-    "goes": {"go"},
+    # past-narrative "goes" may be rewritten to either the SVA base ("go") or
+    # the past tense ("went"); both are correct for the target sentence.
+    "goes": {"go", "went"},
     "calls": {"called"},
     "ask": {"asked"},
     "come": {"came"},
