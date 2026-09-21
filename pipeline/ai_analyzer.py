@@ -31,25 +31,37 @@ import os
 from typing import Callable, Dict, List, Optional
 
 SYSTEM_PROMPT = (
-    "You are a professional English writing assistant for non-native learners. "
-    "Read the COMPLETE text and understand its full context before deciding anything.\n\n"
-    "HARD RULES:\n"
-    "1. Report ONLY real errors. Never change a correct sentence.\n"
-    "2. Separate grammar errors from style preferences. A nicer phrasing is NOT an error.\n"
-    "3. 'She is a boy.' is NOT a grammar error; unusual content is not bad grammar.\n"
-    "4. 'I went to school yesterday.' / 'She goes to school every day.' are correct.\n"
-    "5. Use sentence context to resolve ambiguous words. Example: in the sentence\n"
-    "   'She goes to school evry day.' the word 'evry' is a misspelling of 'every',\n"
-    "   not a misspelling of 'very'.\n"
-    "6. Find ALL errors. Do not stop after the first one. Check every word.\n"
-    "7. Repeated letters indicate a typing mistake: 'homeeee' -> 'home',\n"
-    "   'schoollll' -> 'school', 'happyyy' -> 'happy'.\n"
-    "8. A correction must preserve the writer's meaning and be natural English.\n"
-    "9. For each error give one word-safe 'wrong' and one 'correct' string.\n"
-    "10. Repeated words are common. ALWAYS include the `context` field: a short\n"
-    "    literal snippet of the text IMMEDIATELY around the exact occurrence you mean\n"
-    "    (e.g. 'the food were', 'While we were'). If the same word appears twice,\n"
-    "    your context decides WHICH occurrence we correct — get it right.\n\n"
+    "You are a full-context English grammar analyzer. Read the ENTIRE text below "
+    "and find every grammar, spelling, punctuation, tense, and agreement error — "
+    "do not rely on any fixed word list; reason from general English grammar rules.\n\n"
+    "Pay special attention to error types that narrow rule-based checkers miss:\n"
+    "- Subject-verb agreement with ANY subject/verb pair, not just common ones\n"
+    "  (e.g. \"cousins was\", \"cousins starts\", \"we continues\", \"we decides\")\n"
+    "- Tense consistency across a narrative — if the surrounding text is past\n"
+    "  tense, flag present-tense verbs that should be past\n"
+    "  (e.g. \"we continues\", \"he show\", \"everyone laugh\", \"cousin spill\")\n"
+    "- Sequence-of-tense errors: present perfect used where simple past or past\n"
+    "  perfect is required (e.g. \"has bought ... yesterday\" — a specific past\n"
+    "  time marker rules out present perfect)\n"
+    "- Missing possessive apostrophes on nouns (\"uncle house\" -> \"uncle's house\")\n"
+    "- Verb complement errors: gerund vs. infinitive after specific verbs\n"
+    "  (e.g. \"enjoyed spend\" -> \"enjoyed spending\", not \"enjoyed spent\")\n"
+    "- Missing apostrophes in contractions (\"Lets\" -> \"Let's\")\n"
+    "- Capitalization after a full stop, including on words a rule-based\n"
+    "  checker might treat as \"already corrected\" (don't let a fixed sentence\n"
+    "  stay lowercase, e.g. \"nobody was angry\" at a sentence start)\n"
+    "- Any error type NOT covered above that a careful human proofreader would flag\n\n"
+    "Rules:\n"
+    "- Find errors using ONLY the text as given below — do not invent context.\n"
+    "- Every span (start/end) must be a LOCAL character offset into the exact\n"
+    "  text provided, 0-indexed, computed only after you finalize your answer.\n"
+    "- text[start:end] must exactly equal the \"original\" you report.\n"
+    "- Do not overlap spans. If two possible fixes overlap, keep only the one\n"
+    "  that best addresses the actual error.\n"
+    "- Do not change correct English. Do not flag style preferences as errors.\n"
+    "- Do not paraphrase or rewrite beyond the minimal fix needed.\n"
+    "- confidence is your own confidence this is a genuine, objective error\n"
+    "  (0.00-1.00), not a stylistic judgment call.\n"
 )
 
 
@@ -64,19 +76,18 @@ def build_prompt(text: str, candidates: Optional[List[Dict]] = None) -> str:
         SYSTEM_PROMPT
         + "Candidate hints from a local detector (they MAY contain false positives AND may be "
         "located at the WRONG occurrence of a repeated word — verify each against the real "
-        "context, keep only the correct ones, and always include the `context` field so the "
-        "exact occurrence is unambiguous):\n"
+        "context, keep only the correct ones, and give exact start/end offsets for each):\n"
         + cand_block + "\n\n"
         + "Text to analyze:\n"
-        + text + "\n\n"
-        + 'Return ONLY strict JSON with this exact shape:\n'
-        + '{"original_text": "", "corrected_text": "", "errors": ['
-        '{"wrong": "", "correct": "", "type": "spelling|grammar|subject_verb|tense|verb_form|'
-        'article|pronoun|preposition|plural|word_order|missing_word|extra_word|punctuation|'
-        'capitalization|word_choice|redundancy|context", "explanation": "", "confidence": 0.9, '
-        '"context": "exact short snippet around the occurrence"}], '
-        '"grammar_status": "errors_found|correct", "meaning_preserved": true}\n'
-        'If the text is already correct, return errors: [] and grammar_status "correct".'
+        + '"""\n' + text + '\n"""\n\n'
+        + "Return ONLY valid JSON, no markdown fences, no prose, in this exact shape:\n"
+        + '{"errors": [{"start": <int>, "end": <int>, "original": "<exact substring of '
+        'text[start:end]>", "replacement": "<corrected text>", '
+        '"category": "grammar" | "spelling" | "punctuation" | "capitalization" | '
+        '"word_choice", "subcategory": "<specific type, e.g. subject_verb_agreement, '
+        'tense_consistency, possessive>", "confidence": <float>, "explanation": '
+        '"<one short sentence>"}]}\n'
+        'If there are no errors, return {"errors": []}.\n'
     )
 
 
@@ -110,13 +121,25 @@ def _extract_json(raw: str) -> Optional[Dict]:
         return json.loads(s)
     except ValueError:
         pass
-    # last-resort: slice between first '{' and last '}'
+    # last-resort: slice between first '{' and last '}' if the whole string is
+    # one clean object (with fenced/backtick noise stripped above).
     a, b = s.find("{"), s.rfind("}")
     if a != -1 and b > a:
         try:
             return json.loads(s[a:b + 1])
         except ValueError:
             pass
+    # multi-array repair: the model sometimes emits errors as separate arrays,
+    # e.g. {"errors": [{...}], [{...}], [{...}]} — splice the brace objects
+    # together into one errors list. Run BEFORE the truncation repair so a
+    # partial one-error prefix does not win over the full set.
+    try:
+        errs = [_ for _ in _iter_brace_objects(s)
+                if ("original" in _ or "wrong" in _)]
+        if errs:
+            return {"errors": errs}
+    except Exception:
+        pass
     # truncated-JSON repair: the model sometimes gets cut off mid-list; the
     # outer structure is always {..., "errors": [...]}, so repair by closing
     # the unclosed brackets and walking closing braces backwards.
@@ -135,6 +158,39 @@ def _extract_json(raw: str) -> Optional[Dict]:
     return None
 
 
+def _iter_brace_objects(s: str):
+    """Yield every balanced {...} object found anywhere in the string."""
+    import re as _re
+    # walk delimiters so nested braces are handled; strings containing { } are
+    # skipped by tracking quote state
+    stack = []
+    infl = False
+    esc = False
+    for i, ch in enumerate(s):
+        if infl:
+            if esc:
+                esc = False
+            elif ch == "\\":
+                esc = True
+            elif ch == '"':
+                infl = False
+            continue
+        if ch == '"':
+            infl = True
+        elif ch == "{":
+            stack.append(i)
+        elif ch == "}" and stack:
+            start = stack.pop()
+            chunk = s[start:i + 1]
+            try:
+                obj = json.loads(chunk)
+                if isinstance(obj, dict) and obj:
+                    yield obj
+            except (ValueError, TypeError):
+                pass
+            continue
+
+
 _TYPE_VALUES = {
     "spelling", "grammar", "subject_verb", "tense", "verb_form", "article",
     "pronoun", "preposition", "plural", "word_order", "missing_word",
@@ -144,13 +200,14 @@ _TYPE_VALUES = {
 
 
 def _validate_error(e: Dict) -> Optional[Dict]:
-    wrong = str(e.get("wrong") or "").strip()
-    correct = str(e.get("correct") or "").strip()
+    wrong = str(e.get("original") or e.get("wrong") or "").strip()
+    correct = str(e.get("replacement") or e.get("correct") or "").strip()
     if not wrong or not correct or wrong.lower() == correct.lower():
         return None
-    etype = str(e.get("type") or "grammar").lower().replace(" ", "_")
+    etype = str(e.get("category") or e.get("type") or "grammar").lower().replace(" ", "_")
     if etype not in _TYPE_VALUES:
         etype = "grammar"
+    sub = str(e.get("subcategory") or "").strip().lower().replace(" ", "_")
     try:
         conf = float(e.get("confidence") or 0.5)
     except (TypeError, ValueError):
@@ -160,9 +217,12 @@ def _validate_error(e: Dict) -> Optional[Dict]:
         "wrong": wrong,
         "correct": correct,
         "type": etype,
+        "subcategory": sub,
         "explanation": str(e.get("explanation") or "").strip(),
         "confidence": conf,
         "context": str(e.get("context") or "").strip(),
+        "start": e.get("start"),
+        "end": e.get("end"),
     }
 
 
@@ -227,6 +287,15 @@ def _locate_errors(text: str, raw_errors: List[Dict]) -> List[Dict]:
         fixed = _validate_error(e)
         if not fixed:
             continue
+        # trust a model-provided span ONLY when it exactly matches the wrong
+        # string; otherwise re-locate (model offsets are frequently off).
+        s, en = fixed.get("start"), fixed.get("end")
+        if (isinstance(s, int) and isinstance(en, int) and 0 <= s < en <= len(text)
+                and text[s:en].strip().lower() == fixed["wrong"].lower()):
+            fixed["start"], fixed["end"] = s, en
+            cursor = en + max(1, len(fixed["wrong"]))
+            out.append(fixed)
+            continue
         pos = _locate_with_context(text, fixed, cursor)
         multiword = len(fixed["wrong"].split()) > 1
         if pos is None and multiword:
@@ -277,9 +346,13 @@ def analyze(text: str,
     raw_errors = data.get("errors") or []
     errors = _locate_errors(text, raw_errors) if isinstance(raw_errors, list) else []
     status = str(data.get("grammar_status") or ("errors_found" if errors else "correct"))
+    if "corrected_text" not in data or not data.get("corrected_text"):
+        from .aggregator import apply_corrections
+        data["corrected_text"] = apply_corrections(
+            text, [dict(e) for e in errors], min_confidence=0.0).get("corrected_text", text)
     return {
         "original_text": str(data.get("original_text") or text),
-        "corrected_text": str(data.get("corrected_text") or text),
+        "corrected_text": data["corrected_text"],
         "errors": errors,
         "grammar_status": status,
         "meaning_preserved": bool(data.get("meaning_preserved", True)),
