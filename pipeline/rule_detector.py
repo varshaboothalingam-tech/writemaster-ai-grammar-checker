@@ -459,6 +459,7 @@ class RuleDetector:
             self._tense_consistency,
             self._capitalization,
             self._punctuation,
+            self._contractions,
         ):
             try:
                 out.extend(fn(text))
@@ -874,6 +875,11 @@ class RuleDetector:
                     verb = m.group(1).lower()
                     tokens = sent[:m.start(1)].rstrip().split()
                     if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
+                        continue
+                    # clause-initial imperative ("Let's go", "Let me think",
+                    # "lets go") — the base verb is correct, never pasted.
+                    if re.match(r"(?i)^(let|let's|lets|please)\b",
+                                sent.lstrip()):
                         continue
                     # "I could not understand" — the AUX is two tokens back,
                     # separated by a negator; the base form stays ("could not
@@ -1536,6 +1542,31 @@ class RuleDetector:
                 "source": "rule",
                 "rule_id": "MISSING_END_PUNCT",
                 "message": "Add ending punctuation.",
+            })
+        return out
+
+    def _contractions(self, text: str) -> List[Dict]:
+        # "Lets go" / "Lets play" -> "Let's go" (sentence/imperative start)
+        out = []
+        for m in re.finditer(r"\bLets\s+([a-z]\w*)\b", text):
+            nxt = m.group(1).lower()
+            if nxt in _IRREGULAR_PAST or nxt in _PLURAL_FORM or nxt in _PAST_SIMPLE:
+                # "Lets went" — the next word is a past-form; 'Lets' is likely
+                # a 3rd-person verb ("she lets the dog out"), not an imperative.
+                if text[:m.start()].strip():
+                    lead = text[:m.start()].strip().split()[-1].strip(".,;:!?").lower()
+                    if lead in ("she", "he", "it"):
+                        continue
+            out.append({
+                "wrong": "Lets",
+                "correct": "Let's",
+                "type": "punctuation",
+                "start": m.start(),
+                "end": m.start() + 4,
+                "confidence": 0.85,
+                "source": "rule",
+                "rule_id": "LETS_CONTRACTION",
+                "message": "Use 'Let's' (with an apostrophe) for the imperative.",
             })
         return out
 

@@ -59,3 +59,19 @@ def test_remove_doubling_collapses_adjacent_rewrite():
     out = _remove_doubling(cands)
     assert len(out) == 1
     assert out[0]["wrong"] == "was" and out[0]["correct"] == "were"
+def test_lets_contraction_imperative():
+    rows = _rows("Lets go to the park.")
+    assert ("Lets", "Let's", "LETS_CONTRACTION") in rows
+    # "go" must NOT be pasted inside the imperative
+    assert not any(r[0] == "go" for r in rows)
+
+
+def test_narrative_past_respects_imperative():
+    from pipeline.master import check_master
+    r = check_master("Yesterday it rained. Lets go to the park.", use_ai=False)
+    assert "lets went" not in r["corrected_text"].lower()
+
+
+def test_contractions_no_fp_on_3sg_lets():
+    rows = _rows("She lets the dog out every morning.")
+    assert not any(r[2] == "LETS_CONTRACTION" for r in rows)

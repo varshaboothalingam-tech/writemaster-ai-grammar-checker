@@ -339,3 +339,13 @@ class TestOllamaAwareConfig:
         assert call is not None
         # No network calls happen here; we only assert the transport is wired.
         assert any(p == "ollama" for p in v.providers)
+
+def test_multi_array_json_repair():
+    from pipeline.ai_analyzer import _extract_json
+    raw = ('{"errors": [{"start": 0, "end": 4, "original": "goes", "replacement": "went", '
+           '"category": "grammar", "subcategory": "tense", "confidence": 0.99, '
+           '"explanation": "x"}], [{"start": 5, "end": 9, "original": "goes", '
+           '"replacement": "went", "category": "grammar", "subcategory": "tense", '
+           '"confidence": 0.99, "explanation": "y"}]}')
+    d = _extract_json(raw)
+    assert d and len(d.get("errors", [])) == 2
