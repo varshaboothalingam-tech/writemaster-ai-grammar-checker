@@ -449,6 +449,7 @@ class RuleDetector:
             self._word_form,
             self._person_noun_be,
             self._missing_apostrophe,
+            self._possessive_apostrophe,
             self._who_were,
             self._singular_noun_were,
             self._plural_was,
@@ -764,6 +765,12 @@ class RuleDetector:
                 "wouldn't", "couldn't", "shouldn't", "mustn't", "ain't"}
         for marker in _PAST_MARKERS.finditer(text):
             window = text[max(0, marker.start() - 120): marker.start()]
+            # bound the look-back at the start of the sentence so an earlier
+            # sentence's verbs are never marked by this marker
+            cut = max([i for i in (window.rfind("."), window.rfind("!"),
+                                   window.rfind("?"), window.rfind(";"),
+                                   window.rfind(":")) if i != -1] or [-1])
+            window = window[cut + 1:]
             for m in re.finditer(rf"\b({bases})\b", window, re.I):
                 tokens = m.string[:m.start(1)].rstrip().split()
                 if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
@@ -775,7 +782,14 @@ class RuleDetector:
                              "won't", "wouldn't", "couldn't", "shouldn't",
                              "mustn't", "ain't", "not", "never") for t in skip_tail):
                     continue
-                abs_start = max(0, marker.start() - 120) + m.start(1)
+                # "I have worked here since last year" — the perfect is correct
+                # and the base verb is 'worked' (already past); a duration
+                # preposition between verb and marker proves NOT a narrative
+                # past-time clash.
+                between = window[m.end(1):]
+                if re.search(r"\b(since|until|till)\b", between, re.I):
+                    continue
+                abs_start = max(0, marker.start() - 120) + cut + 1 + m.start(1)
                 abs_end = abs_start + len(m.group(1))
                 out.append({
                     "wrong": m.group(1),
@@ -873,6 +887,11 @@ class RuleDetector:
             if sent_past:
                 for m in re.finditer(rf"\b({bases})\b", sent, re.I):
                     verb = m.group(1).lower()
+                    # "I have worked here since last year" — present-perfect
+                    # with a duration adverb is CORRECT, never rewrite to past.
+                    if verb in ("have", "has") \
+                            and re.search(r"\b(since|for)\b", sent, re.I):
+                        continue
                     tokens = sent[:m.start(1)].rstrip().split()
                     if tokens and tokens[-1].strip(".,;:!?").lower() in _AUX:
                         continue
@@ -1198,23 +1217,57 @@ class RuleDetector:
 
     def _tense_consistency(self, text: str) -> List[Dict]:
         """'Yesterday, the team has attended the meeting.' -> the past-time
-        marker clashes with the present-perfect, so drop the auxiliary."""
+        marker clashes with the present-perfect, so drop the auxiliary.
+        Also catches the marker AFTER the verb: 'She has bought it yesterday.'
+        """
         out = []
+        vre = re.compile(
+            r"\b(has|have)\s+(also|just|already|ever|never)?\s*"
+            r"([a-z]+(?:ed|n|t))\b", re.I)
         for marker in _PAST_MARKERS.finditer(text):
+            # forward window (marker before verb)
             window = text[marker.end():marker.end() + 90]
             cut = min([i for i in (window.find("."), window.find("!"),
                                    window.find("?"), window.find(";"))
                        if i != -1] or [len(window)])
             window = window[:cut]
-            for m in re.finditer(
-                    r"\b(has|have|had)\s+(also|just|already|ever|never)?\s*"
-                    r"([a-z]+(?:ed|n|t))\b", window, re.I):
+            for m in vre.finditer(window):
                 verb = m.group(3).lower()
                 plain = verb if verb in _PAST_SIMPLE or verb.endswith("ed") else None
-                if plain is None or plain == m.group(1).lower() == "had":
+                if plain is None:
                     continue
                 start = marker.end() + m.start(1)
                 end = marker.end() + m.end(0)
+                wrong = text[start:end]
+                out.append({
+                    "wrong": wrong,
+                    "correct": plain,
+                    "type": "tense",
+                    "start": start,
+                    "end": end,
+                    "confidence": 0.85,
+                    "source": "rule",
+                    "rule_id": "TENSE_CONSISTENCY",
+                    "message": f"With '{marker.group(0)}', use the simple past '{plain}' instead of '{wrong}'.",
+                })
+            # backward window (verb before marker): 'has bought ... yesterday'
+            prev = text[max(0, marker.start() - 90):marker.start()]
+            cut = max([i for i in (prev.rfind("."), prev.rfind("!"),
+                                   prev.rfind("?"), prev.rfind(";"), prev.rfind(":"))
+                       if i != -1] or [-1])
+            prev = prev[cut + 1:]
+            # "since/until last year" is a duration anchor — the perfect is
+            # correct there ("I have worked here since last year"), so skip.
+            if re.search(r"\b(since|until|till)\b\s*$", prev, re.I):
+                continue
+            # rely on word-boundary offsets relative to the text (not just prev)
+            for m in vre.finditer(prev):
+                verb = m.group(3).lower()
+                plain = verb if verb in _PAST_SIMPLE or verb.endswith("ed") else None
+                if plain is None:
+                    continue
+                start = max(0, marker.start() - 90) + cut + 1 + m.start(1)
+                end = max(0, marker.start() - 90) + cut + 1 + m.end(0)
                 wrong = text[start:end]
                 out.append({
                     "wrong": wrong,
@@ -1296,6 +1349,42 @@ class RuleDetector:
             out.append(self._cand(m.group(0), rep, "spelling", m, 0.92,
                                   "MISSING_APOSTROPHE",
                                   f"The word '{m.group(0)}' is missing an apostrophe; use '{rep}'."))
+        return out
+
+    def _possessive_apostrophe(self, text: str) -> List[Dict]:
+        # "my uncle house" -> "my uncle's house", "her brother car" -> "her
+        # brother's car". Kinship nouns are near-universally possessive when a
+        # possessive determiner precedes them and a common noun follows; the
+        # compound-noun risk (mother tongue, friend group) is excluded below.
+        out = []
+        _KIN = ("uncle", "aunt", "father", "mother", "brother", "sister",
+                "grandfather", "grandmother", "grandpa", "grandma",
+                "grandson", "granddaughter", "dad", "mom", "son", "daughter",
+                "cousin", "friend", "neighbor", "neighbour", "wife", "husband")
+        _COMPOUND_HEADS = {"tongue", "clock", "figure", "ship", "group",
+                           "zone", "circle", "land", "language", "in-law",
+                           "state", "country", "nature", "board", "company",
+                           "friend", "band"}
+        _FUNC_HEAD = {"and", "or", "but", "the", "a", "an", "with", "from",
+                      "for", "of", "to", "in", "on", "at", "is", "are", "was",
+                      "were", "has", "have", "had", "will", "would", "can",
+                      "could", "should", "may", "might", "this", "that",
+                      "these", "those", "my", "our", "your", "his", "her",
+                      "their", "its", "who", "what", "when", "where", "why"}
+        kin = "|".join(_KIN)
+        pat = rf"\b(my|our|your|his|her|their)\s+({kin})\s+([a-z]\w+)\b"
+        for m in re.finditer(pat, text):
+            head = m.group(3).lower()
+            if head in _COMPOUND_HEADS or head in _FUNC_HEAD:
+                continue
+            if head.endswith(("s", "ing")) or _is_verb_form(head):
+                continue
+            if len(head) > 14:
+                continue
+            out.append(self._cand(m.group(2), f"{m.group(2)}'s",
+                                  "possessive", m, 0.8,
+                                  "POSSESSIVE_APOSTROPHE",
+                                  f"'{m.group(2)}' needs a possessive apostrophe: '{m.group(2)}'s'."))
         return out
 
     def _who_were(self, text: str) -> List[Dict]:

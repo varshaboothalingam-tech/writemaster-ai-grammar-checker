@@ -75,3 +75,44 @@ def test_narrative_past_respects_imperative():
 def test_contractions_no_fp_on_3sg_lets():
     rows = _rows("She lets the dog out every morning.")
     assert not any(r[2] == "LETS_CONTRACTION" for r in rows)
+
+
+def test_possessive_apostrophe_kinship():
+    rows = _rows("my uncle house is big and my father car is red.")
+    assert ("uncle", "uncle's", "POSSESSIVE_APOSTROPHE") in rows
+    assert ("father", "father's", "POSSESSIVE_APOSTROPHE") in rows
+
+
+def test_possessive_apostrophe_no_fp_compounds():
+    rows = _rows("His mother tongue is Hindi and she told her friend group about it.")
+    assert not any(r[2] == "POSSESSIVE_APOSTROPHE" for r in rows)
+
+
+def test_possessive_apostrophe_no_fp_verb_head():
+    rows = _rows("I saw my brother play cricket.")
+    assert not any(r[2] == "POSSESSIVE_APOSTROPHE" for r in rows)
+
+
+def test_present_perfect_duration_no_fp():
+    from pipeline.master import check_master
+    for t in ("I have worked here since last year.",
+              "We have been friends since childhood.",
+              "I lived in Chennai for two years."):
+        r = check_master(t, use_ai=False)
+        assert r["corrected_text"] == t, f"FP on {t!r}: {r['corrected_text']}"
+
+
+def test_tense_past_marker_backward_not_duration():
+    rows = _rows("I have known him until last year and I go to school. my uncle house is big")
+    assert not any(r[2] == "TENSE_PAST_MARKER" for r in rows)
+    assert ("uncle", "uncle's", "POSSESSIVE_APOSTROPHE") in rows
+
+
+def test_tense_consistency_marker_after_verb():
+    rows = _rows("She has bought it yesterday.")
+    assert ("has bought", "bought", "TENSE_CONSISTENCY") in rows
+
+
+def test_possessive_no_fp_on_conjunction():
+    rows = _rows("He called his brother and asked him to search the room.")
+    assert not any(r[2] == "POSSESSIVE_APOSTROPHE" for r in rows)
