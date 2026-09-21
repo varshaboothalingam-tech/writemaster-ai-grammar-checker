@@ -1214,6 +1214,15 @@ class RuleDetector:
             out.append(self._cand(m.group(2), "some time", "word_choice", m, 0.8,
                                   "SOMETIME_SPLIT",
                                   "With a duration, use 'some time'."))
+        # "After few minutes" -> "After a few minutes" ("a few" = some, positive).
+        # Only the safe duration-preposition contexts; "after the few minutes"
+        # / "very few" do not match (a determiner/quantifier intervenes).
+        for m in re.finditer(
+                r"\b(after|in|within|later|for|since|before|during)\s+(few)\b",
+                text, re.I):
+            out.append(self._cand(m.group(2), "a few", "article", m, 0.88,
+                                  "FEW_ARTICLE",
+                                  "In this context use 'a few' (a small number)."))
         return out
 
     def _irregular_past_ed(self, text: str) -> List[Dict]:

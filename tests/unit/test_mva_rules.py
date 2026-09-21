@@ -142,3 +142,14 @@ def test_dont_agreement_3sg():
 def test_dont_agreement_no_fp_plural():
     rows = _rows("My friends don't want to come.")
     assert not any(r[2] == "DONT_AGREEMENT" for r in rows)
+
+
+def test_few_article():
+    rows = _rows("After few minutes, we opened the door. In few days I will visit.")
+    assert rows.count(("few", "a few", "FEW_ARTICLE")) == 2
+
+
+def test_few_article_no_fp():
+    rows = _rows("After the few minutes were over. Very few people came. "
+                 "We had only a few friends.")
+    assert not any(r[2] == "FEW_ARTICLE" for r in rows)
