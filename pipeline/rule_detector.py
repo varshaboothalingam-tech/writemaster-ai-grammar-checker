@@ -328,9 +328,31 @@ def _regular_past(base: str) -> str:
     if low.endswith("e"):
         return low + "d"
     if (len(low) >= 3 and low[-1] not in "aeiouy" and low[-1] not in "xw"
-            and low[-2] in "aeiou" and low[-3] not in "aeiou"):
+            and low[-2] in "aeiou" and low[-3] not in "aeiou"
+            and _single_syllable(low)):
         return low + low[-1] + "ed"
     return low + "ed"
+
+
+def _single_syllable(word: str) -> bool:
+    """True when a CVC-looking base is genuinely one syllable, so consonant
+    doubling (stop->stopped) fires only on single-syllable words. Multi-syllable
+    verbs like 'open', 'enter', 'visit' must NOT be doubled ('opened', not
+    'openned'). Counts vowel groups: a cluster of adjacent vowel letters counts
+    as one ('stop' has 1, 'open' has 2 -> no doubling)."""
+    low = word.lower()
+    if not low:
+        return False
+    groups = 0
+    in_vowel = False
+    for ch in low:
+        if ch in "aeiouy":
+            if not in_vowel:
+                groups += 1
+                in_vowel = True
+        else:
+            in_vowel = False
+    return groups == 1
 
 
 _3SG_BASE = {v: k for k, v in _THIRD_SINGULAR.items()}
